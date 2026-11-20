@@ -1,6 +1,14 @@
 ---
-import strings from '@clipcard/i18n/landing/en';
+import { landingCopy } from '../languages';
+import type { InterfaceLanguage } from '@clipcard/i18n';
 import Icon from './Icon.astro';
+interface Props {
+  locale: InterfaceLanguage;
+  icon?: boolean;
+}
+const { locale } = Astro.props;
+const strings = landingCopy(locale);
+
 const { icon = true } = Astro.props;
 ---
 

@@ -1,0 +1,53 @@
+{
+  "_status": "needs-review",
+  "title": "Clipcard – ዜናን በካርድ መልክ ያጋሩ",
+  "description": "አገናኝ፣ የተቀዳ ጽሑፍ ወይም ፎቶ ወደ ዋናው ምንጭ የሚወስድ ካርድ ይቀይሩ።",
+  "nav": {
+    "app": "የድር መተግበሪያ",
+    "templates": "አብነቶች",
+    "how": "አሠራሩ",
+    "faq": "ተደጋጋሚ ጥያቄዎች",
+    "language": "ቋንቋ",
+    "follow": "በGitHub ይከተሉ"
+  },
+  "hero": {
+    "appHeading": "ዜናን በካርድ መልክ ያጋሩ",
+    "appDescription": "አገናኝ፣ የተቀዳ ጽሑፍ ወይም ፎቶ ወደ ዋናው ምንጭ የሚወስድ ካርድ ይቀይሩ።"
+  },
+  "shortcut": {
+    "submit": "ካርድ ይሥሩ",
+    "open": "መተግበሪያውን ይክፈቱ",
+    "placeholder": "አገናኝ፣ ጽሑፍ ወይም ፎቶ ይለጥፉ"
+  },
+  "features": {
+    "soon": "በቅርቡ",
+    "items": {
+      "cards": {
+        "title": "ካርዶች በአንድ ጠቅታ"
+      },
+      "clips": {
+        "title": "ቁርጥራጮች እና ፍርግርግ"
+      },
+      "videoClips": {
+        "title": "የቪዲዮ ቅንጥቦች"
+      },
+      "videoJoin": {
+        "title": "አንድ ቪዲዮ፣ ብዙ ምንጮች"
+      },
+      "gifs": {
+        "title": "ማከማቻ እና GIF"
+      },
+      "drafts": {
+        "title": "ረቂቆች"
+      }
+    }
+  },
+  "languages": "ለእርስዎ ቋንቋ የተዘጋጀ።",
+  "appBand": "የመጀመሪያ Clipcard ይሥሩ።",
+  "footer": {
+    "privacy": "ግላዊነት"
+  },
+  "privacy": {
+    "title": "ግላዊነት"
+  }
+}

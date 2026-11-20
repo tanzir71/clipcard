@@ -1,0 +1,53 @@
+{
+  "_status": "needs-review",
+  "title": "Clipcard – Ibahagi ang balita bilang card",
+  "description": "Gawing card ang isang link, kinopyang artikulo, o larawan. May link ang card pabalik sa pinagmulan.",
+  "nav": {
+    "app": "Web app",
+    "templates": "Mga template",
+    "how": "Paano ito gumagana",
+    "faq": "Mga tanong",
+    "language": "Wika",
+    "follow": "Sundan sa GitHub"
+  },
+  "hero": {
+    "appHeading": "Ibahagi ang balita bilang card",
+    "appDescription": "Gawing card ang isang link, kinopyang artikulo, o larawan. May link ang card pabalik sa pinagmulan."
+  },
+  "shortcut": {
+    "submit": "Gumawa ng card",
+    "open": "Buksan ang buong app",
+    "placeholder": "Mag-paste ng link, teksto, o larawan"
+  },
+  "features": {
+    "soon": "Malapit na",
+    "items": {
+      "cards": {
+        "title": "Mga card sa isang click"
+      },
+      "clips": {
+        "title": "Mga clip at grid"
+      },
+      "videoClips": {
+        "title": "Mga video clip"
+      },
+      "videoJoin": {
+        "title": "Isang video, maraming source"
+      },
+      "gifs": {
+        "title": "Library at mga GIF"
+      },
+      "drafts": {
+        "title": "Mga draft"
+      }
+    }
+  },
+  "languages": "Para sa wika mo.",
+  "appBand": "Gumawa ng una mong Clipcard.",
+  "footer": {
+    "privacy": "Privacy"
+  },
+  "privacy": {
+    "title": "Privacy"
+  }
+}

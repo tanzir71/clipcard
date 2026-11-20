@@ -1,0 +1,27 @@
+---
+import { landingCopy } from '../languages';
+import type { InterfaceLanguage } from '@clipcard/i18n';
+import { RELEASED } from '../config';
+import Site from '../layouts/Site.astro';
+interface Props {
+  locale?: InterfaceLanguage;
+}
+const { locale = 'en' } = Astro.props;
+const { brand, privacy } = landingCopy(locale);
+---
+
+<Site
+  title={`${privacy.title} · ${brand}`}
+  description={privacy.description}
+  locale={locale}
+  localizedPage="privacy"
+>
+  <article class="container document">
+    <h1>{privacy.title}</h1>
+    {(RELEASED.app ? privacy.appText : privacy.text).map((paragraph) => (
+      <p>{paragraph}</p>
+    ))}
+    {RELEASED.extension &&
+      privacy.extensionText.map((paragraph) => <p>{paragraph}</p>)}
+  </article>
+</Site>

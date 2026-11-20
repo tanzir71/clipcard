@@ -405,6 +405,10 @@
   transform: none;
 }
 
+.cc-split[data-wide] > .cc-photo-area {
+  inset-inline-end: auto;
+}
+
 .cc-split[data-wide] .cc-split-title {
   inset-block-start: var(--cc-wide-title-top);
   inset-inline: 56px 32px;

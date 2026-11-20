@@ -1,0 +1,53 @@
+{
+  "_status": "needs-review",
+  "title": "Clipcard – Bagikan berita sebagai kartu",
+  "description": "Ubah tautan, artikel yang disalin, atau foto menjadi kartu yang dapat dibagikan dan tertaut ke sumbernya.",
+  "nav": {
+    "app": "Aplikasi web",
+    "templates": "Templat",
+    "how": "Cara kerja",
+    "faq": "Tanya jawab",
+    "language": "Bahasa",
+    "follow": "Ikuti di GitHub"
+  },
+  "hero": {
+    "appHeading": "Bagikan berita sebagai kartu",
+    "appDescription": "Ubah tautan, artikel yang disalin, atau foto menjadi kartu yang dapat dibagikan dan tertaut ke sumbernya."
+  },
+  "shortcut": {
+    "submit": "Buat kartu",
+    "open": "Buka aplikasi lengkap",
+    "placeholder": "Tempel tautan, teks, atau foto"
+  },
+  "features": {
+    "soon": "Segera",
+    "items": {
+      "cards": {
+        "title": "Kartu sekali klik"
+      },
+      "clips": {
+        "title": "Klip dan kisi"
+      },
+      "videoClips": {
+        "title": "Klip video"
+      },
+      "videoJoin": {
+        "title": "Satu video, banyak sumber"
+      },
+      "gifs": {
+        "title": "Pustaka dan GIF"
+      },
+      "drafts": {
+        "title": "Draf"
+      }
+    }
+  },
+  "languages": "Dibuat untuk bahasa Anda.",
+  "appBand": "Buat Clipcard pertama Anda.",
+  "footer": {
+    "privacy": "Privasi"
+  },
+  "privacy": {
+    "title": "Privasi"
+  }
+}

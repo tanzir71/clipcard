@@ -1,8 +1,14 @@
 ---
-import strings from '@clipcard/i18n/landing/en';
+import { landingCopy, appPath } from '../languages';
+import type { InterfaceLanguage } from '@clipcard/i18n';
 import { landingBookmarklet } from '../bookmarklet';
-import { sitePath } from '../site';
-const url = new URL(sitePath('app/'), Astro.site);
+interface Props {
+  locale: InterfaceLanguage;
+}
+const { locale } = Astro.props;
+const strings = landingCopy(locale);
+
+const url = new URL(appPath(locale), Astro.site);
 const bookmark = await landingBookmarklet(url);
 const copy = strings.bookmark;
 ---

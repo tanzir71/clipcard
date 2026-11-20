@@ -1,4 +1,4 @@
-import { CLIP_DRAFTS_RELEASED } from '@clipcard/core/flags';
+import { CLIP_DRAFTS_RELEASED, FLAGS } from '@clipcard/core/flags';
 
 export const STORE_URL = import.meta.env.STORE_URL ?? '';
 export const REPO_URL =
@@ -11,7 +11,7 @@ export const RELEASED = {
   extension: true,
   clips: CLIP_DRAFTS_RELEASED,
   drafts: CLIP_DRAFTS_RELEASED,
-  languages: false,
+  languages: FLAGS.languages,
   videoClips: false,
   videoJoin: false,
   gifs: false,

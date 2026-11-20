@@ -1,9 +1,15 @@
 ---
-import strings from '@clipcard/i18n/landing/en';
-import { sitePath } from '../site';
+import { landingCopy, appPath } from '../languages';
+import type { InterfaceLanguage } from '@clipcard/i18n';
 import Icon from './Icon.astro';
+interface Props {
+  locale: InterfaceLanguage;
+}
+const { locale } = Astro.props;
+const strings = landingCopy(locale);
+
 const { installApp: copy } = strings;
-const app = sitePath('app/');
+const app = appPath(locale);
 ---
 
 <div class="app-install">

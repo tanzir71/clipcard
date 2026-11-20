@@ -5,6 +5,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./en": "./locales/en.json",
-    "./landing/en": "./locales/landing/en.json"
+    "./landing/en": "./locales/landing/en.json",
+    "./landing": "./src/landing.ts"
   }
 }

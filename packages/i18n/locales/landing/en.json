@@ -5,6 +5,7 @@
   "nav": {
     "label": "Main navigation",
     "menu": "Menu",
+    "language": "Language",
     "skip": "Skip to content",
     "app": "Web app",
     "templates": "Templates",
@@ -138,6 +139,7 @@
     }
   },
   "languages": "Made for your language.",
+  "languageSupport": "Make cards in 30 languages. The app and extension interface are available in 12 languages.",
   "languageNames": {
     "bn": "বাংলা",
     "hi": "हिन्दी",

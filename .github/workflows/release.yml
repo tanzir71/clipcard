@@ -27,6 +27,11 @@ jobs:
           node-version: '24'
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Install Chromium for released social previews
+        run: |
+          if node --input-type=module -e "import { CARD_LANGUAGES_RELEASED } from './packages/core/flags.ts'; process.exit(CARD_LANGUAGES_RELEASED ? 0 : 1)"; then
+            pnpm exec playwright install --with-deps chromium
+          fi
       - run: pnpm typecheck && pnpm lint && pnpm test
       - name: Package the Chromium extension
         env:

@@ -1,4 +1,11 @@
-import socialImage from './generated/social-en.jpg?url';
+import englishSocial from './generated/social-en.jpg?url';
+import type { InterfaceLanguage } from '@clipcard/i18n';
+
+const social = import.meta.glob<string>('./generated/social-*.jpg', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+});
 
 const media = import.meta.glob<string>('./generated/*.webp', {
   eager: true,
@@ -12,4 +19,6 @@ export function previewImage(name: string) {
   return image;
 }
 
-export { socialImage };
+export function socialImage(locale: InterfaceLanguage) {
+  return social['./generated/social-' + locale + '.jpg'] ?? englishSocial;
+}

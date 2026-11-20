@@ -22,6 +22,7 @@ jobs:
           node-version: '24'
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test
@@ -29,7 +30,15 @@ jobs:
       - run: pnpm --filter @clipcard/extension exec wxt build --mode r4-preview -b chrome
         env:
           VITE_CLIPCARD_LANGUAGES: '1'
-      - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm e2e
         env:
           CLIPCARD_TEST_R4_PREVIEW: '1'
+      - name: Verify the wave-one landing preview
+        run: |
+          pnpm prepare:landing
+          pnpm --filter @clipcard/landing exec astro build --mode r4-preview
+          pnpm --filter @clipcard/lite exec vite build --mode r4-preview
+          pnpm e2e --project=landing --grep 'wave-one routes'
+        env:
+          VITE_CLIPCARD_LANGUAGES: '1'
+          CLIPCARD_TEST_R4_LANDING: '1'

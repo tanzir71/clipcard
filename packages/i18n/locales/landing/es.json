@@ -1,0 +1,53 @@
+{
+  "_status": "needs-review",
+  "title": "Clipcard – Comparte noticias en tarjetas",
+  "description": "Convierte un enlace, un artículo copiado o una foto en una tarjeta que lleve a la fuente original.",
+  "nav": {
+    "app": "Aplicación web",
+    "templates": "Plantillas",
+    "how": "Cómo funciona",
+    "faq": "Preguntas frecuentes",
+    "language": "Idioma",
+    "follow": "Seguir en GitHub"
+  },
+  "hero": {
+    "appHeading": "Comparte noticias en tarjetas",
+    "appDescription": "Convierte un enlace, un artículo copiado o una foto en una tarjeta que lleve a la fuente original."
+  },
+  "shortcut": {
+    "submit": "Crear tarjeta",
+    "open": "Abrir la aplicación completa",
+    "placeholder": "Pega un enlace, texto o una foto"
+  },
+  "features": {
+    "soon": "Próximamente",
+    "items": {
+      "cards": {
+        "title": "Tarjetas en un clic"
+      },
+      "clips": {
+        "title": "Recortes y cuadrículas"
+      },
+      "videoClips": {
+        "title": "Clips de vídeo"
+      },
+      "videoJoin": {
+        "title": "Un vídeo, muchas fuentes"
+      },
+      "gifs": {
+        "title": "Biblioteca y GIF"
+      },
+      "drafts": {
+        "title": "Borradores"
+      }
+    }
+  },
+  "languages": "Hecho para tu idioma.",
+  "appBand": "Crea tu primera Clipcard.",
+  "footer": {
+    "privacy": "Privacidad"
+  },
+  "privacy": {
+    "title": "Privacidad"
+  }
+}

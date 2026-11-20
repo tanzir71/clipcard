@@ -1,14 +1,19 @@
 ---
-import strings from '@clipcard/i18n/landing/en';
+import { landingCopy, appPath } from '../languages';
+import type { InterfaceLanguage } from '@clipcard/i18n';
 import { landingBookmarklet } from '../bookmarklet';
 import { INSTALL_URL, RELEASED, STORE_URL } from '../config';
-import { sitePath } from '../site';
 import Icon from './Icon.astro';
 import InstallApp from './InstallApp.astro';
+interface Props {
+  locale: InterfaceLanguage;
+}
+const { locale } = Astro.props;
+const strings = landingCopy(locale);
 
 const copy = strings.shortcut;
-const appPath = sitePath('app/');
-const bookmark = await landingBookmarklet(new URL(appPath, Astro.site));
+const app = appPath(locale);
+const bookmark = await landingBookmarklet(new URL(app, Astro.site));
 ---
 
 {RELEASED.extension ? (
@@ -22,7 +27,7 @@ const bookmark = await landingBookmarklet(new URL(appPath, Astro.site));
 <form
   class="app-shortcut"
   data-hero-shortcut
-  data-app-path={appPath}
+  data-app-path={app}
   data-failed={copy.failed}
 >
   <Icon name="link" />
@@ -43,11 +48,11 @@ const bookmark = await landingBookmarklet(new URL(appPath, Astro.site));
   <a class="app-shortcut-bookmark" href={bookmark} draggable="true">
     ✂ {copy.bookmark} <span>{copy.drag}</span>
   </a>
-  <a href={appPath}>
+  <a href={app}>
     {copy.open} <span aria-hidden="true">→</span>
   </a>
 </div>
-<InstallApp />
+<InstallApp locale={locale} />
 
 <script>
   import type { CardInput } from '@clipcard/ui/input';
