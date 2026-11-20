@@ -7,5 +7,6 @@
     "outDir": "dist",
     "rootDir": "."
   },
-  "include": ["src/**/*.ts", "flags.ts"]
+  "include": ["src/**/*.ts", "flags.ts"],
+  "exclude": ["src/**/*.test.ts"]
 }

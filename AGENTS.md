@@ -67,6 +67,7 @@ Work arrives as **release prompts** (`handover/R*.md`, plan in `docs/ROADMAP.md`
 | Card geometry per template/format | `docs/DESIGN.md` §Cards |
 | Extension internals, permissions, clipboard path | `docs/ARCHITECTURE.md` |
 | Languages, fonts, RTL, store titles | `docs/I18N.md` |
+| Web app and phone app screens (`/app`) | `docs/APP.md`, `design/webapp/`, `design/phone/` |
 | Landing page + SEO | `docs/LANDING.md` |
 | Test matrix | `docs/QA.md` |
 

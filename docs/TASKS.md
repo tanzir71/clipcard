@@ -10,16 +10,16 @@
 
 ## M1 · Core (`packages/core`)
 - [ ] `unwrapUrl`, `cleanUrl`, `resolveUrl` (with an injectable `fetch`) + `textFragment(url, selection)`. **All cases in `fixtures/urls.json` pass.**
-- [ ] `extract(doc, finalUrl): CardSource` per `ARCHITECTURE.md` §5. **All `fixtures/pages/*.html` match `fixtures/expected/*.json`.**
-- [ ] `detectScript(text)`, `langToScript`, `dirFor(lang)`; unit tests with bn/hi/ur/ar/ta/ne strings.
-- [ ] `cleanTitle(title, siteName, host)` with suffix/prefix stripping tests.
+- [x] `extract(doc, finalUrl): CardSource` per `ARCHITECTURE.md` §5. **All `fixtures/pages/*.html` match `fixtures/expected/*.json`.**
+- [x] `detectScript(text)`, `langToScript`, `dirFor(lang)`; unit tests with bn/hi/ur/ar/ta/ne strings.
+- [x] `cleanTitle(title, siteName, host)` with suffix/prefix stripping tests.
 
 ## M2 · Cards (`packages/cards`)
 - [ ] Font loader (per‑script WOFF2 subsets, lazy) and the font map from `docs/DESIGN.md` §3.
-- [ ] `FitText` (binary search, max lines, balance) with tests.
-- [ ] QR SVG component (EC M, one path) + module‑size growth rule.
+- [x] `FitText` (binary search, max lines, balance) with tests.
+- [x] QR SVG component (EC M, one path) + module‑size growth rule.
 - [ ] Templates: see **M10** (Header, Split, Caps, Overlay, Duotone, Quote, Solid, Roundup) × formats 4:5, 1:1, 9:16, 16:9, 1.91:1 + RTL.
-- [ ] `renderCard()` → PNG Blob via modern‑screenshot.
+- [x] `renderCard()` → PNG Blob via modern‑screenshot.
 - [ ] **Visual snapshots**: render the designed cards with the sample data (`design/photos`, texts from the PNGs) and compare with `design/cards/*.png` (≤ 2% diff). Assert computed font families.
 - [ ] Scan test: decode the QR from every rendered PNG (e.g. `jsqr`) and assert it equals the expected URL.
 

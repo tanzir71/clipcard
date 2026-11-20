@@ -1,0 +1,34 @@
+:root {
+  background: #f4f4f5;
+  color: #0a0a0a;
+  font-family: 'Geist', system-ui, sans-serif;
+}
+body {
+  margin: 32px;
+}
+.gallery {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+figure {
+  margin: 0;
+}
+.preview {
+  overflow: hidden;
+  background: #ddd;
+}
+.preview > div {
+  transform-origin: top left;
+}
+figcaption {
+  margin-block: 8px;
+}
+button {
+  border: 1px solid #ddd;
+  background: #fff;
+  color: inherit;
+  padding: 7px 10px;
+  cursor: pointer;
+}
