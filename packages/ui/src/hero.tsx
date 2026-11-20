@@ -1,6 +1,10 @@
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
-import strings from '@clipcard/i18n/en';
+import {
+  interfaceLanguage,
+  interfaceStrings as strings,
+  setInterfaceLanguage,
+} from '@clipcard/i18n';
 import { FLAGS } from '@clipcard/core/flags';
 import { appendCardDraft } from './collection-card.ts';
 import type { CardDraft } from './draft.ts';
@@ -41,6 +45,9 @@ export async function showHeroCard(
   input: CardInput,
   appUrl: string,
 ) {
+  if (FLAGS.languages) {
+    setInterfaceLanguage(interfaceLanguage(document.documentElement.lang));
+  }
   const draft = await draftFromInput(input, strings['card.photo']);
   if (!draft) return false;
   const collection =
