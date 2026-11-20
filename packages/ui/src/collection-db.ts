@@ -1,10 +1,10 @@
-import { parseWebUrl, textFragment } from '@clipcard/core';
+import { parseWebUrl, textFragment, timestampedVideoUrl } from '@clipcard/core';
 import { connectCollections } from './storage-db.ts';
 import type { Connection, Upgrade } from './storage-db.ts';
 
 export function canonicalSource(url: string | null): string | null {
   if (!url || !parseWebUrl(url)) return null;
-  return textFragment(url, '');
+  return timestampedVideoUrl(url) ?? textFragment(url, '');
 }
 
 async function migrateCards(transaction: Parameters<Upgrade>[3]) {

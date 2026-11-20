@@ -6,6 +6,7 @@ import { FLAGS } from '@clipcard/core/flags';
 import { browser } from 'wxt/browser';
 import { defineContentScript } from 'wxt/utils/define-content-script';
 import { forTarget } from '../src/messages.ts';
+import { mountVideoClipping } from '../src/video-controls.ts';
 import { mountClipping } from '../src/clipping.ts';
 import { trackPage } from '../src/page-hints.ts';
 import { getUserSettings, watchUserSettings } from '../src/user-settings.ts';
@@ -28,6 +29,7 @@ export default defineContentScript({
     const hints = trackPage();
     const clips =
       FLAGS.clips && FLAGS.drafts ? mountClipping(hints) : undefined;
+    const videoClips = FLAGS.videoClips ? mountVideoClipping() : undefined;
     if (FLAGS.languages) {
       const load = () => {
         void getUserSettings()
@@ -51,6 +53,7 @@ export default defineContentScript({
       closeFrame?.();
       dismissToast();
       clips?.popup(true);
+      videoClips?.popup(true);
       const url = new URL(browser.runtime.getURL('/sheet.html'));
       const extensionOrigin = url.protocol + '//' + url.host;
       if (id) url.searchParams.set('draft', id);
@@ -86,6 +89,7 @@ export default defineContentScript({
         window.removeEventListener('keydown', onEscape);
         host.remove();
         clips?.popup(false);
+        videoClips?.popup(false);
         if (closeFrame === removeFrame) closeFrame = undefined;
         if (previous instanceof HTMLElement)
           previous.focus({ preventScroll: true });
@@ -141,6 +145,9 @@ export default defineContentScript({
           case 'startClipping':
             clips?.start();
             respond(Boolean(clips));
+            break;
+          case 'openVideo':
+            respond(videoClips?.open(message.address) ?? false);
             break;
           case 'contextImage':
             respond(clips?.contextImage(message.address));

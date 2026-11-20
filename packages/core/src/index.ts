@@ -19,3 +19,5 @@ export {
   textFragment,
   unwrapUrl,
 } from './url.ts';
+
+export * from './video.ts';

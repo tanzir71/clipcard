@@ -130,6 +130,32 @@ export const archiveSchema = z.object({
       lang: text.optional(),
       publishedAt: text.optional(),
       range: range.optional(),
+      video: z
+        .object({
+          source: url,
+          start: z.number().nonnegative(),
+          end: z.number().nonnegative(),
+          cues: z
+            .array(
+              z.object({
+                start: z.number().nonnegative(),
+                end: z.number().nonnegative(),
+                text: z.string().max(600),
+              }),
+            )
+            .max(300),
+          poster: z
+            .string()
+            .max(800_000)
+            .regex(
+              /^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/,
+            )
+            .optional(),
+        })
+        .refine(
+          (video) => video.end > video.start && video.end - video.start <= 60,
+        )
+        .optional(),
       rect: point.extend({ width: z.number(), height: z.number() }).optional(),
       textFragment: url.optional(),
       media: media.optional(),

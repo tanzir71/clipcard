@@ -2,6 +2,13 @@
 
 Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md).
 
+## R5 video recording — 2026-11-21
+
+- The R2 build comparison found that optional `tabCapture` preserved the install warnings. R5 uses `getDisplayMedia` from the Add clip gesture. Chromium opens its chooser for every recording, and Clipcard verifies the selected tab by cropping to the actual player before encoding. It releases the capture tracks when recording stops.
+- A moment card uses the timestamp and the selected frame when the browser exposes it. The extension can use a permitted tab screenshot. The bookmark uses the page poster or a sourced card when the browser restricts access to the frame.
+- The extension stores a maximum of 60 seconds per capture and 180 seconds from each source in the current draft. Video exports keep the original audio when tab audio is shared. Available browser captions and transcript cues are kept with their timing. The output includes a four-second Sources card with the timestamp QR. The browser encodes H.264 and AAC where available, with a WebM fallback.
+- New R5 interface copy has English and Bangla text. Other interface locales use the existing English fallback for strings without a translation.
+
 ## 2026-11-21 · Developer ZIP first
 
 - The owner chose unsigned Developer mode installs as the first release channel. R4–R8 use the GitHub ZIP and web app. The first Chrome Web Store submission follows the feature-complete 1.0 developer release.

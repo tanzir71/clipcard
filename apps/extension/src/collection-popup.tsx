@@ -14,7 +14,12 @@ import {
   saveCollectionForLater,
   updateDraftCollection,
 } from '@clipcard/ui/collections';
-import type { ClipDraft, DraftCollection } from '@clipcard/ui/collections';
+import type {
+  ClipDraft,
+  DraftClip,
+  DraftCollection,
+} from '@clipcard/ui/collections';
+import { VideoEditor } from '@clipcard/ui/video-editor';
 import { GridEditor } from '@clipcard/ui/grid-editor';
 import { getDraft, saveDraft } from '@clipcard/ui/storage';
 import { browser } from 'wxt/browser';
@@ -85,15 +90,26 @@ export function CollectionPopup({
     }
   }
 
-  async function switchMode(mode: 'card' | 'grid') {
+  const hasVideo =
+    FLAGS.videoClips &&
+    Boolean(
+      collection?.clips.some((clip) => clip.kind === 'video' && clip.video),
+    );
+  const toVideo = hasVideo ? () => void switchMode('video') : undefined;
+
+  async function switchMode(mode: ClipDraft['mode'], moment?: DraftClip) {
     if (!collection) return;
     try {
       const item = await updateDraftCollection(collection.draft.id, { mode });
       if (!item) return;
-      if (mode === 'card')
-        setCard(
-          (await getDraft(item.draft.id)) ?? (await cardFromCollection(item)),
-        );
+      if (mode === 'card') {
+        const next = moment
+          ? await cardFromCollection(item, moment)
+          : ((await getDraft(item.draft.id)) ??
+            (await cardFromCollection(item)));
+        if (moment && next) await saveDraft(next);
+        setCard(next);
+      }
       setCollection(item);
     } catch {
       failed();
@@ -109,11 +125,22 @@ export function CollectionPopup({
     }
   }
 
+  if (collection && hasVideo && collection.draft.mode === 'video') {
+    return (
+      <VideoEditor
+        collection={collection}
+        close={close}
+        onCard={(clip) => void switchMode('card', clip)}
+        onGrid={() => void switchMode('grid')}
+      />
+    );
+  }
   if (collection && (collection.draft.mode === 'grid' || !cardState)) {
     return (
       <GridEditor
         collection={collection}
         change={setCollection}
+        onVideo={toVideo}
         close={close}
         onCard={
           collection.clips.length ? () => void switchMode('card') : undefined
@@ -158,6 +185,7 @@ export function CollectionPopup({
               }
             : undefined
         }
+        onVideo={toVideo}
         onGrid={collection ? () => void switchMode('grid') : undefined}
         openExternal={(url) => browser.tabs.create({ url })}
       />
@@ -199,7 +227,7 @@ export function CollectionPopup({
                   )}
                 </small>
               </span>
-              <Icon name={item.mode === 'grid' ? 'grid' : 'card'} size={16} />
+              <Icon name={item.mode} size={16} />
             </button>
           </li>
         ))}

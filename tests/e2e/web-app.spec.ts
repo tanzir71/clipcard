@@ -7,6 +7,8 @@ import { PNG } from 'pngjs';
 import jsQR from 'jsqr';
 import { buildBookmarklet } from '../../scripts/bookmarklet.ts';
 
+import { VIDEO_CLIPS_RELEASED } from '../../packages/core/flags.ts';
+
 const source = 'https://publisher.example/city/electric-river-buses';
 const photo = fileURLToPath(
   new URL('../../design/photos/river-bus.jpg', import.meta.url),
@@ -121,6 +123,83 @@ test('receives a bookmark payload from a fixture page and creates a canonical qu
   await expect(app.locator('.cc-quote').first()).toBeVisible();
   await expect(app.locator('.cc-headline').first()).toContainText(
     'The first boats left Gabtoli',
+  );
+});
+
+test('bookmark uses the playing video frame and timestamp', async ({
+  page,
+  baseURL,
+}) => {
+  test.skip(
+    !VIDEO_CLIPS_RELEASED && process.env.CLIPCARD_TEST_VIDEO_PREVIEW !== '1',
+    'R5 preview build required',
+  );
+  if (!baseURL) throw new Error('App base URL missing');
+  const origin = 'http://127.0.0.1:' + (Number(new URL(baseURL).port) + 1);
+  await page.goto(new URL('../', baseURL).href);
+  const publishedBookmark = await page
+    .locator('.app-shortcut-bookmark')
+    .getAttribute('href');
+  expect(publishedBookmark).toMatch(/^javascript:/);
+  expect(Buffer.byteLength(publishedBookmark ?? '')).toBeLessThanOrEqual(4096);
+  const bookmark = publishedBookmark?.replace(
+    'https://tanzir71.github.io',
+    new URL(baseURL).origin,
+  );
+  await page.goto(origin + '/video.html?utm_campaign=fixture');
+  await expect
+    .poll(() =>
+      page
+        .locator('video')
+        .evaluate(
+          (video: HTMLVideoElement) =>
+            video.readyState >= 2 && video.textTracks[0]?.cues?.length === 2,
+        ),
+    )
+    .toBe(true);
+  await page.locator('video').evaluate(async (video: HTMLVideoElement) => {
+    const seek = new Promise<void>((resolve) =>
+      video.addEventListener('seeked', () => resolve(), { once: true }),
+    );
+    video.currentTime = 1.7;
+    await seek;
+  });
+  await page.locator('video').evaluate((_, link) => {
+    const node = document.createElement('a');
+    node.id = 'run-video-bookmark';
+    node.textContent = 'Run bookmark';
+    node.href = link ?? '';
+    document.body.append(node);
+  }, bookmark);
+  const popup = page.waitForEvent('popup');
+  await page.locator('#run-video-bookmark').click();
+  const app = await popup;
+  await expect(app).toHaveURL((url) => url.origin === new URL(baseURL).origin);
+  await expect(app.locator('.cc-headline').first()).toContainText(
+    'The second fixture caption',
+  );
+  const qr = await app
+    .locator('.cc-qr')
+    .first()
+    .evaluate(async (element) => {
+      const xml = new XMLSerializer().serializeToString(element);
+      const image = new Image();
+      image.src = 'data:image/svg+xml,' + encodeURIComponent(xml);
+      await image.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 264;
+      const context = canvas.getContext('2d')!;
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      return Array.from(
+        context.getImageData(0, 0, canvas.width, canvas.height).data,
+      );
+    });
+  expect(jsQR(new Uint8ClampedArray(qr), 264, 264)?.data).toBe(
+    origin + '/video.html#t=1',
+  );
+  await expect(app.locator('.clip-editor-canvas .cc-photo').first()).toHaveCSS(
+    'background-image',
+    /url\(/,
   );
 });
 

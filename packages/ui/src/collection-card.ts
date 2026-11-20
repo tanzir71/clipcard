@@ -6,7 +6,7 @@ import {
   outletFromHost,
 } from '@clipcard/core';
 import { appendDraftClip, readClipMedia } from './collections.ts';
-import type { DraftCollection } from './collections.ts';
+import type { DraftClip, DraftCollection } from './collections.ts';
 import { newCardDraft } from './draft.ts';
 import type { CardDraft } from './draft.ts';
 import { inspectPhoto } from './input.ts';
@@ -38,18 +38,23 @@ export function appendCardDraft(card: CardDraft, preferGrid = false) {
   );
 }
 
-export async function cardFromCollection({
-  draft,
-  clips,
-}: DraftCollection): Promise<CardDraft | null> {
-  const [first] = clips;
+export async function cardFromCollection(
+  { draft, clips }: DraftCollection,
+  first: DraftClip | undefined = clips[0],
+): Promise<CardDraft | null> {
   if (!first) return null;
-  if (draft.legacyCard)
+  if (draft.legacyCard && first.kind !== 'video' && first.id === clips[0]?.id)
     return { ...draft.legacyCard, overrides: draft.overrides };
   const address = first.sourceUrl ? new URL(first.sourceUrl) : null;
-  const lang = detectLang(first.text || first.title, first.lang);
-  const headline = first.text || first.title;
-  const blob = await readClipMedia(first).catch(() => undefined);
+  const headline = first.text || first.video?.cues[0]?.text || first.title;
+  const lang = detectLang(headline, first.lang);
+  const blob =
+    first.kind === 'video'
+      ? first.video?.poster &&
+        (await fetch(first.video.poster)
+          .then((response) => response.blob())
+          .catch(() => undefined))
+      : await readClipMedia(first).catch(() => undefined);
   const card = newCardDraft({
     source: address
       ? {

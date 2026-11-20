@@ -1,0 +1,53 @@
+.clip-video-editor {
+  background: #fff;
+  color: #0b0b0c;
+}
+
+.clip-video-preview {
+  position: relative;
+  min-block-size: 140px;
+  background: #0b0b0c;
+}
+
+.clip-video-preview video,
+.clip-video-preview img {
+  display: block;
+  inline-size: 100%;
+  max-block-size: 440px;
+  object-fit: contain;
+}
+
+.clip-video-preview .clip-grid-close {
+  inset-block-start: 8px;
+  inset-inline-end: 8px;
+  z-index: 1;
+}
+
+.clip-video-actions {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+
+.clip-video-actions p {
+  margin: 0;
+  font-size: 12px;
+}
+
+.clip-video-time {
+  color: #55555c;
+  font:
+    500 12px 'Geist Mono',
+    monospace;
+  direction: ltr;
+}
+
+.clip-video-actions select {
+  min-inline-size: 0;
+  min-block-size: 36px;
+  font: inherit;
+}
+
+.clip-video-actions .clip-primary {
+  margin-inline-start: auto;
+}

@@ -12,7 +12,10 @@ import { getDraft } from '../storage.ts';
 import { DraftPreview } from './CardPreview.tsx';
 import { Icon } from './Icon.tsx';
 
-type Preview = { card: CardDraft } | { grid: ComponentProps<typeof GridCard> };
+type Preview =
+  | { card: CardDraft }
+  | { grid: ComponentProps<typeof GridCard> }
+  | { poster: string };
 
 export function CollectionThumbnail({ draft }: { draft: ClipDraft }) {
   const element = useRef<HTMLDivElement>(null);
@@ -32,7 +35,12 @@ export function CollectionThumbnail({ draft }: { draft: ClipDraft }) {
     async function load() {
       const collection = await getDraftCollection(id);
       if (!collection || !active) return;
-      if (mode === 'grid') {
+      if (mode === 'video') {
+        const poster = collection.clips.findLast(
+          (clip) => clip.kind === 'video' && clip.video?.poster,
+        )?.video?.poster;
+        if (poster) setPreview({ poster });
+      } else if (mode === 'grid') {
         const clips = await gridClipsForCollection(collection, (blob) => {
           if (!active) return undefined;
           const url = URL.createObjectURL(blob);
@@ -94,8 +102,10 @@ export function CollectionThumbnail({ draft }: { draft: ClipDraft }) {
         >
           <GridCard {...preview.grid} />
         </div>
+      ) : preview && 'poster' in preview ? (
+        <img src={preview.poster} alt="" />
       ) : (
-        <Icon name={mode === 'grid' ? 'grid' : 'card'} />
+        <Icon name={mode} />
       )}
     </div>
   );

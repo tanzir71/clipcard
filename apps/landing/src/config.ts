@@ -12,7 +12,7 @@ export const RELEASED = {
   clips: CLIP_DRAFTS_RELEASED,
   drafts: CLIP_DRAFTS_RELEASED,
   languages: FLAGS.languages,
-  videoClips: false,
+  videoClips: FLAGS.videoClips,
   videoJoin: false,
   gifs: false,
   app: true,

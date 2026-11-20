@@ -8,6 +8,8 @@ const [, , port, directory = '.', prefix = '/'] = process.argv;
 const root = resolve(directory);
 const fixturePages = root === resolve('fixtures/pages');
 const mime = new Map([
+  ['.mp4', 'video/mp4'],
+  ['.vtt', 'text/vtt'],
   ['.css', 'text/css'],
   ['.html', 'text/html; charset=utf-8'],
   ['.jpg', 'image/jpeg'],
@@ -45,6 +47,27 @@ createServer(async (request, response) => {
       : initialPath;
     const { size } = await stat(file);
     const type = mime.get(extname(file)) ?? 'application/octet-stream';
+    const range =
+      type.startsWith('video/') &&
+      /^bytes=(\d+)-(\d*)$/.exec(request.headers.range ?? '');
+    if (range) {
+      const start = Number(range[1]);
+      const end = Math.min(size - 1, range[2] ? Number(range[2]) : size - 1);
+      if (start >= size || end < start)
+        return response
+          .writeHead(416, { 'Content-Range': 'bytes */' + size })
+          .end();
+      response.writeHead(206, {
+        'Content-Type': type,
+        'Content-Length': end - start + 1,
+        'Content-Range': 'bytes ' + start + '-' + end + '/' + size,
+        'Accept-Ranges': 'bytes',
+      });
+      if (request.method === 'HEAD') return response.end();
+      return createReadStream(file, { start, end })
+        .on('error', () => response.destroy())
+        .pipe(response);
+    }
     const gzip =
       /^(text\/|application\/(json|xml))/.test(type) &&
       /(?:^|,\s*)gzip(?:,|$)/.test(request.headers['accept-encoding'] ?? '');

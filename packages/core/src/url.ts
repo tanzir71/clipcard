@@ -68,7 +68,8 @@ export function cleanUrl(input: string): { url: string; removed: string[] } {
       return false;
     });
   url.search = parts.join('&');
-  if (!url.hash.startsWith('#:~:text=')) url.hash = '';
+  if (!url.hash.startsWith('#:~:text=') && !/^#t=\d{1,12}$/.test(url.hash))
+    url.hash = '';
   return { url: url.href, removed };
 }
 

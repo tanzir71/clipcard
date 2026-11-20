@@ -42,7 +42,10 @@ async function thumbnail(blob: Blob) {
   }
 }
 
-async function trayFor({ draft, clips }: DraftCollection): Promise<ClipTray> {
+export async function trayFor({
+  draft,
+  clips,
+}: DraftCollection): Promise<ClipTray> {
   return {
     id: draft.id,
     count: clips.length,
@@ -51,6 +54,8 @@ async function trayFor({ draft, clips }: DraftCollection): Promise<ClipTray> {
     ).size,
     thumbnails: await Promise.all(
       clips.slice(-3).map(async (clip) => {
+        if (clip.kind === 'video')
+          return { kind: clip.kind, image: clip.video?.poster };
         const blob = await readClipMedia(clip).catch(() => undefined);
         return {
           kind: clip.kind,
@@ -63,7 +68,7 @@ async function trayFor({ draft, clips }: DraftCollection): Promise<ClipTray> {
   };
 }
 
-async function cropVisible(
+export async function cropVisible(
   tab: Browser.tabs.Tab,
   rect: NonNullable<ClipCapture['rect']>,
 ) {

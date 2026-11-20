@@ -9,6 +9,7 @@
     "./grid-view": "./src/components/GridCard.tsx",
     "./grid-export": "./src/grid-export.tsx",
     "./assets": "./src/assets.ts",
+    "./qr": "./src/qr.ts",
     "./typefaces": "./src/typefaces.ts",
     "./export": "./src/export.tsx",
     "./card.css": "./src/card.css",

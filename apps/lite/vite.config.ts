@@ -1,13 +1,22 @@
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { VIDEO_CLIPS_RELEASED } from '../../packages/core/flags.ts';
 import { buildBookmarklet } from '../../scripts/bookmarklet.ts';
 
-export default defineConfig(async ({ command }) => {
+export default defineConfig(async ({ command, mode }) => {
   const siteBase =
     process.env.CLIPCARD_BASE ?? (command === 'serve' ? '/' : '/clipcard/');
   const base = siteBase.replace(/\/$/, '') + '/app/';
   const origin = process.env.CLIPCARD_SITE ?? 'https://tanzir71.github.io';
-  const bookmark = await buildBookmarklet(new URL(base, origin).href);
+  const video =
+    VIDEO_CLIPS_RELEASED ||
+    ((command === 'serve' || mode === 'r5-preview') &&
+      process.env.VITE_CLIPCARD_VIDEO_CLIPS === '1');
+  const bookmark = await buildBookmarklet(
+    new URL(base, origin).href,
+    undefined,
+    video,
+  );
 
   return {
     base,

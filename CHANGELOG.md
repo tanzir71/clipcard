@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## v0.5.0 - 2026-11-21
+
+- Select a range on a video and make a moment card with a QR that opens the source at the selected time.
+- Record up to 60 seconds in the extension by sharing the tab that’s playing the video. Keep clips in the current draft and return to them later.
+- Export a portrait video with the original tab audio, available captions and a Sources card.
+- Use the Clipcard bookmark to make a timestamped moment card in the web app.
+
 ## v0.4.0 - 2026-11-21
 
 - Make cards in 30 languages, with right-to-left layouts for Arabic, Urdu and Persian.

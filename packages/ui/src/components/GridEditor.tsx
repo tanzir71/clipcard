@@ -31,6 +31,7 @@ export function GridEditor({
   change,
   close,
   onCard,
+  onVideo,
   beforePreview,
   view = 'popup',
 }: {
@@ -38,6 +39,7 @@ export function GridEditor({
   change: (item: DraftCollection) => void;
   close: () => void;
   onCard?: () => void;
+  onVideo?: () => void;
   beforePreview?: ReactNode;
   view?: 'popup' | 'workspace';
 }) {
@@ -395,6 +397,17 @@ export function GridEditor({
           >
             <Icon name="grid" size={16} />
           </span>
+          {onVideo ? (
+            <button
+              type="button"
+              className="clip-icon-button"
+              aria-label={strings['mode.video']}
+              title={strings['mode.video']}
+              onClick={onVideo}
+            >
+              <Icon name="video" size={16} />
+            </button>
+          ) : null}
           <button
             type="button"
             className="clip-button clip-grid-auto"

@@ -1,0 +1,116 @@
+:host {
+  color-scheme: dark;
+}
+
+button {
+  appearance: none;
+  border: 1px solid #525257;
+  border-radius: 0;
+  padding: 6px 10px;
+  background: #111112;
+  color: #fff;
+  font:
+    500 13px/1.3 system-ui,
+    sans-serif;
+  cursor: pointer;
+}
+
+button:focus-visible {
+  outline: 2px solid #a9bcdf;
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.video-trigger {
+  background: #161618e8;
+  white-space: nowrap;
+}
+
+.video-range {
+  position: absolute;
+  pointer-events: auto;
+  color: #fff;
+}
+
+.video-capsule,
+.video-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border: 1px solid #505054;
+  background: #101011;
+  color: #fff;
+  font:
+    500 13px/1.3 system-ui,
+    sans-serif;
+}
+
+.video-capsule span {
+  padding-inline: 3px;
+  font-family: monospace;
+}
+
+.video-add {
+  background: #fff;
+  color: #111;
+}
+
+.video-rail {
+  position: relative;
+  height: 6px;
+  margin-top: 12px;
+  background: #ffffff65;
+}
+
+.video-highlight {
+  position: absolute;
+  inset-block: 0;
+  background: #a9bcdf;
+}
+
+.video-handle {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 28px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: ew-resize;
+  touch-action: none;
+}
+
+.video-handle::before {
+  position: absolute;
+  inset: 4px 5px;
+  background: #fff;
+  content: '';
+}
+
+.video-status {
+  width: fit-content;
+  margin: 8px 0 0;
+  padding: 4px 8px;
+  background: #101011;
+  font:
+    500 13px/1.3 system-ui,
+    sans-serif;
+}
+
+.video-status:empty,
+[hidden] {
+  display: none;
+}
+
+.video-indicator {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  pointer-events: auto;
+}

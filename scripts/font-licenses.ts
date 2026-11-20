@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 
 const cards = new URL('../packages/cards/', import.meta.url);
 const manifest = JSON.parse(
@@ -26,4 +26,35 @@ for (const app of ['extension', 'lite']) {
       ),
     ),
   );
+}
+
+const videoPackage = new URL(
+  '../packages/ui/node_modules/mediabunny/',
+  import.meta.url,
+);
+const videoVersion = (
+  JSON.parse(await readFile(new URL('package.json', videoPackage), 'utf8')) as {
+    version: string;
+  }
+).version;
+for (const app of ['extension', 'lite']) {
+  const directory = new URL(
+    '../apps/' + app + '/public/licenses/',
+    import.meta.url,
+  );
+  await Promise.all([
+    copyFile(
+      new URL('LICENSE', videoPackage),
+      new URL('mediabunny.txt', directory),
+    ),
+    writeFile(
+      new URL('mediabunny-source.txt', directory),
+      'Mediabunny ' +
+        videoVersion +
+        ' is licensed under MPL-2.0.\n' +
+        'Source: https://www.npmjs.com/package/mediabunny/v/' +
+        videoVersion +
+        '\n',
+    ),
+  ]);
 }

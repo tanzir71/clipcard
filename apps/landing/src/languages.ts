@@ -58,11 +58,11 @@ export function alternates(page: LocalizedPage, site: URL | undefined) {
 
 export function landingCopy(locale: InterfaceLanguage) {
   const copy = landingStrings(locale);
-  if (!RELEASED.languages) return copy;
-  return {
-    ...copy,
-    faq: copy.faq.map((item, index) =>
-      index === 2 ? { ...item, answer: copy.languageSupport } : item,
-    ),
-  };
+  const faq = copy.faq.map((item, index) =>
+    RELEASED.languages && index === 2
+      ? { ...item, answer: copy.languageSupport }
+      : item,
+  );
+  if (RELEASED.videoClips) faq.push(copy.videoFaq);
+  return { ...copy, faq };
 }

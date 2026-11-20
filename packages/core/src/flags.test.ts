@@ -5,13 +5,13 @@ afterEach(() => {
   vi.resetModules();
 });
 
-it('enables clips, drafts and languages by default', async () => {
+it('enables clips, drafts, languages and video clips by default', async () => {
   const { FLAGS } = await import('../flags.ts');
   expect(
     Object.entries(FLAGS)
       .filter(([, enabled]) => enabled)
       .map(([feature]) => feature),
-  ).toEqual(['clips', 'drafts', 'languages']);
+  ).toEqual(['clips', 'drafts', 'languages', 'videoClips']);
 });
 
 it('only activates overrides in development', async () => {
