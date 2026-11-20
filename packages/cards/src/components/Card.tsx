@@ -24,6 +24,7 @@ export interface CardProps {
 const typography = {
   header: { size: 48, line: 66, min: 33, lines: 3, family: 'Geist' },
   split: { size: 52, line: 70, min: 37, lines: 3, family: 'Libre Caslon Text' },
+  caps: { size: 56, line: 58, min: 32, lines: 3, family: 'Schibsted Grotesk' },
   overlay: {
     size: 56,
     line: 62,
@@ -31,6 +32,7 @@ const typography = {
     lines: 4,
     family: 'Schibsted Grotesk',
   },
+  duotone: { size: 53, line: 62, min: 32, lines: 3, family: 'Geist' },
   solid: { size: 62, line: 82, min: 38, lines: 4, family: 'Libre Caslon Text' },
   quote: { size: 44, line: 60, min: 28, lines: 5, family: 'Libre Caslon Text' },
 } as const;
@@ -38,7 +40,9 @@ const typography = {
 const overallEmphasis: Record<Template, EmphasisStyle> = {
   header: 'box',
   split: 'line',
+  caps: 'color',
   overlay: 'color',
+  duotone: 'color',
   solid: 'line',
   quote: 'line',
 };
@@ -127,7 +131,7 @@ function Kicker({
   variant,
 }: {
   model: CardModel;
-  variant: 'panel' | 'chip' | 'quote';
+  variant: 'panel' | 'chip' | 'quote' | 'via';
 }) {
   if (model.oldNewsYear) {
     const year = new Intl.NumberFormat(model.lang, {
@@ -142,6 +146,13 @@ function Kicker({
         {model.outlet ? <span>{model.outlet}</span> : null}
       </div>
     );
+  if (variant === 'via') {
+    return model.outlet ? (
+      <div className="cc-kicker cc-via">
+        {strings['card.via']} | {model.outlet}
+      </div>
+    ) : null;
+  }
   if (!model.section) return null;
   return variant === 'panel' ? (
     <div className="cc-kicker cc-panel-kicker">
@@ -158,7 +169,7 @@ function Meta({
   variant = 'mono',
 }: {
   model: CardModel;
-  variant?: 'mono' | 'panel' | 'overlay';
+  variant?: 'mono' | 'panel' | 'overlay' | 'wide';
 }) {
   let date = '';
   if (model.publishedAt) {
@@ -182,7 +193,7 @@ function Meta({
     ? [source, date, edited]
     : variant === 'overlay'
       ? [model.section, date, model.outlet, edited]
-      : [date, source, edited];
+      : [date, variant === 'wide' ? model.outlet : source, edited];
   const text = fields
     .filter(Boolean)
     .join(panel ? '   |   ' : variant === 'overlay' ? '  ·  ' : '  |  ');
@@ -214,30 +225,48 @@ export function Card({ model, options, assets }: CardProps) {
   const { format, template } = options;
   const [width, height] = tokens.card.formats[format];
   const story = format === '9:16';
-  const top = story
-    ? tokens.card.safeArea['9:16'].top
-    : template === 'header'
-      ? 50
-      : 52;
-  const bottom = story ? tokens.card.safeArea['9:16'].bottom : 56;
+  const wide = width > height;
+  const wideSplit = wide && template === 'split';
+  const splitX = Math.round(width * 0.6125);
+  const top = wide
+    ? 48
+    : story
+      ? tokens.card.safeArea['9:16'].top
+      : template === 'header'
+        ? 50
+        : template === 'duotone'
+          ? 56
+          : 52;
+  const bottom = wide ? 48 : story ? tokens.card.safeArea['9:16'].bottom : 56;
   const theme = options.theme ?? THEMES.midnight;
   const emphasis = options.emphasis ?? overallEmphasis[template];
-  const background = template === 'solid' ? theme.deep : INK;
+  const background =
+    template === 'solid' || template === 'duotone' ? theme.deep : INK;
   const keyColor = options.keyColor ?? theme.light;
   const textColor = options.textColor ?? TEXT_COLORS.white;
   const typographyForTemplate = typography[template];
+  const sizing = wideSplit ? { size: 44, line: 56 } : typographyForTemplate;
   const size = Math.round(
-    typographyForTemplate.size * Math.min(width / 1080, 1),
+    sizing.size * Math.min(width / 1080, wide ? height / 900 : 1, 1),
   );
-  const lineHeight = typographyForTemplate.line / typographyForTemplate.size;
-  const lines = typographyForTemplate.lines - Number(format === '1:1');
-  const qrBaseSize =
-    template === 'header'
+  const lineHeight = sizing.line / sizing.size;
+  const lines =
+    wideSplit && format === '16:9'
+      ? 5
+      : format === '1.91:1'
+        ? Math.min(3, typographyForTemplate.lines)
+        : typographyForTemplate.lines -
+          Number(format === '1:1' && template !== 'duotone');
+  const qrBaseSize = wide
+    ? tokens.card.qrSize['16x9']
+    : template === 'header'
       ? tokens.card.qrSize.header
       : story
         ? tokens.card.qr.tile['9:16']
         : tokens.card.qrSize.default4x5;
-  const headerHeight = Math.round(height * (story ? 588 / 1920 : 388 / 1350));
+  const headerHeight = Math.round(
+    height * (story ? 588 / 1920 : wide ? 0.47 : 388 / 1350),
+  );
   const splitHeight = story
     ? height - bottom - 335
     : Math.round(height * 0.726);
@@ -253,8 +282,9 @@ export function Card({ model, options, assets }: CardProps) {
     height,
     Math.max(920, overlayPlateau + height * 0.35),
   );
-  const availableHeight =
-    template === 'header'
+  const availableHeight = wideSplit
+    ? height * 0.32
+    : template === 'header'
       ? Math.max(94, headerHeight - top - 76)
       : template === 'split'
         ? Math.max(75, height - splitHeight - bottom - 72)
@@ -269,12 +299,16 @@ export function Card({ model, options, assets }: CardProps) {
     '--cc-bottom': bottom + 'px',
     '--cc-deep': background,
     '--cc-key': guarded.key,
-    '--cc-meta-width': width - qrBaseSize - 56 * 2 - 60 + 'px',
+    '--cc-split-x': splitX + 'px',
+    '--cc-wide-title-top': Math.round(height * 0.157) + 'px',
+    '--cc-meta-width':
+      width - (wideSplit ? splitX : 0) - qrBaseSize - 56 * 2 - 60 + 'px',
   } as CSSProperties;
   const title = (
     <Headline
       title={model.headline}
       range={model.emphasisRange}
+      secondRange={template === 'caps' ? model.extraEmphasisRange : undefined}
       emphasis={emphasis}
       keyColor={guarded.key}
       color={template === 'quote' ? INK : guarded.text}
@@ -284,16 +318,19 @@ export function Card({ model, options, assets }: CardProps) {
       lineHeight={lineHeight}
       availableHeight={availableHeight}
       panel={template === 'header'}
+      secondLine={template === 'duotone'}
     />
   );
   const thumbPattern = useMemo(
     () =>
       template === 'split'
-        ? halftone(width, 380, 'down')
+        ? wide
+          ? halftone(420, height, 'right')
+          : halftone(width, 380, 'down')
         : template === 'solid'
           ? halftone(Math.round(width * 0.7), 470, 'toward-start')
           : null,
-    [template, width],
+    [template, width, height, wide],
   );
   const halftoneStyle = thumbPattern
     ? { backgroundImage: 'url("' + thumbPattern + '")' }
@@ -303,6 +340,7 @@ export function Card({ model, options, assets }: CardProps) {
     <article
       className={'cc-card cc-' + template}
       data-format={format}
+      data-wide={wide ? '' : undefined}
       lang={model.lang}
       dir={model.dir}
       aria-label={model.headline}
@@ -310,7 +348,10 @@ export function Card({ model, options, assets }: CardProps) {
     >
       {template === 'header' ? (
         <>
-          <div className="cc-photo-area" style={{ top: headerHeight }}>
+          <div
+            className="cc-photo-area"
+            style={wide ? undefined : { top: headerHeight }}
+          >
             <Photo model={model} />
             <PhotoShade
               height={Math.max(500, (height - headerHeight) * 0.35)}
@@ -335,21 +376,80 @@ export function Card({ model, options, assets }: CardProps) {
         </>
       ) : template === 'split' ? (
         <>
-          <div className="cc-photo-area" style={{ height: splitHeight }}>
+          <div
+            className="cc-photo-area"
+            style={
+              wideSplit ? { width: splitX, height } : { height: splitHeight }
+            }
+          >
             <Photo model={model} />
             <PhotoShade
-              height={Math.max(420, splitHeight * 0.35)}
+              height={Math.max(420, (wideSplit ? height : splitHeight) * 0.35)}
               edge="top"
               alpha={0.28}
             />
           </div>
-          <div className="cc-split-panel" style={{ top: splitHeight }}>
+          <div
+            className="cc-split-panel"
+            style={
+              wideSplit ? { insetInlineStart: splitX } : { top: splitHeight }
+            }
+          >
             <div className="cc-halftone" style={halftoneStyle} />
             <Grain assets={assets} />
             <div className="cc-split-title">{title}</div>
           </div>
           <Brand mark={model.mark} />
           <Kicker model={model} variant="chip" />
+          <Meta model={model} variant={wideSplit ? 'wide' : 'mono'} />
+        </>
+      ) : template === 'caps' ? (
+        <>
+          <div
+            className="cc-photo-area"
+            style={{ top: wide ? 0 : Math.round((height * 300) / 1350) }}
+          >
+            <Photo model={model} />
+            <PhotoShade
+              height={Math.max(760, height * 0.35)}
+              alpha={1}
+              edge="top"
+            />
+            <PhotoShade
+              height={Math.max(500, height * 0.35)}
+              alpha={wide ? 0.88 : 0.3}
+              edge="bottom"
+            />
+          </div>
+          <div
+            className="cc-hairlines"
+            style={{ maskImage: fade('#000', 1, 'to bottom') }}
+          />
+          <Grain assets={assets} />
+          <Brand mark={model.mark} />
+          <Kicker model={model} variant="via" />
+          <div className="cc-caps-title">
+            {title}
+            {model.dek ? <p>{model.dek}</p> : null}
+          </div>
+        </>
+      ) : template === 'duotone' ? (
+        <>
+          <Photo model={model} />
+          <PhotoShade
+            height={height * 0.62}
+            color={background}
+            alpha={0.9}
+            edge="bottom"
+          />
+          <div
+            className="cc-hairlines"
+            style={{ maskImage: fade('#000', 1, 'to top') }}
+          />
+          <Grain assets={assets} />
+          <Brand mark={model.mark} />
+          <Kicker model={model} variant="chip" />
+          <div className="cc-duotone-title">{title}</div>
           <Meta model={model} />
         </>
       ) : template === 'overlay' ? (

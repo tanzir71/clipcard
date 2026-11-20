@@ -7,6 +7,7 @@ import type { TextRange } from '@clipcard/core';
 interface Props {
   title: string;
   range?: TextRange | null;
+  secondRange?: TextRange;
   emphasis: EmphasisStyle;
   color: string;
   keyColor: string;
@@ -16,11 +17,13 @@ interface Props {
   lineHeight: number;
   availableHeight: number;
   panel?: boolean;
+  secondLine?: boolean;
 }
 
 export function Headline({
   title,
   range,
+  secondRange,
   emphasis,
   color,
   keyColor,
@@ -30,6 +33,7 @@ export function Headline({
   lineHeight,
   availableHeight,
   panel = false,
+  secondLine = false,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [breakAt, setBreakAt] = useState(0);
@@ -71,6 +75,13 @@ export function Headline({
   }, [shapeBox, title, start, end, maxSize]);
 
   const wrappedKey = shapeBox && breakAt > start && breakAt < end;
+  const extra =
+    secondRange &&
+    secondRange[0] >= end &&
+    secondRange[1] > secondRange[0] &&
+    secondRange[1] <= title.length
+      ? secondRange
+      : undefined;
   useLayoutEffect(() => {
     const element = ref.current;
     if (!element) return;
@@ -122,7 +133,16 @@ export function Headline({
       data-emphasis={emphasis}
       style={style}
     >
-      {validRange ? (
+      {validRange && secondLine && start > 0 ? (
+        <>
+          {title.slice(0, start).trimEnd()}
+          <br />
+          <span className="cc-duotone-key">
+            <strong>{title.slice(start, end)}</strong>
+            {title.slice(end)}
+          </span>
+        </>
+      ) : validRange ? (
         <>
           {title.slice(0, start)}
           {wrappedKey ? (
@@ -134,7 +154,15 @@ export function Headline({
           ) : (
             <strong>{title.slice(start, end)}</strong>
           )}
-          {title.slice(end)}
+          {extra ? (
+            <>
+              {title.slice(end, extra[0])}
+              <strong>{title.slice(extra[0], extra[1])}</strong>
+              {title.slice(extra[1])}
+            </>
+          ) : (
+            title.slice(end)
+          )}
         </>
       ) : (
         title

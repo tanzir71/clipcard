@@ -136,6 +136,7 @@
   "oldnews.year": "{year}",
   "card.source": "Source",
   "card.quote": "Quote",
+  "card.via": "Via",
   "card.qr": "QR code to the original source",
   "card.preview": "Card preview",
   "card.renderFailed": "Could not make this card.",

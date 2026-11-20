@@ -1,4 +1,9 @@
-import { chooseTemplate, modelFromSource, THEMES } from '@clipcard/cards';
+import {
+  capsPhrases,
+  chooseTemplate,
+  modelFromSource,
+  THEMES,
+} from '@clipcard/cards';
 import type {
   CardModel,
   CardOptions,
@@ -88,6 +93,10 @@ export function modelForDraft(
   const originalModel = source
     ? modelFromSource(source, { image, selection, section, now })
     : null;
+  const caps =
+    overrides.template === 'caps' && overrides.phrase === undefined
+      ? capsPhrases(headline)
+      : null;
 
   return {
     ...originalModel,
@@ -104,8 +113,12 @@ export function modelForDraft(
     qrUrl: originalModel?.qrUrl ?? null,
     quote: Boolean(selection),
     edited: changed,
-    emphasisRange:
-      overrides.phrase !== undefined ? overrides.phrase : keyphrase(headline),
+    emphasisRange: caps
+      ? (caps[0] ?? null)
+      : overrides.phrase !== undefined
+        ? overrides.phrase
+        : keyphrase(headline),
+    extraEmphasisRange: caps?.[1],
   };
 }
 
