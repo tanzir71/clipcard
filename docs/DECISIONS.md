@@ -79,3 +79,8 @@ Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md)
 - **GIFs:** GIPHY + KLIPY through official APIs. Tenor's API was shut down on 30 June 2026. GIPHY requires "Powered by GIPHY" attribution; its beta keys allow 100 calls/hour, so production keys are needed before launch.
 - **Lite (no install):** a bookmarklet plus a top‑level Clipcard window, because iframes get partitioned storage per site.
 - Footer credit: "Made by tanziro.com · Inspired by Zibon" (links to https://frame.zibon.design/).
+
+## R4 · Interface and browser locale support
+
+- A web app opened from a translated landing page remembers that language locally. Its card language still follows the source by default. Extension quick controls use the interface language chosen in Settings.
+- Chrome's manifest locale table omits Urdu and Burmese. In-app settings support both languages, while the manifest publisher emits only Chrome-supported locales. Wave-one translations remain drafts pending native review.

@@ -6,7 +6,7 @@ import { tokens } from '@clipcard/cards';
 import { prepareCardAssets } from '@clipcard/cards/assets';
 import type { CardAssets } from '@clipcard/cards/assets';
 import { typefaceFor } from '@clipcard/cards/typefaces';
-import strings from '@clipcard/i18n/en';
+import { interfaceStrings as strings } from '@clipcard/i18n';
 import { modelForDraft, optionsForDraft } from '../draft.ts';
 import type { CardDraft } from '../draft.ts';
 import '../ui.css';

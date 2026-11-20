@@ -193,3 +193,48 @@ test('opens Welcome and persists card settings in a fresh install', async ({
     await context.close();
   }
 });
+
+test('localizes the real extension popup in Arabic and Urdu', async ({
+  browserName,
+}) => {
+  test.skip(
+    browserName !== 'chromium' || process.env.CLIPCARD_TEST_R4_PREVIEW !== '1',
+    'Run with the R4 preview build.',
+  );
+  const context = await chromium.launchPersistentContext('', {
+    channel: 'chromium',
+    locale: 'en-US',
+    args: ['--disable-extensions-except=' + build, '--load-extension=' + build],
+  });
+  try {
+    const worker =
+      context.serviceWorkers()[0] ??
+      (await context.waitForEvent('serviceworker'));
+    const root = worker.url().split('/').slice(0, 3).join('/');
+    const options = await context.newPage();
+    await options.goto(root + '/options.html');
+    const popup = await context.newPage();
+    let previous = 'Interface language';
+    const translations = [
+      ['ar', 'لغة الواجهة', 'عام', 'الصق رابطًا…', 'أنشئ بطاقة'],
+      ['ur', 'انٹرفیس کی زبان', 'عمومی', 'کوئی لنک چسپاں کریں…', 'کارڈ بنائیں'],
+    ] as const;
+    for (const [lang, select, heading, paste, make] of translations) {
+      await options
+        .getByRole('combobox', { name: previous })
+        .selectOption(lang);
+      await expect(
+        options.getByRole('heading', { name: heading }),
+      ).toBeVisible();
+      await expect(options.locator('html')).toHaveAttribute('dir', 'rtl');
+      await popup.goto(root + '/popup-fallback.html');
+      await expect(popup.locator('html')).toHaveAttribute('lang', lang);
+      await expect(popup.locator('html')).toHaveAttribute('dir', 'rtl');
+      await expect(popup.getByRole('textbox', { name: paste })).toBeVisible();
+      await expect(popup.getByRole('button', { name: make })).toBeVisible();
+      previous = select;
+    }
+  } finally {
+    await context.close();
+  }
+});

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import strings from '@clipcard/i18n/en';
+import { interfaceStrings as strings } from '@clipcard/i18n';
 
 export function DraftNameForm({
   title,

@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import type { ClipboardEvent, DragEvent, FormEvent } from 'react';
-import strings from '@clipcard/i18n/en';
+import { interfaceStrings as strings } from '@clipcard/i18n';
 import { readTransfer } from '../input.ts';
 import type { CardInput } from '../input.ts';
 import { Icon } from './Icon.tsx';

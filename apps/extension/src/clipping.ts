@@ -1,5 +1,6 @@
-import { parseWebUrl, textFragment } from '@clipcard/core';
-import strings from '@clipcard/i18n/en';
+import { dirFor, parseWebUrl, textFragment } from '@clipcard/core';
+import { interfaceStrings as strings } from '@clipcard/i18n';
+import type { UiStrings } from '@clipcard/i18n';
 import type { UserSettings } from './user-settings.ts';
 import { browser } from 'wxt/browser';
 import type {
@@ -94,8 +95,14 @@ export function mountClipping(readHints: () => Hints) {
   let hoveredAddress: string | undefined;
   let linkButtons: UserSettings['links'] = 'previews';
   let selectionToolbar = true;
+  let language: UserSettings['interfaceLanguage'] = 'en';
   let selected = '';
   const clipped = new WeakSet<Element>();
+  const labels: Array<{
+    button: HTMLButtonElement;
+    key: keyof UiStrings;
+    prefix: string;
+  }> = [];
 
   function button(label: string, action: () => void, quiet = false) {
     const node = document.createElement('button');
@@ -105,6 +112,17 @@ export function mountClipping(readHints: () => Hints) {
     node.addEventListener('pointerdown', (event) => event.preventDefault());
     node.addEventListener('click', action);
     return node;
+  }
+
+  function localizedButton(
+    key: keyof UiStrings,
+    action: () => void,
+    quiet = false,
+    prefix = '',
+  ) {
+    const control = button(prefix + strings[key], action, quiet);
+    labels.push({ button: control, key, prefix });
+    return control;
   }
 
   function sync() {
@@ -124,7 +142,7 @@ export function mountClipping(readHints: () => Hints) {
     anchor = undefined;
     sync();
   }
-  pill.append(status, button(strings['clip.done'], done));
+  pill.append(status, localizedButton('clip.done', done));
   function start() {
     clipping = true;
     sync();
@@ -347,17 +365,19 @@ export function mountClipping(readHints: () => Hints) {
       ) + 'px';
   });
   selectionTools.append(
-    button(
-      strings['clip.quoteCard'],
+    localizedButton(
+      'clip.quoteCard',
       () => void send({ to: 'background', kind: 'copyQuote', text: selected }),
       true,
     ),
-    button(
-      '+ ' + strings['clip.add'],
+    localizedButton(
+      'clip.add',
       () => void capture({ kind: 'text', text: selected }),
+      false,
+      '+ ',
     ),
-    button(
-      strings['clip.copyWithLink'],
+    localizedButton(
+      'clip.copyWithLink',
       () => {
         const hints = readHints();
         const address = hints.source?.canonicalUrl ?? hints.address;
@@ -410,7 +430,7 @@ export function mountClipping(readHints: () => Hints) {
     true,
   );
   previewTools.append(
-    button(strings['card.makeCard'], () => {
+    localizedButton('card.makeCard', () => {
       if (hoveredAddress)
         void send({
           to: 'background',
@@ -435,7 +455,21 @@ export function mountClipping(readHints: () => Hints) {
   return {
     start,
     showTray,
-    configure(settings: Pick<UserSettings, 'links' | 'selectionToolbar'>) {
+    configure(
+      settings: Pick<
+        UserSettings,
+        'links' | 'selectionToolbar' | 'interfaceLanguage'
+      >,
+    ) {
+      if (language !== settings.interfaceLanguage) {
+        language = settings.interfaceLanguage;
+        root.lang = language;
+        root.dir = dirFor(language);
+        status.textContent = '▪ ' + strings['clip.active'];
+        for (const label of labels)
+          label.button.textContent = label.prefix + strings[label.key];
+        if (current) showTray(current);
+      }
       if (linkButtons !== settings.links) {
         linkButtons = settings.links;
         hoveredAddress = undefined;

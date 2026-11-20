@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { FLAGS } from '@clipcard/core/flags';
-import strings from '@clipcard/i18n/en';
+import { interfaceStrings as strings } from '@clipcard/i18n';
 import { Icon, InputRow } from '@clipcard/ui';
 import type { CardDraft } from '@clipcard/ui';
 import { receiveBookmark } from '@clipcard/ui/bookmark';

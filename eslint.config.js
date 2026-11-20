@@ -3,6 +3,12 @@ import astro from 'eslint-plugin-astro';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
+const uprightTypography = {
+  selector:
+    'Property[key.name="fontStyle"] > Literal[value=/^(italic|oblique)/i]',
+  message: 'Clipcard typography uses upright fonts.',
+};
+
 export default [
   {
     ignores: [
@@ -22,12 +28,18 @@ export default [
   {
     files: ['**/*.{ts,tsx,js,jsx}'],
     rules: {
+      'no-restricted-syntax': ['error', uprightTypography],
+    },
+  },
+  {
+    files: ['apps/extension/**/*.tsx'],
+    rules: {
       'no-restricted-syntax': [
         'error',
+        uprightTypography,
         {
-          selector:
-            'Property[key.name="fontStyle"] > Literal[value=/^(italic|oblique)/i]',
-          message: 'Clipcard typography uses upright fonts.',
+          selector: 'JSXText[value=/[\\p{L}\\p{N}]/u]',
+          message: 'Use a Clipcard locale message for interface copy.',
         },
       ],
     },

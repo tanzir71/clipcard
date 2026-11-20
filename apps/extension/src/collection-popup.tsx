@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import strings from '@clipcard/i18n/en';
+import { interfaceStrings as strings } from '@clipcard/i18n';
 import { FLAGS } from '@clipcard/core/flags';
 import { Icon } from '@clipcard/ui';
 import type { CardDraft } from '@clipcard/ui';
