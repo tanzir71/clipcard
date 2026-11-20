@@ -1,4 +1,9 @@
-import strings from '@clipcard/i18n/en';
+import {
+  activeInterfaceLanguage,
+  interfaceStrings as strings,
+} from '@clipcard/i18n';
+import { dirFor } from '@clipcard/core';
+import { FLAGS } from '@clipcard/core/flags';
 import { browser } from 'wxt/browser';
 import type { BackgroundMessage, MadeCard } from './messages.ts';
 import css from './toast.css?inline';
@@ -13,7 +18,8 @@ export function dismissToast() {
 function toast(direction: 'ltr' | 'rtl') {
   dismissToast();
   const host = document.createElement('clipcard-toast');
-  host.dir = direction;
+  host.dir = FLAGS.languages ? dirFor(activeInterfaceLanguage) : direction;
+  if (FLAGS.languages) host.lang = activeInterfaceLanguage;
   const shadow = host.attachShadow({ mode: 'closed' });
   const style = new CSSStyleSheet();
   style.replaceSync(css);

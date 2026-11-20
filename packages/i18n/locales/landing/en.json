@@ -217,7 +217,8 @@
       "When you paste or bookmark a page, the web app may ask the original site for an image. You can add a local photo if the site does not allow the request."
     ],
     "extensionText": [
-      "The extension can read the current page when you ask it to make a card. With optional site access, it can read linked articles and photos. Cards and recent history stay in browser storage.",
+      "The extension reads the active page when you ask it to make a card or clip. Optional site access lets it read linked articles and photos directly from the publisher and show in-page controls. Clipcard saves cards, drafts and preferences in your browser.",
+      "Clipcard writes generated images and cleaned links to your clipboard when you choose Copy. It renders and stores your working data on your device. Clipcard’s use of browser data follows the Chrome Web Store User Data Policy and its Limited Use requirements.",
       "The developer-mode extension asks GitHub for the latest public release at most once a day. The request contains no Clipcard identifiers or card data. Chrome Web Store builds use the store’s update mechanism."
     ]
   },

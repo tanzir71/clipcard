@@ -1,4 +1,7 @@
-import strings from '@clipcard/i18n/en';
+import {
+  interfaceStrings as strings,
+  setInterfaceLanguage,
+} from '@clipcard/i18n';
 import { FLAGS } from '@clipcard/core/flags';
 import { browser } from 'wxt/browser';
 import { defineContentScript } from 'wxt/utils/define-content-script';
@@ -25,10 +28,13 @@ export default defineContentScript({
     const hints = trackPage();
     const clips =
       FLAGS.clips && FLAGS.drafts ? mountClipping(hints) : undefined;
-    if (FLAGS.languages && clips) {
+    if (FLAGS.languages) {
       const load = () => {
         void getUserSettings()
-          .then(clips.configure)
+          .then((settings) => {
+            setInterfaceLanguage(settings.interfaceLanguage);
+            clips?.configure(settings);
+          })
           .catch(() => undefined);
       };
       load();

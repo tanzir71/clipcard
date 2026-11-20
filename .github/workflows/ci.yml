@@ -27,7 +27,9 @@ jobs:
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm build
-      - run: pnpm --filter @clipcard/extension exec wxt build --mode r4-preview -b chrome
+      - run: |
+          pnpm prepare:assets
+          pnpm --filter @clipcard/extension exec wxt build --mode r4-preview -b chrome
         env:
           VITE_CLIPCARD_LANGUAGES: '1'
       - run: pnpm e2e

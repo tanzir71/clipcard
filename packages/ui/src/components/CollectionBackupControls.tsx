@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import strings from '@clipcard/i18n/en';
+import { interfaceStrings } from '@clipcard/i18n';
+import type { UiStrings } from '@clipcard/i18n';
 import {
   getDraftRetention,
   setDraftRetention,
@@ -9,8 +10,10 @@ import type { Retention } from '../collections.ts';
 
 export function CollectionBackupControls({
   refresh,
+  strings = interfaceStrings,
 }: {
   refresh: () => Promise<unknown>;
+  strings?: UiStrings;
 }) {
   const upload = useRef<HTMLInputElement>(null);
   const [retention, setRetention] = useState<Retention>('30-days');
@@ -29,7 +32,7 @@ export function CollectionBackupControls({
     return () => {
       active = false;
     };
-  }, []);
+  }, [strings]);
 
   async function backup(input?: File) {
     setBusy(true);

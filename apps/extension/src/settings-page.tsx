@@ -389,7 +389,10 @@ export function SettingsPage({ update }: { update: string | null }) {
                   </button>
                 )}
               </Row>
-              <CollectionBackupControls refresh={() => Promise.resolve()} />
+              <CollectionBackupControls
+                refresh={() => Promise.resolve()}
+                strings={strings}
+              />
               <Row label={strings['settings.clearHistory']}>
                 {confirm ? (
                   <div className="settings-confirm">

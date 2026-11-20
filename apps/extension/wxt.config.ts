@@ -4,6 +4,9 @@ import { CLIP_DRAFTS_RELEASED } from '@clipcard/core/flags';
 export default defineConfig({
   manifestVersion: 3,
   modules: ['@wxt-dev/module-react'],
+  ...(process.env.CLIPCARD_STORE_PACKAGE === '1' && {
+    zip: { artifactTemplate: 'clipcard-store-{{version}}.zip' },
+  }),
   hooks: {
     'build:manifestGenerated': (_wxt, manifest) => {
       // WXT adds runtime content-script matches as required hosts.

@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import strings from '@clipcard/i18n/en';
+import { interfaceStrings as strings } from '@clipcard/i18n';
 import { cardLanguages, languageName } from '@clipcard/i18n';
 import type { CardLanguage } from '@clipcard/i18n';
 import { FLAGS } from '@clipcard/core/flags';

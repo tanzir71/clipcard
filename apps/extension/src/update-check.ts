@@ -53,7 +53,11 @@ async function latestTag(): Promise<string | null> {
 }
 
 export async function developerUpdate(): Promise<string | null> {
-  if (import.meta.env.VITE_CLIPCARD_DEV_RELEASE !== '1') return null;
+  if (
+    import.meta.env.MODE === 'store' ||
+    import.meta.env.VITE_CLIPCARD_DEV_RELEASE !== '1'
+  )
+    return null;
   pending ??= latestTag().finally(() => {
     pending = undefined;
   });

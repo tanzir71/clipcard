@@ -11,7 +11,7 @@ import type {
   GridModel,
 } from '@clipcard/cards/grid-model';
 import { GridCard } from '@clipcard/cards/grid-view';
-import strings from '@clipcard/i18n/en';
+import { interfaceStrings as strings } from '@clipcard/i18n';
 import { copyPng, downloadPng, shareFile } from '../actions.ts';
 import {
   moveDraftClip,
