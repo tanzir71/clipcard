@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Social feed · Clipcard fixture</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; background: #eff0f2; color: #1a1a1c; font: 15px/1.45 system-ui, sans-serif; }
+      header { background: #fff; padding: 15px 24px; font-size: 18px; font-weight: 650; }
+      main { width: min(calc(100vw - 24px), 600px); margin: 24px auto; }
+      article { background: #fff; border: 1px solid #dedee4; border-radius: 12px; padding: 16px; }
+      figure { margin: 0; }
+      img { display: block; inline-size: 100%; aspect-ratio: 1.9; object-fit: cover; }
+      a { display: block; overflow: hidden; border: 1px solid #e1e1e5; border-radius: 9px; color: inherit; text-decoration: none; }
+      figcaption { background: #f3f3f5; padding: 10px 14px; }
+      h2 { margin: 0; font-size: 16px; }
+      small { color: #53535a; }
+      footer { border-block-start: 1px solid #ededf0; margin-block-start: 10px; padding-block-start: 8px; color: #53535a; }
+    </style>
+  </head>
+  <body>
+    <header>Social feed</header>
+    <main>
+      <article>
+        <strong>Nadia Rahman</strong><br>
+        <small>2h · Dhaka</small>
+        <p id="excerpt">The first boats left Gabtoli before sunrise; the river carried commuters across the city.</p>
+        <a id="preview" href="feed-redirect">
+          <figure>
+            <img src="feed-preview.webp" width="960" height="505" alt="River buses passing Dhaka at sunset">
+            <figcaption>
+              <small>DELTA DISPATCH</small>
+              <h2>Dhaka’s new electric river buses cut cross-city commutes in half</h2>
+            </figcaption>
+          </figure>
+        </a>
+        <footer>24 replies · 61 shares</footer>
+      </article>
+    </main>
+    <script>
+      const link = document.querySelector('#preview');
+      const address = new URL(link.href);
+      address.search = 'utm_source=fixture&fbclid=feed-test';
+      const wrapper = new URL('https://l.facebook.com/l.php');
+      wrapper.searchParams.set('u', address.href);
+      link.href = wrapper.href;
+    </script>
+  </body>
+</html>

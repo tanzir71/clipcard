@@ -24,11 +24,11 @@
 - [ ] Scan test: decode the QR from every rendered PNG (e.g. `jsqr`) and assert it equals the expected URL.
 
 ## M3 · One‑click (extension)
-- [ ] Manifest permissions exactly per `ARCHITECTURE.md` §3. Optional `<all_urls>` request helper.
-- [ ] Context menus (links, page, selection) with the parent "Clipcard"; command `Alt+Shift+S`.
-- [ ] Offscreen document: fetch → extract → image → render. 8 s timeout, fallbacks.
-- [ ] Injected script: hints collection, clipboard write, toast (shadow DOM, M1 visuals, RTL‑aware, auto‑dismiss 6 s, hover pause).
-- [ ] Per‑site prefs, history (IndexedDB, last 30).
+- [x] Manifest permissions exactly per `ARCHITECTURE.md` §3. Optional `<all_urls>` request helper.
+- [x] Context menus (links, page, selection) with the parent "Clipcard"; command `Alt+Shift+S`.
+- [x] Offscreen document: fetch → extract → image → render. 8 s timeout, fallbacks.
+- [x] Injected script: hints collection, clipboard write, toast (shadow DOM, M1 visuals, RTL‑aware, auto‑dismiss 6 s, hover pause).
+- [x] Per‑site prefs, history (IndexedDB, last 30).
 **Done when** an e2e test right‑clicks a link on `fixtures/pages/feed.html` (create it from the E1 mock), the clipboard contains a PNG, and the decoded QR equals the cleaned URL. p50 ≤ 1.2 s locally.
 
 ## M4 · Quick sheet — **superseded by M11** (skip)
@@ -40,9 +40,9 @@
 - [ ] Keyboard map. Visual parity with `M2-quick-sheet.png` / `M3-share-menu.png`.
 
 ## M5 · Entry points
-- [ ] Toolbar action → sheet for the current page; badge dot when an article is detected.
+- [x] Toolbar action → sheet for the current page; badge dot when an article is detected.
 - [ ] Hover button (E2) and selection toolbar (E3) via dynamically registered content scripts (only with the optional permission). Settings modes respected.
-- [ ] Empty sheet with paste + recents (E5). Popup‑window fallback on restricted pages.
+- [x] Empty sheet with paste + recents (E5). Popup‑window fallback on restricted pages.
 
 ## M6 · Languages & RTL
 - [ ] `packages/i18n` with locale JSON → `_locales` generator. `en` and `bn` complete; other wave‑1 locales generated and marked `needs-review`.
@@ -77,9 +77,9 @@
 - [ ] Formats 1:1, 9:16 (safe areas), 16:9 horizontal Split, 1.91:1; RTL mirror.
 
 ## M11 · Popup (one surface for all workflows) — supersedes M4
-- [ ] Top‑right placement rule for every surface (DESIGN §2).
+- [x] Top‑right placement rule for every surface (DESIGN §2).
 - [ ] Popup with Card · Grid · Video modes, edge‑to‑edge preview, hover‑only controls, always‑visible close, Auto chip + override panel, text bar, Save for later, Share menu.
-- [ ] Toast moves to the top right and adds "Copy link for the comment".
+- [x] Toast moves to the top right and adds "Copy link for the comment".
 
 ## M12 · Clips → grid
 - [ ] Clip mode (outline, kind tag, region drag, Esc), selection toolbar "+ Clip", image context menu, tray (top right).

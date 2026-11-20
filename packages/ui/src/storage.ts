@@ -62,3 +62,7 @@ export async function recentDrafts() {
 export async function deleteDraft(id: string) {
   await (await database()).delete('cards', id);
 }
+
+export async function clearDrafts() {
+  await (await database()).clear('cards');
+}

@@ -6,6 +6,7 @@ import { createGzip } from 'node:zlib';
 
 const [, , port, directory = '.', prefix = '/'] = process.argv;
 const root = resolve(directory);
+const fixturePages = root === resolve('fixtures/pages');
 const mime = new Map([
   ['.css', 'text/css'],
   ['.html', 'text/html; charset=utf-8'],
@@ -27,6 +28,13 @@ createServer(async (request, response) => {
       new URL(request.url ?? '/', 'http://localhost').pathname,
     );
     if (!pathname.startsWith(prefix)) return response.writeHead(404).end();
+    if (fixturePages && pathname === prefix + 'feed-redirect') {
+      return response
+        .writeHead(302, {
+          Location: prefix + 'feed-story.html?utm_source=redirect',
+        })
+        .end();
+    }
     const initialPath = resolve(root, pathname.slice(prefix.length));
     const subpath = relative(root, initialPath);
     if (subpath.startsWith('..') || isAbsolute(subpath))

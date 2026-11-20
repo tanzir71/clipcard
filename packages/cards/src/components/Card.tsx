@@ -45,7 +45,10 @@ const overallEmphasis: Record<Template, EmphasisStyle> = {
 
 function photoStyle(model: CardModel) {
   return {
-    objectPosition:
+    backgroundImage: model.image
+      ? 'url(' + JSON.stringify(model.image) + ')'
+      : undefined,
+    backgroundPosition:
       (model.focal?.x ?? 0.5) * 100 +
       '% ' +
       (model.focal?.y ?? 0.4) * 100 +
@@ -54,13 +57,12 @@ function photoStyle(model: CardModel) {
 }
 
 function Photo({ model, echo = false }: { model: CardModel; echo?: boolean }) {
+  // Backgrounds keep DOM export independent of image decoding in hidden documents.
   return model.image ? (
-    <img
+    <div
       className={echo ? 'cc-echo' : 'cc-photo'}
-      src={model.image}
       style={photoStyle(model)}
-      alt=""
-      draggable={false}
+      aria-hidden="true"
     />
   ) : null;
 }
