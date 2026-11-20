@@ -40,7 +40,7 @@ export default defineContentScript({
       frame.style.cssText =
         'display:block;width:min(392px,calc(100vw - 24px));height:545px;' +
         'max-height:calc(100vh - 24px);border:0;border-radius:6px;background:#fff;' +
-        'box-shadow:0 14px 50px #0003,0 2px 5px #0004;color-scheme:light';
+        'box-shadow:0 14px 50px #0003,0 2px 5px #0004;color-scheme:light dark';
       const previous = document.activeElement;
       let confirm: (visible: boolean) => void = () => {};
       const shown = new Promise<boolean>((resolve) => {

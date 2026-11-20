@@ -6,7 +6,7 @@ export const INSTALL_URL = STORE_URL || ZIP_URL;
 export const RELEASED = {
   lite: true,
   cards: true,
-  extension: import.meta.env.CLIPCARD_PREVIEW_R2 === '1',
+  extension: true,
   clips: false,
   drafts: false,
   languages: false,

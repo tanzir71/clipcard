@@ -5,9 +5,9 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import strings from '@clipcard/i18n/en';
-import { CARD_TEMPLATES, chooseTemplate } from '@clipcard/cards';
+import { CARD_TEMPLATES, chooseTemplate, tokens } from '@clipcard/cards';
 import type { CardModel, CardOptions, Template } from '@clipcard/cards';
 import type { CardDraft, Overrides } from '../draft.ts';
 import { CardPreview, useDraftArt } from './CardPreview.tsx';
@@ -120,6 +120,7 @@ export function CardEditor({
   );
   const phone = narrow && view !== 'popup';
   const { model, options } = useDraftArt(draft);
+  const [previewWidth, previewHeight] = tokens.card.formats[options.format];
   const selected = draft.overrides.template;
   const templates = availableTemplates(model);
   const autoLabel = draft.destination
@@ -280,7 +281,15 @@ export function CardEditor({
         {beforePreview ? (
           <div className="clip-canvas-input">{beforePreview}</div>
         ) : null}
-        <div className="clip-preview-wrap" ref={previewWrap}>
+        <div
+          className="clip-preview-wrap"
+          ref={previewWrap}
+          style={
+            {
+              '--clip-card-ratio': previewWidth / previewHeight,
+            } as CSSProperties
+          }
+        >
           <CardPreview model={model} options={options} onHeadline={openText} />
           <button
             type="button"

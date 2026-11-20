@@ -17,6 +17,27 @@ const permissionView = params.get('permission') === '1';
 const initialShareOpen = params.get('share') === '1';
 const draftId = params.get('draft');
 
+async function fitPopupWindow() {
+  const current = await browser.windows.getCurrent();
+  if (current.type !== 'popup' || current.id === undefined) return;
+  const screen = window.screen as Screen & {
+    availLeft?: number;
+    availTop?: number;
+  };
+  const width = Math.min(416, screen.availWidth);
+  const height = Math.min(650, screen.availHeight);
+  await browser.windows.update(current.id, {
+    left: (screen.availLeft ?? 0) + Math.max(0, screen.availWidth - width - 12),
+    top: (screen.availTop ?? 0) + Math.min(44, screen.availHeight - height),
+    width,
+    height,
+  });
+}
+
+if (location.pathname === '/popup-fallback.html' && params.get('fit') === '1') {
+  await fitPopupWindow().catch(() => undefined);
+}
+
 function closeWindow() {
   if (window.parent === window) window.close();
   else window.parent.postMessage({ clipcard: 'close' }, '*');
@@ -264,8 +285,22 @@ if (host) {
   }
   if (window.parent !== window) {
     const observer = new ResizeObserver(() => {
+      const wrap = host.querySelector<HTMLElement>('.clip-preview-wrap');
+      const preview = wrap?.querySelector('.clip-preview');
+      const ratio = Number(wrap?.style.getPropertyValue('--clip-card-ratio'));
+      // Request the natural height so the frame can grow when the outer viewport grows.
+      const extraHeight =
+        wrap && preview && ratio > 0
+          ? Math.max(
+              0,
+              wrap.clientWidth / ratio - preview.getBoundingClientRect().height,
+            )
+          : 0;
       window.parent.postMessage(
-        { clipcard: 'resize', height: host.getBoundingClientRect().height },
+        {
+          clipcard: 'resize',
+          height: host.getBoundingClientRect().height + extraHeight,
+        },
         '*',
       );
     });

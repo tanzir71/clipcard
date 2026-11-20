@@ -11,6 +11,7 @@ import SendToComputer from '../components/SendToComputer.astro';
 import { RELEASED, REPO_URL } from '../config';
 import Site from '../layouts/Site.astro';
 import { previewImage } from '../media';
+import extensionPreview from '../media/feature-extension.webp?url';
 import webAppPreview from '../media/feature-web-app.webp?url';
 import { sitePath } from '../site';
 
@@ -52,12 +53,15 @@ const sourceIcons = ['qr', 'shield', 'edited'] as const;
 const featureKeys = Object.keys(
   features.items,
 ) as (keyof typeof features.items)[];
-const examples = Object.entries(templates.names).filter(([name]) =>
-  RELEASED.extension || (RELEASED.cards ? !['duotone', 'caps'].includes(name) : name !== 'solid'),
+const examples = Object.entries(templates.names).filter(
+  ([name]) =>
+    RELEASED.extension ||
+    (RELEASED.cards ? !['duotone', 'caps'].includes(name) : name !== 'solid'),
 );
-const formats = RELEASED.cards && !RELEASED.extension
-  ? ['4:5', '1:1', '9:16']
-  : ['4:5', '1:1', '9:16', '16:9', '1.91:1'];
+const formats =
+  RELEASED.cards && !RELEASED.extension
+    ? ['4:5', '1:1', '9:16']
+    : ['4:5', '1:1', '9:16', '16:9', '1.91:1'];
 const url = new URL(sitePath(), Astro.site).href;
 const schema = [
   {
@@ -150,8 +154,10 @@ const schema = [
         <li class:list={[!RELEASED[key] && 'feature-soon']}>
           <img
             src={
-              key === 'cards' && RELEASED.cards && !RELEASED.extension
-                ? webAppPreview
+              key === 'cards' && RELEASED.cards
+                ? RELEASED.extension
+                  ? extensionPreview
+                  : webAppPreview
                 : previewImage(`feature-${key}`)
             }
             alt=""
@@ -212,7 +218,11 @@ const schema = [
   >
     <div class="template-heading">
       <h2 id="templates-heading">
-        {RELEASED.extension ? templates.extensionHeading : RELEASED.cards ? templates.appHeading : templates.heading}
+        {RELEASED.extension
+          ? templates.extensionHeading
+          : RELEASED.cards
+            ? templates.appHeading
+            : templates.heading}
       </h2>
       <ul class="formats" aria-label={templates.formats}>
         {formats.map((format) => (
@@ -232,7 +242,12 @@ const schema = [
         ))}
       </ul>
     </div>
-    <div class:list={['templates-grid', RELEASED.extension && 'templates-extension']}>
+    <div
+      class:list={[
+        'templates-grid',
+        RELEASED.extension && 'templates-extension',
+      ]}
+    >
       {examples.map(([name, label]) => (
         <figure>
           <div data-demo-card={RELEASED.cards ? name : undefined}>

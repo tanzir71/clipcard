@@ -57,7 +57,7 @@
 ## M8 · Landing (`apps/landing`)
 - [ ] Sections and routes per `docs/LANDING.md`; CardDemo island using `packages/cards`.
 - [ ] SEO: meta, hreflang, JSON‑LD, OG images generated with the card renderer, sitemap.
-- [ ] Pre‑store mode (`LANDING.md` §3.1): Install section, Download .zip / GitHub / clone‑and‑build, beta note; the switch to store mode when `STORE_URL` is set.
+- [x] Pre‑store mode (`LANDING.md` §3.1): Install section, Download .zip / GitHub / clone‑and‑build, beta note; the switch to store mode when `STORE_URL` is set.
 - [x] Footer with tanziro.com link.
 - [x] Mobile "Send to my computer". Lighthouse ≥ 95.
 
