@@ -28,6 +28,24 @@ export const WRAPPERS: readonly Wrapper[] = [
   { hosts: ['slack-redir.net'], path: '/link', target: param('url') },
 ];
 
+const redirectHosts = new Set([
+  'bit.ly',
+  'buff.ly',
+  'fb.me',
+  'link.medium.com',
+  'lnkd.in',
+  'ow.ly',
+  't.co',
+]);
+
+export function needsRedirect(url: URL): boolean {
+  return (
+    redirectHosts.has(url.hostname) ||
+    (url.hostname === 'news.google.com' &&
+      url.pathname.startsWith('/rss/articles/'))
+  );
+}
+
 export function wrappedTarget(url: URL): string | null {
   const { hostname, pathname, search } = url;
   if (hostname === 'youtu.be' && /^\/[\w-]+\/?$/.test(pathname)) {
