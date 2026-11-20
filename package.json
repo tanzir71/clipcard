@@ -13,7 +13,7 @@
     "dev:landing": "pnpm prepare:landing && pnpm --filter @clipcard/landing dev",
     "dev:gallery": "node scripts/tokens.ts && vite --config packages/cards/gallery/vite.config.ts",
     "prepare:landing": "node scripts/tokens.ts && pnpm --filter @clipcard/landing prepare:media",
-    "test": "vitest run",
+    "test": "node scripts/tokens.ts && vitest run",
     "e2e": "playwright test",
     "build:landing": "pnpm prepare:landing && pnpm --filter @clipcard/landing build",
     "build:extension": "pnpm prepare:assets && pnpm --filter @clipcard/extension build",
