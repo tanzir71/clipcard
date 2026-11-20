@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import strings from '@clipcard/i18n/en';
+import { FLAGS } from '@clipcard/core/flags';
+import { CollectionBackupControls } from '@clipcard/ui/collection-backup-controls';
 import { clearDrafts } from '@clipcard/ui/storage';
 import { browser } from 'wxt/browser';
 import { webApp } from './site.ts';
@@ -51,6 +53,27 @@ function Settings() {
       <section aria-labelledby="storage-title">
         <h2 id="storage-title">{strings['settings.privacy']}</h2>
         <p>{strings['settings.cardStorage']}</p>
+        {FLAGS.clips && FLAGS.drafts ? (
+          <>
+            <CollectionBackupControls refresh={() => Promise.resolve()} />
+            <p>
+              <button
+                type="button"
+                className="clip-button"
+                onClick={() => {
+                  void browser.permissions
+                    .request({ origins: ['<all_urls>'] })
+                    .then((granted) => {
+                      if (granted) setStatus(strings['welcome.photosEnabled']);
+                    })
+                    .catch(() => setStatus(strings['card.savedFailed']));
+                }}
+              >
+                {strings['clip.enable']}
+              </button>
+            </p>
+          </>
+        ) : null}
         <a href={webApp} target="_blank" rel="noreferrer">
           {strings['card.openWebApp']}
         </a>

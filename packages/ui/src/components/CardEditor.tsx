@@ -19,6 +19,7 @@ import {
   templateName,
 } from './EditorControls.tsx';
 import { Icon } from './Icon.tsx';
+import { DraftNameForm } from './DraftNameForm.tsx';
 
 export function availableTemplates(model: CardModel): readonly Template[] {
   return model.image ? CARD_TEMPLATES : (['solid', 'quote'] as const);
@@ -92,6 +93,8 @@ export function CardEditor({
   onClose,
   onPhoto,
   onSave,
+  onSaveForLater,
+  onGrid,
   openExternal,
   initialShareOpen,
   beforePreview,
@@ -102,6 +105,8 @@ export function CardEditor({
   onClose: () => void;
   onPhoto?: () => void;
   onSave?: () => Promise<void>;
+  onSaveForLater?: (title: string) => Promise<unknown>;
+  onGrid?: () => void;
   openExternal?: (address: string) => Promise<unknown>;
   initialShareOpen?: boolean;
   beforePreview?: ReactNode;
@@ -110,6 +115,7 @@ export function CardEditor({
   const [active, setActive] = useState<Panel>('text');
   const [tabShown, setTabShown] = useState(false);
   const [autoOpen, setAutoOpen] = useState(false);
+  const [naming, setNaming] = useState(false);
   const [inspectorOpen, setInspectorOpen] = useState(false);
   const [textLayout, setTextLayout] = useState({ top: 8, bottom: 32, bar: 40 });
   const previewWrap = useRef<HTMLDivElement>(null);
@@ -250,6 +256,17 @@ export function CardEditor({
           <Icon name="card" size={14} />
           {openExternal ? null : strings['mode.card']}
         </div>
+        {onGrid ? (
+          <button
+            type="button"
+            className="clip-icon-button"
+            aria-label={strings['mode.grid']}
+            title={strings['mode.grid']}
+            onClick={onGrid}
+          >
+            <Icon name="grid" size={16} />
+          </button>
+        ) : null}
         {view === 'workspace' ? (
           <button
             type="button"
@@ -446,10 +463,16 @@ export function CardEditor({
           model={model}
           options={options}
           onSave={onSave}
+          onSaveForLater={
+            onSaveForLater ? () => setNaming((visible) => !visible) : undefined
+          }
           openExternal={openExternal}
           initialShareOpen={initialShareOpen}
           emphasis={phone || view === 'shared' ? 'share' : 'copy'}
         />
+        {naming && onSaveForLater ? (
+          <DraftNameForm title={draft.headline} save={onSaveForLater} />
+        ) : null}
       </div>
     </section>
   );

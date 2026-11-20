@@ -1,11 +1,28 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
+import { FLAGS } from '@clipcard/core/flags';
 import strings from '@clipcard/i18n/en';
 import { Icon, InputRow } from '@clipcard/ui';
 import type { CardDraft } from '@clipcard/ui';
 import { receiveBookmark } from '@clipcard/ui/bookmark';
 import { CardEditor } from '@clipcard/ui/card-editor';
 import { DraftPreview } from '@clipcard/ui/card-preview';
+import {
+  appendCardDraft,
+  cardFromCollection,
+} from '@clipcard/ui/collection-card';
+import {
+  listDraftCollections,
+  resumeDraftCollection,
+  saveCollectionForLater,
+  startNewDraftCollection,
+  sweepDraftCollections,
+  updateDraftCollection,
+} from '@clipcard/ui/collections';
+import type { ClipDraft, DraftCollection } from '@clipcard/ui/collections';
+import { GridEditor } from '@clipcard/ui/grid-editor';
+import { CollectionBackupControls } from '@clipcard/ui/collection-backup-controls';
+import { CollectionThumbnail } from '@clipcard/ui/collection-thumbnail';
 import { draftFromInput, inspectPhoto, readTransfer } from '@clipcard/ui/input';
 import type { CardInput } from '@clipcard/ui/input';
 import {
@@ -15,11 +32,14 @@ import {
   saveDraft,
 } from '@clipcard/ui/storage';
 import mark from '../../../design/brand/mark.svg?url';
+import './collections.css';
 
 declare const __CLIPCARD_BOOKMARK__: string;
 type Screen = 'make' | 'drafts';
 const getParams = () => new URLSearchParams(location.search);
 const appUrl = import.meta.env.BASE_URL;
+const collectionsEnabled = FLAGS.drafts && FLAGS.clips;
+type View = 'workspace' | 'popup' | 'shared';
 
 function SiteBookmark() {
   return (
@@ -193,6 +213,9 @@ export function App() {
   );
   const [active, setActive] = useState<CardDraft | null>(null);
   const [history, setHistory] = useState<CardDraft[]>([]);
+  const [collection, setCollection] = useState<DraftCollection | null>(null);
+  const [collections, setCollections] = useState<ClipDraft[]>([]);
+  const [filter, setFilter] = useState<'all' | 'card' | 'grid'>('all');
   const [flow, setFlow] = useState<'workspace' | 'popup' | 'shared'>(
     'workspace',
   );
@@ -202,7 +225,10 @@ export function App() {
   const draftRef = useRef<CardDraft | null>(null);
   const pending = useRef<number | undefined>(undefined);
 
-  const refresh = useCallback(() => recentDrafts().then(setHistory), []);
+  const refresh = useCallback(async () => {
+    if (collectionsEnabled) setCollections(await listDraftCollections());
+    setHistory(await recentDrafts());
+  }, []);
   const failed = useCallback(() => setMessage(strings['card.savedFailed']), []);
   const put = useCallback(
     async (draft: CardDraft) => {
@@ -213,8 +239,9 @@ export function App() {
   );
 
   const display = useCallback(
-    (draft: CardDraft, view: 'workspace' | 'popup' | 'shared') => {
+    (draft: CardDraft, view: View, group: DraftCollection | null = null) => {
       draftRef.current = draft;
+      setCollection(group);
       setScreen('make');
       setFlow(view);
       setActive(draft);
@@ -222,13 +249,28 @@ export function App() {
       const next = new URL(location.href);
       next.hash = '';
       next.search = '';
-      next.searchParams.set('draft', draft.id);
+      if (group) next.searchParams.set('collection', group.draft.id);
+      else next.searchParams.set('draft', draft.id);
       if (view === 'popup') next.searchParams.set('from', 'bookmark');
       if (view === 'shared') next.searchParams.set('from', 'share');
       window.history.replaceState(null, '', next);
     },
     [],
   );
+
+  const showGrid = useCallback((group: DraftCollection, view: View) => {
+    draftRef.current = null;
+    setActive(null);
+    setCollection(group);
+    setScreen('make');
+    setFlow(view);
+    setMessage('');
+    const address = new URL(appUrl, location.origin);
+    address.searchParams.set('collection', group.draft.id);
+    if (view === 'popup') address.searchParams.set('from', 'bookmark');
+    if (view === 'shared') address.searchParams.set('from', 'share');
+    window.history.replaceState(null, '', address);
+  }, []);
 
   const close = useCallback(() => {
     if (draftRef.current) void put(draftRef.current).catch(failed);
@@ -238,16 +280,14 @@ export function App() {
     }
     draftRef.current = null;
     setActive(null);
+    setCollection(null);
     setScreen('make');
     setFlow('workspace');
     window.history.replaceState(null, '', appUrl);
   }, [flow, put, failed]);
 
   const open = useCallback(
-    async (
-      draft: CardDraft,
-      view: 'workspace' | 'popup' | 'shared' = 'workspace',
-    ) => {
+    async (draft: CardDraft, view: View = 'workspace') => {
       const previous = draftRef.current;
       if (previous && previous.id !== draft.id)
         void put(previous).catch(failed);
@@ -257,35 +297,76 @@ export function App() {
     [display, put, failed],
   );
 
+  const find = useCallback(
+    async (draft: CardDraft, view: View = 'workspace') => {
+      if (!collectionsEnabled) {
+        await open(draft, view);
+        return;
+      }
+      const group = await appendCardDraft(draft);
+      if (group.draft.mode === 'grid') {
+        showGrid(group, view);
+        await refresh();
+        return;
+      }
+      const card = { ...draft, id: group.draft.id };
+      display(card, view, group);
+      await put(card);
+    },
+    [display, open, put, refresh, showGrid],
+  );
+
+  const restoreCollection = useCallback(
+    async (id: string, view: View = 'workspace') => {
+      const group = await resumeDraftCollection(id);
+      if (!group) {
+        setMessage(strings['card.draftMissing']);
+        return;
+      }
+      if (group.draft.mode === 'grid' || group.clips.length === 0) {
+        showGrid(group, view);
+        return;
+      }
+      const card =
+        (await getDraft(group.draft.id)) ?? (await cardFromCollection(group));
+      if (card) display(card, view, group);
+    },
+    [display, showGrid],
+  );
+
   const add = useCallback(
     async (input: CardInput) => {
       const draft = await draftFromInput(input, strings['card.photo']);
       if (!draft) return false;
-      await open(draft);
+      await find(draft);
       return true;
     },
-    [open],
+    [find],
   );
 
   useEffect(() => {
     const start = getParams();
     const id = start.get('draft');
+    const collectionId = start.get('collection');
     const from = start.get('from');
+    const view =
+      from === 'share' ? 'shared' : from === 'bookmark' ? 'popup' : 'workspace';
     let current = true;
-    void refresh().catch(failed);
-    if (id) {
+    const ready = collectionsEnabled
+      ? sweepDraftCollections()
+      : Promise.resolve();
+    void ready.then(refresh).catch(failed);
+    if (collectionsEnabled && collectionId) {
+      void ready
+        .then(() => restoreCollection(collectionId, view))
+        .catch(failed);
+    } else if (id) {
       void getDraft(id)
         .then((draft) => {
           if (!current) return;
-          if (draft)
-            display(
-              draft,
-              from === 'share'
-                ? 'shared'
-                : from === 'bookmark'
-                  ? 'popup'
-                  : 'workspace',
-            );
+          if (draft && collectionsEnabled && view === 'shared')
+            return find(draft, view);
+          if (draft) display(draft, view);
           else setMessage(strings['card.draftMissing']);
         })
         .catch(failed);
@@ -299,19 +380,20 @@ export function App() {
       }).catch(failed);
     }
     const stop =
-      from === 'bookmark'
+      from === 'bookmark' && !collectionId
         ? receiveBookmark(
             (draft) => {
-              void open(draft, 'popup');
+              void ready.then(() => find(draft, 'popup')).catch(failed);
             },
             () => setMessage(strings['card.bookmarkFailed']),
+            collectionsEnabled,
           )
         : undefined;
     return () => {
       current = false;
       stop?.();
     };
-  }, [add, display, failed, open, refresh]);
+  }, [add, display, failed, find, refresh, restoreCollection]);
 
   useEffect(() => {
     function onPaste(event: ClipboardEvent) {
@@ -342,6 +424,18 @@ export function App() {
     clearTimeout(pending.current);
     pending.current = window.setTimeout(() => {
       void put(draft).catch(failed);
+      if (collection) {
+        const title =
+          draft.headline === draft.original
+            ? collection.draft.title
+            : draft.headline;
+        void updateDraftCollection(collection.draft.id, {
+          title,
+          overrides: draft.overrides,
+        })
+          .then(refresh)
+          .catch(failed);
+      }
     }, 250);
   }
 
@@ -373,6 +467,23 @@ export function App() {
     void refresh().catch(failed);
   }
 
+  function fresh() {
+    if (collectionsEnabled)
+      void startNewDraftCollection().then(close).catch(failed);
+    else close();
+  }
+
+  function switchMode(mode: 'grid' | 'card') {
+    if (!collection) return;
+    void updateDraftCollection(collection.draft.id, { mode })
+      .then(async (next) => {
+        if (!next) return;
+        if (mode === 'grid') showGrid(next, flow);
+        else await restoreCollection(next.draft.id, flow);
+      })
+      .catch(failed);
+  }
+
   const input = (
     <InputRow
       onInput={add}
@@ -385,8 +496,20 @@ export function App() {
       }
     />
   );
+  const inGrid =
+    collection?.draft.mode === 'grid' || collection?.clips.length === 0;
   const editor =
-    screen === 'make' && active ? (
+    screen === 'make' && collection && inGrid ? (
+      <GridEditor
+        key={collection.draft.id}
+        collection={collection}
+        change={setCollection}
+        close={close}
+        onCard={collection.clips.length ? () => switchMode('card') : undefined}
+        view={flow === 'popup' ? 'popup' : 'workspace'}
+        beforePreview={flow === 'popup' ? undefined : input}
+      />
+    ) : screen === 'make' && active ? (
       <CardEditor
         key={active.id}
         draft={active}
@@ -395,24 +518,41 @@ export function App() {
         onClose={close}
         onPhoto={() => picker.current?.click()}
         onSave={() => put(active)}
+        onSaveForLater={
+          collection
+            ? async (title) => {
+                await put(active);
+                await saveCollectionForLater(collection.draft.id, title);
+                close();
+              }
+            : undefined
+        }
+        onGrid={collection ? () => switchMode('grid') : undefined}
         beforePreview={flow === 'workspace' ? input : undefined}
       />
     ) : null;
-  const showNav = !(active && screen === 'make' && flow !== 'workspace');
+  const showNav = !(
+    (active || inGrid) &&
+    screen === 'make' &&
+    flow !== 'workspace'
+  );
+  const visibleCollections = collections.filter(
+    (item) => filter === 'all' || item.mode === filter,
+  );
   return (
     <div
       className={
         'app' +
-        (active && screen === 'make' ? ' app-editing' : '') +
+        ((active || inGrid) && screen === 'make' ? ' app-editing' : '') +
         (showNav ? '' : ' app-compact')
       }
     >
       {showNav ? (
         <AppNav
           screen={screen}
-          length={history.length}
+          length={collectionsEnabled ? collections.length : history.length}
           go={navigate}
-          fresh={close}
+          fresh={fresh}
         />
       ) : null}
       <main className="app-main">
@@ -420,27 +560,79 @@ export function App() {
           <section>
             <header className="app-work-header">
               <h1>{strings['drafts.title']}</h1>
-              <span>{history.length}</span>
+              <span>
+                {collectionsEnabled ? collections.length : history.length}
+              </span>
             </header>
+            {collectionsEnabled ? (
+              <div className="app-collection-filters">
+                {(['all', 'card', 'grid'] as const).map((value) => (
+                  <button
+                    type="button"
+                    key={value}
+                    className="clip-button"
+                    aria-pressed={filter === value}
+                    onClick={() => setFilter(value)}
+                  >
+                    {
+                      strings[
+                        ('drafts.filter.' + value) as keyof typeof strings
+                      ]
+                    }
+                  </button>
+                ))}
+              </div>
+            ) : null}
             <div className="app-drafts">
-              <DraftList
-                drafts={history}
-                open={(draft) => {
-                  void open(draft);
-                }}
-                remove={(id) => {
-                  void deleteDraft(id)
-                    .then(() => {
-                      if (draftRef.current?.id === id) {
-                        draftRef.current = null;
-                        setActive(null);
-                      }
-                      return refresh();
-                    })
-                    .catch(failed);
-                }}
-              />
-              <button type="button" className="app-new-tile" onClick={close}>
+              {collectionsEnabled ? (
+                <CollectionBackupControls refresh={refresh} />
+              ) : null}
+              {collectionsEnabled ? (
+                <ul className="app-draft-list">
+                  {visibleCollections.map((item) => (
+                    <li key={item.id}>
+                      <button
+                        type="button"
+                        className="app-draft"
+                        onClick={() =>
+                          void restoreCollection(item.id).catch(failed)
+                        }
+                      >
+                        <div className="app-collection-thumb">
+                          <CollectionThumbnail draft={item} />
+                        </div>
+                        <strong>{item.title}</strong>
+                        <span>
+                          {
+                            strings[
+                              ('mode.' + item.mode) as keyof typeof strings
+                            ]
+                          }
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <DraftList
+                  drafts={history}
+                  open={(draft) => {
+                    void open(draft);
+                  }}
+                  remove={(id) => {
+                    void deleteDraft(id)
+                      .then(() => {
+                        if (draftRef.current?.id === id) {
+                          draftRef.current = null;
+                          setActive(null);
+                        }
+                        return refresh();
+                      })
+                      .catch(failed);
+                  }}
+                />
+              )}
+              <button type="button" className="app-new-tile" onClick={fresh}>
                 <Icon name="add" />
                 {strings['card.newDraft']}
               </button>

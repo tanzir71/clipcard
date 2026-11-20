@@ -2,6 +2,8 @@
 import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { draftFromInput } from '@clipcard/ui/input';
+import { FLAGS } from '@clipcard/core/flags';
+import { appendCardDraft } from '@clipcard/ui/collection-card';
 import { saveDraft } from '@clipcard/ui/storage';
 import strings from '@clipcard/i18n/en';
 
@@ -42,8 +44,16 @@ registerRoute(
         strings['card.photo'],
       );
       if (!draft) throw new Error('Unsupported share input');
-      await saveDraft(draft);
-      destination.searchParams.set('draft', draft.id);
+      if (FLAGS.drafts && FLAGS.clips) {
+        const collection = await appendCardDraft(draft);
+        if (collection.draft.mode === 'card') {
+          await saveDraft({ ...draft, id: collection.draft.id });
+        }
+        destination.searchParams.set('collection', collection.draft.id);
+      } else {
+        await saveDraft(draft);
+        destination.searchParams.set('draft', draft.id);
+      }
       destination.searchParams.set('from', 'share');
     } catch {
       destination.searchParams.set('from', 'share-error');

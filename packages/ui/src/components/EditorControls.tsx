@@ -386,6 +386,7 @@ export function CardActions({
   model,
   options,
   onSave,
+  onSaveForLater,
   onOpen,
   openExternal,
   initialShareOpen = false,
@@ -394,6 +395,7 @@ export function CardActions({
   model: CardModel;
   options: CardOptions;
   onSave?: () => Promise<void>;
+  onSaveForLater?: () => void;
   onOpen?: () => void;
   openExternal?: (address: string) => Promise<unknown>;
   initialShareOpen?: boolean;
@@ -596,11 +598,11 @@ export function CardActions({
             <Icon name="share" />
           </button>
         ) : null}
-        {onSave ? (
+        {onSave || onSaveForLater ? (
           <button
             type="button"
             className="clip-icon-button"
-            onClick={save}
+            onClick={onSaveForLater ?? save}
             aria-label={strings['action.save']}
             title={strings['action.save']}
           >

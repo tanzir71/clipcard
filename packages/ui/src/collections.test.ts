@@ -327,3 +327,34 @@ it('keeps a local image when the browser cannot commit an OPFS write', async () 
   expect(await media?.text()).toBe('fallback photo');
   expect(files.size).toBe(0);
 });
+
+it('persists manual clip order, layout and removal across collection reads', async () => {
+  const {
+    appendDraftClip,
+    getDraftCollection,
+    moveDraftClip,
+    removeDraftClip,
+    updateDraftCollection,
+  } = await import('./collections.ts');
+  const a = await appendDraftClip(input);
+  const b = await appendDraftClip({ ...input, title: 'Second source' });
+  const c = await appendDraftClip({ ...input, title: 'Third source' });
+  const clipA = a.clips[0]!.id;
+  const clipB = b.clips[1]!.id;
+  const clipC = c.clips[2]!.id;
+  await moveDraftClip(a.draft.id, clipC, clipA);
+  await updateDraftCollection(a.draft.id, {
+    mode: 'grid',
+    gridLayout: 'board',
+  });
+  await removeDraftClip(a.draft.id, clipB);
+
+  const restored = await getDraftCollection(a.draft.id);
+  expect(restored?.draft.mode).toBe('grid');
+  expect(restored?.draft.gridLayout).toBe('board');
+  expect(restored?.draft.order).toEqual([clipC, clipA]);
+  expect(restored?.clips.map((clip) => clip.title)).toEqual([
+    'Third source',
+    input.title,
+  ]);
+});

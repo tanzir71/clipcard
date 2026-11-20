@@ -32,6 +32,7 @@ export interface SourceRequest {
 
 export interface MadeCard {
   id: string;
+  collectionId?: string;
   url: string;
   dir: 'ltr' | 'rtl';
   template: Template;
@@ -39,6 +40,26 @@ export interface MadeCard {
   png?: string;
   thumb?: string;
   fallback: boolean;
+}
+
+export interface ClipCapture {
+  kind: 'text' | 'image' | 'section';
+  text?: string;
+  image?: string;
+  rect?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    viewport: number;
+  };
+}
+
+export interface ClipTray {
+  id: string;
+  count: number;
+  sources: number;
+  thumbnails: Array<{ kind: string; image?: string }>;
 }
 
 export type OffscreenMessage =
@@ -50,7 +71,17 @@ export type BridgeMessage =
   | { to: 'bridge'; kind: 'card'; card: MadeCard; offerPermission: boolean }
   | { to: 'bridge'; kind: 'link'; url: string }
   | { to: 'bridge'; kind: 'error' }
-  | { to: 'bridge'; kind: 'open'; id?: string; share?: boolean };
+  | {
+      to: 'bridge';
+      kind: 'open';
+      id?: string;
+      share?: boolean;
+      collection?: string;
+      drafts?: boolean;
+    }
+  | { to: 'bridge'; kind: 'startClipping' }
+  | { to: 'bridge'; kind: 'contextImage'; address?: string }
+  | { to: 'bridge'; kind: 'tray'; tray: ClipTray };
 
 export type BackgroundMessage =
   | { to: 'background'; kind: 'open'; id: string; share?: boolean }
@@ -59,6 +90,12 @@ export type BackgroundMessage =
   | { to: 'background'; kind: 'remember'; id: string }
   | { to: 'background'; kind: 'sitePrefs'; address: string }
   | { to: 'background'; kind: 'releaseUpdate' }
+  | { to: 'background'; kind: 'captureClip'; capture: ClipCapture }
+  | { to: 'background'; kind: 'openCollection'; id: string }
+  | { to: 'background'; kind: 'pageCard' }
+  | { to: 'background'; kind: 'addPage' }
+  | { to: 'background'; kind: 'previewLink'; address: string }
+  | { to: 'background'; kind: 'copyQuote'; text: string }
   | { to: 'background'; kind: 'offscreenIdle' };
 
 export function forTarget(

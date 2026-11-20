@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { parseWebUrl } from '@clipcard/core';
+import { FLAGS } from '@clipcard/core/flags';
 import strings from '@clipcard/i18n/en';
 import { Icon } from '@clipcard/ui';
 import type { CardDraft } from '@clipcard/ui';
@@ -10,12 +11,15 @@ import { getDraft, recentDrafts, saveDraft } from '@clipcard/ui/storage';
 import type { BackgroundMessage, MadeCard } from './messages.ts';
 import { browser } from 'wxt/browser';
 import { webApp } from './site.ts';
+import { CollectionPopup } from './collection-popup.tsx';
 import './popup.css';
 
 const params = new URLSearchParams(location.search);
 const permissionView = params.get('permission') === '1';
 const initialShareOpen = params.get('share') === '1';
 const draftId = params.get('draft');
+const collectionId = params.get('collection');
+const draftsView = params.get('drafts') === '1';
 
 async function fitPopupWindow() {
   const current = await browser.windows.getCurrent();
@@ -276,7 +280,18 @@ const host = document.querySelector('#root');
 if (host) {
   const root = createRoot(host);
   if (permissionView) root.render(<PhotoPermission />);
-  else {
+  else if (FLAGS.drafts && FLAGS.clips && (collectionId || draftsView)) {
+    const draft = draftId
+      ? await getDraft(draftId).catch(() => undefined)
+      : undefined;
+    root.render(
+      <CollectionPopup
+        initialId={collectionId ?? undefined}
+        card={draft}
+        close={closeWindow}
+      />,
+    );
+  } else {
     const [initial, history] = await Promise.all([
       draftId ? getDraft(draftId).catch(() => undefined) : undefined,
       recentDrafts().catch(() => []),

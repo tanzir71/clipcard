@@ -32,7 +32,11 @@ const retentionPeriod = 30 * 24 * hours;
 
 export async function appendDraftClip(
   input: ClipInput,
-  { now = Date.now(), media }: { now?: number; media?: Blob } = {},
+  {
+    now = Date.now(),
+    media,
+    preferGrid = false,
+  }: { now?: number; media?: Blob; preferGrid?: boolean } = {},
 ): Promise<DraftCollection> {
   const db = await collectionDatabase();
   const id = crypto.randomUUID();
@@ -50,6 +54,7 @@ export async function appendDraftClip(
         ? {
             ...current,
             updatedAt: Math.max(current.updatedAt, now),
+            mode: preferGrid || current.order.length > 0 ? 'grid' : 'card',
             order: [...current.order, id],
           }
         : {
@@ -57,7 +62,7 @@ export async function appendDraftClip(
             title: input.title,
             createdAt: now,
             updatedAt: now,
-            mode: 'card',
+            mode: preferGrid ? 'grid' : 'card',
             overrides: {},
             order: [id],
           };
@@ -115,9 +120,114 @@ export async function listDraftCollections(): Promise<ClipDraft[]> {
   return (await db.getAllFromIndex('drafts', 'updatedAt')).reverse();
 }
 
+export async function getCurrentDraftCollection() {
+  const db = await collectionDatabase();
+  const id = await db.get('prefs', 'currentDraftId');
+  return id ? getDraftCollection(id) : undefined;
+}
+
+export async function startNewDraftCollection(): Promise<void> {
+  const db = await collectionDatabase();
+  await db.delete('prefs', 'currentDraftId');
+}
+
+export async function updateDraftCollection(
+  id: string,
+  patch: Partial<
+    Pick<ClipDraft, 'mode' | 'gridLayout' | 'overrides' | 'title'>
+  >,
+): Promise<DraftCollection | undefined> {
+  const db = await collectionDatabase();
+  const tx = db.transaction(['drafts', 'clips'], 'readwrite');
+  const drafts = tx.objectStore('drafts');
+  const existing = await drafts.get(id);
+  if (!existing) {
+    await tx.done;
+    return undefined;
+  }
+  const draft = { ...existing, ...patch, updatedAt: Date.now() };
+  const [clips] = await Promise.all([
+    tx.objectStore('clips').index('draftId').getAll(id),
+    drafts.put(draft),
+    tx.done,
+  ]);
+  return { draft, clips: orderedClips(clips, draft.order) };
+}
+
+export async function moveDraftClip(
+  draftId: string,
+  clipId: string,
+  targetId: string,
+): Promise<DraftCollection | undefined> {
+  const db = await collectionDatabase();
+  const tx = db.transaction(['drafts', 'clips'], 'readwrite');
+  const drafts = tx.objectStore('drafts');
+  const existing = await drafts.get(draftId);
+  const order = existing?.order.slice() ?? [];
+  const from = order.indexOf(clipId);
+  const to = order.indexOf(targetId);
+  if (!existing || from < 0 || to < 0 || from === to) {
+    await tx.done;
+    return undefined;
+  }
+  order.splice(from, 1);
+  order.splice(to, 0, clipId);
+  const draft = { ...existing, order, updatedAt: Date.now() };
+  const [clips] = await Promise.all([
+    tx.objectStore('clips').index('draftId').getAll(draftId),
+    drafts.put(draft),
+    tx.done,
+  ]);
+  return { draft, clips: orderedClips(clips, order) };
+}
+
+export async function removeDraftClip(
+  draftId: string,
+  clipId: string,
+): Promise<DraftCollection | undefined> {
+  const db = await collectionDatabase();
+  const tx = db.transaction(['drafts', 'clips', 'expiredMedia'], 'readwrite');
+  const drafts = tx.objectStore('drafts');
+  const clips = tx.objectStore('clips');
+  const [existing, clip] = await Promise.all([
+    drafts.get(draftId),
+    clips.get(clipId),
+  ]);
+  if (!existing || clip?.draftId !== draftId) {
+    await tx.done;
+    return undefined;
+  }
+  const order = existing.order.filter((id) => id !== clipId);
+  const draft = { ...existing, order, updatedAt: Date.now() };
+  const mediaKey = clip.mediaKey;
+  const [remaining] = await Promise.all([
+    clips.index('draftId').getAll(draftId),
+    drafts.put(draft),
+    clips.delete(clipId),
+    mediaKey
+      ? tx.objectStore('expiredMedia').put(mediaKey, mediaKey)
+      : undefined,
+    tx.done,
+  ]);
+  if (mediaKey) {
+    await withMediaLock(async () => {
+      await removeMedia(mediaKey);
+      await db.delete('expiredMedia', mediaKey);
+    }).catch(() => undefined);
+  }
+  return { draft, clips: orderedClips(remaining, order) };
+}
+
 export async function setDraftRetention(retention: Retention): Promise<void> {
   const db = await collectionDatabase();
   await db.put('prefs', retention, 'retention');
+}
+
+export async function getDraftRetention(): Promise<Retention> {
+  const db = await collectionDatabase();
+  return (await db.get('prefs', 'retention')) === 'forever'
+    ? 'forever'
+    : '30-days';
 }
 
 export function sweepDraftCollections(now = Date.now()): Promise<number> {

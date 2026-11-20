@@ -1,4 +1,5 @@
 import { CARD_FORMATS, CARD_TEMPLATES } from '@clipcard/cards';
+import { GRID_LAYOUTS } from '@clipcard/cards/grid-model';
 import { parseWebUrl, BASIC_SCRIPTS } from '@clipcard/core';
 import { z } from 'zod';
 
@@ -93,6 +94,7 @@ export const archiveSchema = z.object({
       createdAt: time,
       updatedAt: time,
       mode: z.enum(['card', 'grid', 'video']),
+      gridLayout: z.enum(GRID_LAYOUTS).optional(),
       overrides,
       order: z.array(key),
       legacyCard: legacyCard.optional(),

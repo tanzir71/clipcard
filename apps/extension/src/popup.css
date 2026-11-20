@@ -412,3 +412,59 @@ a:focus-visible {
     color: var(--pc-ui-color-text-secondary);
   }
 }
+.popup-collections-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.popup-collections ul {
+  display: grid;
+  gap: 4px;
+  max-height: min(390px, 58vh);
+  margin: 8px 0 12px;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}
+
+.clip-popup-draft {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 36px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 2px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.clip-popup-draft:hover,
+.clip-popup-draft:focus-visible {
+  background: #ededf0;
+  color: #0b0b0c;
+}
+
+.clip-popup-thumb {
+  display: grid;
+  width: 36px;
+  height: 45px;
+  place-items: center;
+  background: #14243d;
+  color: #a9bcdf;
+}
+
+.clip-popup-thumb > div {
+  width: 36px;
+}
+
+.clip-popup-caption :is(strong, small) {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

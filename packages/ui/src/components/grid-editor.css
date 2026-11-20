@@ -1,0 +1,278 @@
+.clip-grid-editor {
+  color: var(--clip-fg, #0b0b0c);
+  background: var(--clip-surface, #fff);
+  font-family: 'Geist', sans-serif;
+}
+
+.clip-grid-header {
+  display: flex;
+  min-height: 56px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 20px;
+  border-block-end: 1px solid #dddde1;
+}
+
+.clip-grid-header h1 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.clip-grid-stage {
+  min-width: 0;
+}
+
+.clip-grid-workspace .clip-grid-stage {
+  padding: 16px clamp(12px, 2vw, 28px);
+  background: #f4f4f5;
+}
+
+.clip-grid-preview-wrap {
+  position: relative;
+}
+
+.clip-grid-workspace .clip-grid-preview-wrap {
+  width: min(100%, 416px);
+  margin: 16px auto 0;
+}
+
+.clip-grid-close,
+.clip-grid-arrows button {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: #0b0b0cbb;
+  color: #fff;
+  cursor: pointer;
+}
+
+.clip-grid-close {
+  position: absolute;
+  inset-block-start: 8px;
+  inset-inline-end: 8px;
+}
+
+.clip-grid-arrows {
+  position: absolute;
+  inset: 50% 8px auto;
+  display: flex;
+  justify-content: space-between;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.clip-grid-arrows button {
+  pointer-events: auto;
+}
+
+.clip-grid-preview-wrap:hover .clip-grid-arrows,
+.clip-grid-preview-wrap:focus-within .clip-grid-arrows {
+  opacity: 1;
+}
+
+.clip-grid-tools {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px 12px 12px;
+}
+
+.clip-grid-mode-row,
+.clip-grid-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.clip-grid-auto {
+  margin-inline-start: auto;
+  font-size: 12px;
+}
+
+.clip-grid-selected {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  background: #0b0b0c;
+  color: #fff;
+}
+
+.clip-grid-actions .clip-primary {
+  flex: 1;
+}
+
+.clip-grid-actions .clip-button {
+  min-height: 42px;
+}
+
+.clip-grid-clips {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 0 0 4px;
+  overflow-x: auto;
+  list-style: none;
+}
+
+.clip-grid-clips > li {
+  position: relative;
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: 40px;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  cursor: grab;
+}
+
+.clip-grid-thumb {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  background: #14243d;
+  color: #a9bcdf;
+}
+
+.clip-grid-thumb img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+.clip-grid-item-title,
+.clip-grid-item-buttons {
+  display: none;
+}
+
+.clip-grid-clips > li:hover .clip-grid-item-buttons,
+.clip-grid-clips > li:focus-within .clip-grid-item-buttons {
+  display: flex;
+}
+
+.clip-grid-item-title {
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clip-grid-item-buttons {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  visibility: hidden;
+}
+
+.clip-grid-item-buttons:focus-within,
+.clip-grid-clips > li:hover .clip-grid-item-buttons {
+  visibility: visible;
+}
+
+.clip-grid-item-buttons button {
+  display: grid;
+  width: 18px;
+  height: 18px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid #dddde1;
+  background: #fff;
+  color: #0b0b0c;
+  cursor: pointer;
+}
+
+.clip-grid-item-buttons button:disabled {
+  color: #777;
+}
+
+.clip-grid-workspace .clip-grid-clips {
+  flex-direction: column;
+}
+
+.clip-grid-workspace .clip-grid-clips > li {
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  padding: 6px 0;
+  border-block-end: 1px solid #eeeef0;
+}
+
+.clip-grid-workspace .clip-grid-item-title {
+  display: block;
+}
+
+.clip-grid-workspace .clip-grid-item-buttons {
+  position: static;
+  visibility: visible;
+}
+
+.clip-grid-workspace .clip-grid-item-buttons button {
+  width: 24px;
+  height: 28px;
+}
+
+.clip-grid-controls {
+  display: grid;
+  gap: 8px;
+  padding: 10px 0;
+}
+
+.clip-grid-controls label {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.clip-grid-controls :is(input, select) {
+  min-width: 0;
+  min-height: 36px;
+  padding: 8px;
+  border: 1px solid #c7c7cc;
+  border-radius: 3px;
+  background: #fff;
+  color: #0b0b0c;
+  font: inherit;
+}
+
+.clip-grid-status {
+  margin: 0;
+  font-size: 12px;
+}
+
+@media (min-width: 1000px) {
+  .clip-grid-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(245px, 320px);
+  }
+
+  .clip-grid-header {
+    grid-column: 1 / -1;
+  }
+
+  .clip-grid-workspace .clip-grid-tools {
+    align-content: start;
+    padding: 16px;
+    border-inline-start: 1px solid #dddde1;
+  }
+}
+
+@media (max-width: 767px) {
+  .clip-grid-workspace .clip-grid-tools :is(button, select, input) {
+    min-height: 44px;
+  }
+
+  .clip-grid-workspace .clip-grid-tools .clip-grid-item-buttons button {
+    width: 44px;
+  }
+}

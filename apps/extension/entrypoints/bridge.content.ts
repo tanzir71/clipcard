@@ -1,7 +1,9 @@
 import strings from '@clipcard/i18n/en';
+import { FLAGS } from '@clipcard/core/flags';
 import { browser } from 'wxt/browser';
 import { defineContentScript } from 'wxt/utils/define-content-script';
 import { forTarget } from '../src/messages.ts';
+import { mountClipping } from '../src/clipping.ts';
 import { trackPage } from '../src/page-hints.ts';
 import {
   dismissToast,
@@ -20,15 +22,25 @@ export default defineContentScript({
     if (isolated.clipcardBridge) return;
     isolated.clipcardBridge = true;
     const hints = trackPage();
+    const clips =
+      FLAGS.clips && FLAGS.drafts ? mountClipping(hints) : undefined;
     let closeFrame: (() => void) | undefined;
 
-    function showFrame(id?: string, share?: boolean): Promise<boolean> {
+    function showFrame(
+      id?: string,
+      share?: boolean,
+      collection?: string,
+      drafts?: boolean,
+    ): Promise<boolean> {
       closeFrame?.();
       dismissToast();
+      clips?.popup(true);
       const url = new URL(browser.runtime.getURL('/sheet.html'));
       const extensionOrigin = url.protocol + '//' + url.host;
       if (id) url.searchParams.set('draft', id);
       if (share) url.searchParams.set('share', '1');
+      if (collection) url.searchParams.set('collection', collection);
+      if (drafts) url.searchParams.set('drafts', '1');
       const host = document.createElement('clipcard-popup');
       host.style.cssText =
         'all:initial;position:fixed;z-index:2147483647;right:12px;top:12px';
@@ -57,6 +69,7 @@ export default defineContentScript({
         window.removeEventListener('message', onFrameMessage);
         window.removeEventListener('keydown', onEscape);
         host.remove();
+        clips?.popup(false);
         if (closeFrame === removeFrame) closeFrame = undefined;
         if (previous instanceof HTMLElement)
           previous.focus({ preventScroll: true });
@@ -102,10 +115,24 @@ export default defineContentScript({
             respond(hints(message.address));
             break;
           case 'open':
-            void showFrame(message.id, message.share).then(respond, () =>
-              respond(false),
-            );
+            void showFrame(
+              message.id,
+              message.share,
+              message.collection,
+              message.drafts,
+            ).then(respond, () => respond(false));
             return true;
+          case 'startClipping':
+            clips?.start();
+            respond(Boolean(clips));
+            break;
+          case 'contextImage':
+            respond(clips?.contextImage(message.address));
+            break;
+          case 'tray':
+            clips?.showTray(message.tray);
+            respond(Boolean(clips));
+            break;
           case 'card':
             void showCardToast(message.card, message.offerPermission).then(() =>
               respond(true),

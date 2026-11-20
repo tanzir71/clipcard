@@ -1,4 +1,9 @@
 import { cleanUrl, parseWebUrl, unwrapUrl } from '@clipcard/core';
+import { FLAGS } from '@clipcard/core/flags';
+import {
+  sweepDraftCollections,
+  updateDraftCollection,
+} from '@clipcard/ui/collections';
 import { getDraft } from '@clipcard/ui/storage';
 import { browser } from 'wxt/browser';
 import type { Browser } from 'wxt/browser';
@@ -6,6 +11,7 @@ import { bridgeScript, forTarget } from './messages.ts';
 import type {
   BackgroundMessage,
   BridgeMessage,
+  ClipCapture,
   Destination,
   Hints,
   MadeCard,
@@ -13,7 +19,9 @@ import type {
 } from './messages.ts';
 import { destinationFor, rememberPrefs, sitePrefs } from './preferences.ts';
 import { developerUpdate } from './update-check.ts';
+import { persistCapture } from './clip-capture.ts';
 
+const clipping = FLAGS.clips && FLAGS.drafts;
 const offscreenPath = '/offscreen.html';
 const destinationKey = 'lastShareDestination';
 let opening: Promise<void> | undefined;
@@ -125,11 +133,15 @@ async function fallback(
   id?: string,
   share?: boolean,
   permission?: boolean,
+  collection?: string,
+  drafts?: boolean,
 ) {
   const url = new URL(browser.runtime.getURL('/popup-fallback.html'));
   if (id) url.searchParams.set('draft', id);
   if (share) url.searchParams.set('share', '1');
   if (permission) url.searchParams.set('permission', '1');
+  if (collection) url.searchParams.set('collection', collection);
+  if (drafts) url.searchParams.set('drafts', '1');
   const parent = tab
     ? await browser.windows.get(tab.windowId).catch(() => null)
     : null;
@@ -158,17 +170,25 @@ async function fallback(
   }
 }
 
-async function open(tab?: Browser.tabs.Tab, id?: string, share?: boolean) {
+async function open(
+  tab?: Browser.tabs.Tab,
+  id?: string,
+  share?: boolean,
+  collection?: string,
+  drafts?: boolean,
+) {
   if (tab?.id !== undefined) {
     const shown = await bridge<boolean>(tab.id, 0, {
       to: 'bridge',
       kind: 'open',
       id,
       share,
+      collection,
+      drafts,
     });
     if (shown) return;
   }
-  await fallback(tab, id, share);
+  await fallback(tab, id, share, undefined, collection, drafts);
 }
 
 async function make(
@@ -202,6 +222,7 @@ async function showCard(
   hints: Hints | null,
   render: boolean,
   selection?: string,
+  forceCard = false,
 ) {
   if (tab.id === undefined) return;
   const canFetch = await mayRead(address);
@@ -212,7 +233,9 @@ async function showCard(
     return;
   }
   if (!render) {
-    await open(tab, card.id);
+    if (forceCard && card.collectionId)
+      await updateDraftCollection(card.collectionId, { mode: 'card' });
+    await open(tab, card.id, undefined, card.collectionId);
     return;
   }
   const shown = await bridge<boolean>(tab.id, 0, {
@@ -221,7 +244,30 @@ async function showCard(
     card,
     offerPermission: !canFetch && card.template === 'solid',
   });
-  if (!shown) await fallback(tab, card.id);
+  if (!shown)
+    await fallback(tab, card.id, undefined, undefined, card.collectionId);
+}
+
+async function findClip(
+  tab: Browser.tabs.Tab,
+  frameId: number,
+  capture: ClipCapture,
+) {
+  if (tab.id === undefined) return;
+  const [hints, canFetch] = await Promise.all([
+    readHints(tab.id, frameId),
+    capture.image ? mayRead(capture.image) : false,
+  ]);
+  const tray = await persistCapture(
+    tab,
+    hints,
+    capture,
+    canFetch,
+    frameId === 0,
+  );
+  if (tray) await bridge(tab.id, 0, { to: 'bridge', kind: 'tray', tray });
+  else await report(tab.id);
+  return tray;
 }
 
 async function fromMenu(
@@ -231,6 +277,40 @@ async function fromMenu(
   if (tab?.id === undefined) return;
   const address = info.linkUrl ?? info.frameUrl ?? info.pageUrl ?? tab.url;
   if (!address || !parseWebUrl(address)) return;
+  const id = info.menuItemId;
+  if (clipping && id === 'startClipping') {
+    await bridge(tab.id, 0, { to: 'bridge', kind: 'startClipping' });
+    return;
+  }
+  if (clipping && id === 'clipText') {
+    await findClip(tab, info.frameId ?? 0, {
+      kind: 'text',
+      text: info.selectionText,
+    });
+    return;
+  }
+  if (clipping && id === 'clipImage') {
+    const capture = await bridge<ClipCapture>(tab.id, info.frameId ?? 0, {
+      to: 'bridge',
+      kind: 'contextImage',
+      address: info.srcUrl,
+    });
+    await findClip(
+      tab,
+      info.frameId ?? 0,
+      capture ?? { kind: 'image', image: info.srcUrl },
+    );
+    return;
+  }
+  if (clipping && id === 'addPage') {
+    await showCard(
+      tab,
+      address,
+      await readHints(tab.id, info.frameId, info.linkUrl),
+      false,
+    );
+    return;
+  }
   if (info.menuItemId === 'cleanLink') {
     const canFetch = await mayRead(address);
     const resolved = canFetch
@@ -243,7 +323,6 @@ async function fromMenu(
 
   const hints = await readHints(tab.id, info.frameId, info.linkUrl);
   if (hints?.source) await setBadge(tab.id, hints.source.isArticle);
-  const id = info.menuItemId;
   const selection =
     id === 'copyQuote' || id === 'editQuote' ? info.selectionText : undefined;
   await showCard(
@@ -259,11 +338,25 @@ async function fromToolbar(tab: Browser.tabs.Tab) {
   if (tab.id === undefined) return;
   const hints = await readHints(tab.id);
   await setBadge(tab.id, Boolean(hints?.source?.isArticle));
+  if (
+    clipping &&
+    !hints?.selection &&
+    parseWebUrl(hints?.address ?? tab.url ?? '')
+  ) {
+    await open(tab, undefined, undefined, undefined, true);
+    return;
+  }
   if (!hints?.source?.isArticle) {
     await open(tab);
     return;
   }
-  await showCard(tab, hints.address, hints, false);
+  await showCard(
+    tab,
+    hints.address,
+    hints,
+    false,
+    clipping ? hints.selection : undefined,
+  );
 }
 
 async function fromShortcut(tab: Browser.tabs.Tab) {
@@ -289,7 +382,9 @@ async function installMenus() {
   browser.contextMenus.create({
     id: 'clipcard',
     title: browser.i18n.getMessage('menu_parent'),
-    contexts: [...linksAndPages, ...selection],
+    contexts: clipping
+      ? [...linksAndPages, ...selection, 'image']
+      : [...linksAndPages, ...selection],
   });
   const items = [
     ['copy', browser.i18n.getMessage('menu_copy'), linksAndPages],
@@ -301,6 +396,32 @@ async function installMenus() {
   for (const [id, title, contexts] of items) {
     browser.contextMenus.create({ id, title, contexts, parentId: 'clipcard' });
   }
+  if (clipping) {
+    browser.contextMenus.create({
+      id: 'startClipping',
+      title: browser.i18n.getMessage('clip_start'),
+      contexts: ['page'],
+      parentId: 'clipcard',
+    });
+    browser.contextMenus.create({
+      id: 'clipText',
+      title: browser.i18n.getMessage('clip_add'),
+      contexts: ['selection'],
+      parentId: 'clipcard',
+    });
+    browser.contextMenus.create({
+      id: 'clipImage',
+      title: browser.i18n.getMessage('clip_image'),
+      contexts: ['image'],
+      parentId: 'clipcard',
+    });
+    browser.contextMenus.create({
+      id: 'addPage',
+      title: browser.i18n.getMessage('clip_addPage'),
+      contexts: linksAndPages,
+      parentId: 'clipcard',
+    });
+  }
 }
 
 async function handleRequest(
@@ -308,6 +429,44 @@ async function handleRequest(
   sender: Browser.runtime.MessageSender,
 ) {
   switch (message.kind) {
+    case 'captureClip':
+      return clipping && sender.tab
+        ? findClip(sender.tab, sender.frameId ?? 0, message.capture)
+        : null;
+    case 'openCollection':
+      if (clipping) await open(sender.tab, undefined, undefined, message.id);
+      return clipping;
+    case 'previewLink':
+    case 'copyQuote':
+    case 'pageCard':
+    case 'addPage': {
+      if (!clipping) return null;
+      const tab =
+        sender.tab ??
+        (
+          await browser.tabs.query({ active: true, lastFocusedWindow: true })
+        )[0];
+      if (tab?.id === undefined) return null;
+      const address =
+        message.kind === 'previewLink' ? message.address : tab.url;
+      if (!address || !parseWebUrl(address)) return null;
+      const frameId = sender.url?.startsWith(browser.runtime.getURL('/'))
+        ? 0
+        : sender.frameId;
+      await showCard(
+        tab,
+        address,
+        await readHints(
+          tab.id,
+          frameId,
+          message.kind === 'previewLink' ? address : undefined,
+        ),
+        message.kind === 'previewLink' || message.kind === 'copyQuote',
+        message.kind === 'copyQuote' ? message.text : undefined,
+        message.kind === 'pageCard',
+      );
+      return true;
+    }
     case 'open':
       await open(sender.tab, message.id, message.share);
       return true;
@@ -340,7 +499,45 @@ async function report(tabId?: number) {
     await bridge(tabId, 0, { to: 'bridge', kind: 'error' });
 }
 
+async function syncClippingEntryPoints() {
+  const id = 'clipcard-clipping';
+  const { origins } = await browser.permissions.getAll();
+  const matches = (origins ?? []).filter(
+    (origin) => origin === '<all_urls>' || /^(\*|https?):\/\//.test(origin),
+  );
+  const [existing] = await browser.scripting.getRegisteredContentScripts({
+    ids: [id],
+  });
+  if (!matches.length) {
+    if (existing)
+      await browser.scripting.unregisterContentScripts({ ids: [id] });
+    return;
+  }
+  const script = {
+    id,
+    matches,
+    js: [bridgeScript.slice(1)],
+    allFrames: true,
+  } as const;
+  if (existing)
+    await browser.scripting.updateContentScripts([
+      { ...script, js: [...script.js] },
+    ]);
+  else
+    await browser.scripting.registerContentScripts([
+      { ...script, js: [...script.js] },
+    ]);
+}
+
 export function startExtension() {
+  if (clipping) {
+    function updateEntryPoints() {
+      void syncClippingEntryPoints().catch(() => undefined);
+    }
+    browser.permissions.onAdded.addListener(updateEntryPoints);
+    browser.permissions.onRemoved.addListener(updateEntryPoints);
+    updateEntryPoints();
+  }
   browser.runtime.onInstalled.addListener(() => {
     void installMenus().catch(() => undefined);
     void browser.action.setBadgeBackgroundColor({ color: '#187451' });
@@ -348,6 +545,7 @@ export function startExtension() {
   });
   browser.runtime.onStartup.addListener(() => {
     void developerUpdate().catch(() => undefined);
+    if (clipping) void sweepDraftCollections().catch(() => undefined);
   });
   browser.contextMenus.onClicked.addListener((info, tab) => {
     void fromMenu(info, tab).catch(() => report(tab?.id));
@@ -358,6 +556,11 @@ export function startExtension() {
   browser.commands.onCommand.addListener((command, tab) => {
     if (command === 'copy-clipcard' && tab) {
       void fromShortcut(tab).catch(() => report(tab.id));
+    }
+    if (clipping && command === 'clip-selection' && tab?.id !== undefined) {
+      void bridge(tab.id, 0, { to: 'bridge', kind: 'startClipping' }).catch(
+        () => report(tab.id),
+      );
     }
   });
   browser.tabs.onActivated.addListener(({ tabId }) => {

@@ -11,7 +11,9 @@ import {
   unwrapUrl,
 } from '@clipcard/core';
 import type { CardSource } from '@clipcard/core';
+import { FLAGS } from '@clipcard/core/flags';
 import { modelForDraft, newCardDraft, optionsForDraft } from '@clipcard/ui';
+import { appendCardDraft } from '@clipcard/ui/collection-card';
 import { fetchPhoto } from '@clipcard/ui/input';
 import { saveDraft } from '@clipcard/ui/storage';
 import { fetchArticle } from './article.ts';
@@ -140,12 +142,16 @@ export async function makeCard(
       png ? asDataUrl(png) : undefined,
     ]);
     if (thumb) draft.thumb = thumb;
+    const collection =
+      FLAGS.clips && FLAGS.drafts ? await appendCardDraft(draft) : undefined;
+    if (collection?.clips.length === 1) draft.id = collection.draft.id;
     const [, preview] = await Promise.all([
       saveDraft(draft),
       thumb ? asDataUrl(thumb) : undefined,
     ]);
     return {
       id: draft.id,
+      collectionId: collection?.draft.id,
       url: source.canonicalUrl,
       dir: model.dir,
       template: options.template,
