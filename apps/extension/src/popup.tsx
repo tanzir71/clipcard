@@ -264,8 +264,22 @@ if (host) {
   }
   if (window.parent !== window) {
     const observer = new ResizeObserver(() => {
+      const wrap = host.querySelector<HTMLElement>('.clip-preview-wrap');
+      const preview = wrap?.querySelector('.clip-preview');
+      const ratio = Number(wrap?.style.getPropertyValue('--clip-card-ratio'));
+      // Request the natural height so the frame can grow when the outer viewport grows.
+      const extraHeight =
+        wrap && preview && ratio > 0
+          ? Math.max(
+              0,
+              wrap.clientWidth / ratio - preview.getBoundingClientRect().height,
+            )
+          : 0;
       window.parent.postMessage(
-        { clipcard: 'resize', height: host.getBoundingClientRect().height },
+        {
+          clipcard: 'resize',
+          height: host.getBoundingClientRect().height + extraHeight,
+        },
         '*',
       );
     });

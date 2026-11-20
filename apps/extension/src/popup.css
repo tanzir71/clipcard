@@ -1,3 +1,5 @@
+@import '@clipcard/cards/tokens.css';
+
 :root {
   color-scheme: light dark;
   font:
@@ -152,6 +154,20 @@ a:focus-visible {
   padding: 0;
 }
 
+.clip-editor-popup .clip-preview-wrap {
+  --clip-preview-width: min(
+    100%,
+    calc(max(120px, 100dvh - 108px) * var(--clip-card-ratio))
+  );
+
+  background: #0a0a0a;
+}
+
+.clip-editor-popup .clip-preview-wrap > .clip-preview {
+  inline-size: var(--clip-preview-width);
+  margin-inline: auto;
+}
+
 .clip-editor-popup .clip-actions .clip-button,
 .clip-editor-popup .clip-actions .clip-icon-button {
   min-block-size: 42px;
@@ -184,6 +200,8 @@ a:focus-visible {
 }
 
 .clip-editor-popup .clip-preview-close {
+  position: fixed;
+  z-index: 5;
   border-radius: 0;
   background: rgb(10 10 10 / 60%);
 }
@@ -203,7 +221,7 @@ a:focus-visible {
 
 .clip-text-outline {
   position: absolute;
-  inset-inline: 15px;
+  inset-inline: calc((100% - var(--clip-preview-width, 100%)) / 2 + 15px);
   border: 1px dashed rgba(255, 255, 255, 0.85);
   pointer-events: none;
 }
@@ -338,4 +356,59 @@ a:focus-visible {
   padding: 8px;
   background: #fff;
   color: #0a0a0a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root,
+  :root[data-theme='system'] .clip-editor-popup,
+  .clip-editor-popup .clip-editor-header,
+  .clip-editor-popup .clip-editor-inspector .clip-action-area {
+    color: var(--pc-ui-color-text-primary);
+    background: var(--pc-ui-color-bg-surface);
+  }
+
+  .popup-input,
+  .popup-recents button,
+  .clip-editor-popup .clip-look {
+    border-color: var(--pc-ui-color-border-strong);
+  }
+
+  .popup-empty :is(.clip-button, .clip-icon-button):not(.clip-primary),
+  .clip-editor-popup :is(.clip-button, .clip-icon-button):not(.clip-primary),
+  .clip-editor-popup :is(select, textarea, .clip-words button) {
+    border-color: var(--pc-ui-color-border-strong);
+    color: var(--pc-ui-color-text-primary);
+    background: var(--pc-ui-color-bg-subtle);
+  }
+
+  .popup-empty :is(.clip-button, .clip-icon-button):hover:not(.clip-primary),
+  .clip-editor-popup
+    :is(.clip-button, .clip-icon-button):hover:not(.clip-primary),
+  .clip-editor-popup .clip-words button[aria-pressed='true'] {
+    border-color: var(--pc-ui-color-text-tertiary);
+    background: var(--pc-ui-color-bg-hover);
+  }
+
+  .popup-empty .clip-primary,
+  .clip-editor-popup .clip-primary {
+    border-color: var(--pc-ui-color-accent-default);
+    color: var(--pc-ui-color-accent-on);
+    background: var(--pc-ui-color-accent-default);
+  }
+
+  .clip-editor-popup .clip-look .clip-swatch,
+  .clip-editor-popup .clip-look .clip-custom-color,
+  .clip-editor-popup .clip-text-controls {
+    color: var(--pc-ui-color-text-primary);
+    background: var(--pc-ui-color-bg-subtle);
+  }
+
+  .clip-editor-popup .clip-look .clip-swatch[aria-pressed='true'] {
+    border-color: var(--pc-ui-color-accent-default);
+  }
+
+  .popup-status,
+  .clip-editor-popup :is(.clip-status, .clip-note) {
+    color: var(--pc-ui-color-text-secondary);
+  }
 }

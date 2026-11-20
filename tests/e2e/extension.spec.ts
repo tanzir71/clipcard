@@ -179,6 +179,51 @@ test('opens a sourced card from paste in a clean extension profile', async ({
   );
 });
 
+test('keeps the card actions visible in a short dark popup', async ({
+  extension,
+  worker,
+}) => {
+  const page = await extension.newPage();
+  await page.setViewportSize({ width: 392, height: 456 });
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.goto(new URL('popup-fallback.html', worker.url()).href);
+  await page
+    .getByRole('textbox', { name: 'Paste any link…' })
+    .fill('https://example.org/city/electric-river');
+  await page.getByRole('button', { name: 'Make card' }).click();
+
+  const editor = page.locator('.clip-editor-popup');
+  await expect(editor.locator('.cc-card')).toHaveAttribute(
+    'data-format',
+    '4:5',
+  );
+  await expect(
+    page.getByRole('button', { name: 'Close', exact: true }),
+  ).toBeInViewport({ ratio: 1 });
+  await expect(
+    page.getByRole('button', { name: 'Copy', exact: true }),
+  ).toBeInViewport({ ratio: 1 });
+  await expect(editor).toHaveCSS('background-color', 'rgb(18, 18, 20)');
+
+  await page.getByRole('button', { name: 'Auto · 4:5' }).click();
+  await page.getByRole('button', { name: '9:16', exact: true }).click();
+  await page
+    .getByRole('button', { name: 'Copy', exact: true })
+    .scrollIntoViewIfNeeded();
+  await expect(
+    page.getByRole('button', { name: 'Close', exact: true }),
+  ).toBeInViewport({ ratio: 1 });
+  await page.getByRole('button', { name: 'Auto · 9:16' }).click();
+  await expect(editor.locator('.cc-card')).toHaveAttribute(
+    'data-format',
+    '9:16',
+  );
+  await expect(
+    page.getByRole('button', { name: 'Copy', exact: true }),
+  ).toBeInViewport({ ratio: 1 });
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
 test.describe('registered browser actions', () => {
   test.use({ instrumentEvents: true });
 
@@ -186,6 +231,7 @@ test.describe('registered browser actions', () => {
     extension,
     worker,
   }) => {
+    test.setTimeout(60_000);
     await extension.grantPermissions(['clipboard-read', 'clipboard-write'], {
       origin,
     });
@@ -240,6 +286,29 @@ test.describe('registered browser actions', () => {
     ).toBeVisible();
     await expect(page.locator('clipcard-popup')).toHaveCSS('right', '12px');
     await expect(page.locator('clipcard-popup')).toHaveCSS('top', '12px');
+    const preview = frame.locator('.clip-preview-wrap > .clip-preview');
+    const copy = frame.getByRole('button', { name: 'Copy', exact: true });
+    await expect(preview).toHaveCSS('width', '392px');
+    for (const [width, height] of [
+      [1024, 576],
+      [854, 480],
+      [640, 360],
+    ] as const) {
+      await page.setViewportSize({ width, height });
+      await expect(preview).not.toHaveCSS('width', '392px');
+      await expect(copy).toBeInViewport({ ratio: 1 });
+      await expect(
+        frame.getByRole('button', { name: 'Close', exact: true }),
+      ).toBeInViewport({ ratio: 1 });
+    }
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await expect(preview).toHaveCSS('width', '392px');
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await expect(frame.locator('.clip-editor-popup')).toHaveCSS(
+      'background-color',
+      'rgb(18, 18, 20)',
+    );
+    await page.emulateMedia({ colorScheme: 'light' });
     const draftUrl = frame.url();
     await frame.locator('.clip-editor-popup .cc-headline').click();
     await frame
