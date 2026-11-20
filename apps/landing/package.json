@@ -1,0 +1,43 @@
+{
+  "name": "@clipcard/landing",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "prepare:media": "node scripts/media.ts",
+    "typecheck": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "7.3.1",
+    "@clipcard/cards": "workspace:*",
+    "@clipcard/i18n": "workspace:*",
+    "@fontsource-variable/geist": "5.3.0",
+    "@fontsource-variable/geist-mono": "5.3.0",
+    "@fontsource/anek-bangla": "5.3.0",
+    "@fontsource/anek-gujarati": "5.3.0",
+    "@fontsource/anek-gurmukhi": "5.3.0",
+    "@fontsource/anek-kannada": "5.3.0",
+    "@fontsource/anek-malayalam": "5.3.0",
+    "@fontsource/anek-odia": "5.3.0",
+    "@fontsource/anek-tamil": "5.3.0",
+    "@fontsource/anek-telugu": "5.3.0",
+    "@fontsource/be-vietnam-pro": "5.3.0",
+    "@fontsource/cairo": "5.3.0",
+    "@fontsource/kanit": "5.3.0",
+    "@fontsource/lateef": "5.3.0",
+    "@fontsource/menbere": "5.3.0",
+    "@fontsource/mukta": "5.3.0",
+    "@fontsource/noto-sans": "5.3.0",
+    "@fontsource/onest": "5.3.1",
+    "@fontsource/padauk": "5.3.0",
+    "@fontsource/vazirmatn": "5.3.0",
+    "@fontsource/yaldevi": "5.3.0",
+    "astro": "7.4.13"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "sharp": "0.35.5"
+  }
+}

@@ -1,0 +1,225 @@
+---
+import strings from '@clipcard/i18n/landing/en';
+import CardImage from '../components/CardImage.astro';
+import HeroAppShortcut from '../components/HeroAppShortcut.astro';
+import Icon from '../components/Icon.astro';
+import Languages from '../components/Languages.astro';
+import SendToComputer from '../components/SendToComputer.astro';
+import { RELEASED, REPO_URL } from '../config';
+import Site from '../layouts/Site.astro';
+import { previewImage } from '../media';
+import { sitePath } from '../site';
+
+const { nav, hero, how, features, sources, templates, faq } = strings;
+const heroCards = [
+  { name: 'header-4x5-bn', alt: templates.localizedExamples.bn, order: 2 },
+  {
+    name: 'overlay-4x5',
+    alt: templates.example.replace('{name}', templates.names.overlay),
+    order: 3,
+  },
+  {
+    name: 'split-4x5',
+    alt: templates.example.replace('{name}', templates.names.split),
+    order: 1,
+  },
+  {
+    name: 'caps-4x5',
+    alt: templates.example.replace('{name}', templates.names.caps),
+    order: 4,
+  },
+  {
+    name: 'quote-4x5',
+    alt: templates.example.replace('{name}', templates.names.quote),
+    order: 5,
+  },
+];
+const howIcons = ['link', 'grid', 'layers'] as const;
+const sourceIcons = ['qr', 'shield', 'edited'] as const;
+const featureKeys = Object.keys(
+  features.items,
+) as (keyof typeof features.items)[];
+const examples = Object.entries(templates.names);
+const url = new URL(sitePath(), Astro.site).href;
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: strings.brand,
+    description: strings.description,
+    applicationCategory: 'BrowserApplication',
+    operatingSystem: 'Chrome',
+    url,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map(({ question, answer }) => ({
+      '@type': 'Question',
+      name: question,
+      acceptedAnswer: { '@type': 'Answer', text: answer },
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: strings.brand,
+    url,
+    sameAs: [REPO_URL],
+  },
+];
+---
+
+<Site schema={schema}>
+  <section class="hero dark" aria-labelledby="page-heading">
+    <div class="container hero-copy">
+      <h1 id="page-heading">{hero.heading}</h1>
+      <p>{hero.description}</p>
+      {RELEASED.app ? (
+        <HeroAppShortcut />
+      ) : (
+        <a class="button button-light hero-follow" href={REPO_URL}>
+          {nav.follow}
+        </a>
+      )}
+      <SendToComputer />
+    </div>
+    <ul class="hero-cards" aria-label={hero.gallery} tabindex="0">
+      {heroCards.map((card) => (
+        <li style={{ '--mobile-order': card.order }}>
+          <CardImage
+            name={card.name}
+            alt={card.alt}
+            sizes="(max-width: 767px) 236px, 336px"
+            eager={card.order === 1}
+            priority={card.order === 1}
+          />
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section
+    class="section container"
+    id="how-it-works"
+    aria-labelledby="how-heading"
+  >
+    <h2 id="how-heading">{how.heading}</h2>
+    <ul class="how-grid">
+      {how.items.map(({ title, description }, index) => (
+        <li>
+          <span class="how-icon">
+            <Icon name={howIcons[index]!} />
+          </span>
+          <h3>{title}</h3>
+          <p>{description}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section
+    class="section container features"
+    aria-labelledby="features-heading"
+  >
+    <h2 id="features-heading">{features.heading}</h2>
+    <ul class="features-grid">
+      {featureKeys.map((key) => (
+        <li class:list={[!RELEASED[key] && 'feature-soon']}>
+          <img
+            src={previewImage(`feature-${key}`)}
+            alt=""
+            width="384"
+            height="280"
+            loading="lazy"
+            decoding="async"
+          />
+          <h3>
+            {features.items[key].title}{' '}
+            {!RELEASED[key] && <span>{features.soon}</span>}
+          </h3>
+          <p>{features.items[key].description}</p>
+        </li>
+      ))}
+    </ul>
+    <p class="features-also">{features.also}</p>
+  </section>
+
+  <section class="section verifiable" aria-labelledby="sources-heading">
+    <div class="container">
+      <div>
+        <h2 id="sources-heading">{sources.heading}</h2>
+        <ul>
+          {sources.bullets.map((bullet, index) => (
+            <li>
+              <Icon name={sourceIcons[index]!} />
+              {bullet}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <figure>
+        <div class="source-card">
+          <CardImage
+            name="split-4x5"
+            alt={templates.example.replace('{name}', templates.names.split)}
+            sizes="(max-width: 767px) 240px, 420px"
+          />
+        </div>
+        <figcaption>{sources.scan}</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section
+    class="section container template-section"
+    id="templates"
+    aria-labelledby="templates-heading"
+  >
+    <div class="template-heading">
+      <h2 id="templates-heading">{templates.heading}</h2>
+      <ul class="formats" aria-label={templates.formats}>
+        {['4:5', '1:1', '9:16', '16:9', '1.91:1'].map((format) => (
+          <li>{format}</li>
+        ))}
+      </ul>
+    </div>
+    <div class="templates-grid">
+      {examples.map(([name, label]) => (
+        <figure>
+          <CardImage
+            name={`${name}-4x5`}
+            alt={templates.example.replace('{name}', label)}
+            sizes="(max-width: 767px) 45vw, (max-width: 1279px) 16vw, 188px"
+          />
+          <figcaption>{label}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+
+  <Languages />
+
+  <section class="section container faq" id="faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">{nav.faq}</h2>
+    <div>
+      {faq.map(({ question, answer }, index) => (
+        <details open={index === 0}>
+          <summary>{question}</summary>
+          <p>{answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="cta-band" aria-labelledby="cta-heading">
+    <div class="container">
+      <h2 id="cta-heading">{strings.band}</h2>
+      <a class="button button-light desktop-cta" href={REPO_URL}>
+        {nav.follow}
+      </a>
+      <SendToComputer icon={false} />
+    </div>
+  </section>
+</Site>

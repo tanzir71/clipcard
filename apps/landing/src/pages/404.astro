@@ -1,0 +1,18 @@
+---
+import strings from '@clipcard/i18n/landing/en';
+import Site from '../layouts/Site.astro';
+import { sitePath } from '../site';
+---
+
+<Site
+  title={`${strings.notFound.title} · ${strings.brand}`}
+  path="404/"
+  noindex
+>
+  <article class="container document">
+    <h1>{strings.notFound.title}</h1>
+    <p>
+      <a href={sitePath()}>{strings.notFound.home}</a>
+    </p>
+  </article>
+</Site>

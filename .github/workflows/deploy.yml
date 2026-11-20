@@ -1,0 +1,55 @@
+name: Deploy landing to GitHub Pages
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+env:
+  ASTRO_TELEMETRY_DISABLED: '1'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: pnpm
+      - uses: actions/configure-pages@v5
+        id: pages
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm build:landing
+        env:
+          CLIPCARD_SITE: ${{ steps.pages.outputs.origin }}
+          CLIPCARD_BASE: ${{ steps.pages.outputs.base_path || '/' }}
+          CLIPCARD_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          STORE_URL: ${{ vars.STORE_URL }}
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: apps/landing/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment

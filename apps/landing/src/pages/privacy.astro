@@ -1,0 +1,18 @@
+---
+import strings from '@clipcard/i18n/landing/en';
+import Site from '../layouts/Site.astro';
+const { brand, privacy } = strings;
+---
+
+<Site
+  title={`${privacy.title} · ${brand}`}
+  description={privacy.description}
+  path="privacy/"
+>
+  <article class="container document">
+    <h1>{privacy.title}</h1>
+    {privacy.text.map((paragraph) => (
+      <p>{paragraph}</p>
+    ))}
+  </article>
+</Site>

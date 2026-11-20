@@ -1,0 +1,49 @@
+---
+import strings from '@clipcard/i18n/landing/en';
+import Icon from './Icon.astro';
+const { icon = true } = Astro.props;
+---
+
+<div class="mobile-cta">
+  <button
+    class="button button-light"
+    type="button"
+    data-send-to-computer
+    data-copied={strings.share.copied}
+    data-failed={strings.share.failed}
+  >
+    {icon && <Icon name="share" />}
+    {strings.share.label}
+  </button>
+  <span class="share-status" role="status"></span>
+</div>
+
+<script>
+  document
+    .querySelectorAll<HTMLButtonElement>('[data-send-to-computer]')
+    .forEach((button) => {
+      const status = button.nextElementSibling;
+      if (!status) return;
+      button.addEventListener('click', async () => {
+        status.textContent = '';
+        const url = document.querySelector<HTMLLinkElement>(
+          'link[rel="canonical"]',
+        )?.href;
+        if (!url) return;
+        if (navigator.share) {
+          try {
+            await navigator.share({ title: document.title, url });
+            return;
+          } catch (error) {
+            if (error instanceof Error && error.name === 'AbortError') return;
+          }
+        }
+        try {
+          await navigator.clipboard.writeText(url);
+          status.textContent = button.dataset.copied ?? '';
+        } catch {
+          status.textContent = button.dataset.failed ?? '';
+        }
+      });
+    });
+</script>

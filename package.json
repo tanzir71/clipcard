@@ -1,0 +1,42 @@
+{
+  "name": "clipcard",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.2",
+  "engines": {
+    "node": ">=24.16.0"
+  },
+  "scripts": {
+    "prepare:assets": "node scripts/tokens.ts && node scripts/icons.ts && node packages/i18n/scripts/gen-locales.ts",
+    "dev:ext": "pnpm prepare:assets && pnpm --filter @clipcard/extension dev",
+    "dev:landing": "pnpm prepare:landing && pnpm --filter @clipcard/landing dev",
+    "dev:gallery": "pnpm dev:landing",
+    "prepare:landing": "node scripts/tokens.ts && pnpm --filter @clipcard/landing prepare:media",
+    "test": "vitest run",
+    "e2e": "playwright test",
+    "build:landing": "pnpm prepare:landing && pnpm --filter @clipcard/landing build",
+    "build:extension": "pnpm prepare:assets && pnpm --filter @clipcard/extension build",
+    "build": "pnpm prepare:assets && tsc -b && pnpm --filter @clipcard/extension build && pnpm build:landing && pnpm --filter @clipcard/lite build",
+    "typecheck": "pnpm prepare:assets && pnpm prepare:landing && tsc -b && tsc -p tsconfig.tools.json && pnpm --filter @clipcard/extension --filter @clipcard/landing --filter @clipcard/lite --fail-if-no-match -r typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.65.1",
+    "@resvg/resvg-js": "2.6.2",
+    "@types/node": "^24.0.0",
+    "eslint": "10.15.0",
+    "eslint-plugin-astro": "3.2.1",
+    "globals": "17.14.0",
+    "html-validate": "11.21.1",
+    "lighthouse": "13.6.0",
+    "prettier": "3.10.1",
+    "prettier-plugin-astro": "1.1.2",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.73.0",
+    "vitest": "5.1.1"
+  }
+}

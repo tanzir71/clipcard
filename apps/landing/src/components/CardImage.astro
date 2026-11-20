@@ -1,0 +1,25 @@
+---
+import { previewImage } from '../media';
+interface Props {
+  name: string;
+  alt: string;
+  sizes: string;
+  eager?: boolean;
+  priority?: boolean;
+}
+const { name, alt, sizes, eager, priority } = Astro.props;
+---
+
+<img
+  src={previewImage(`${name}-420`)}
+  srcset={[240, 420, 840]
+    .map((width) => `${previewImage(`${name}-${width}`)} ${width}w`)
+    .join(', ')}
+  sizes={sizes}
+  width="420"
+  height="525"
+  alt={alt}
+  loading={eager ? 'eager' : 'lazy'}
+  fetchpriority={priority ? 'high' : undefined}
+  decoding="async"
+/>
