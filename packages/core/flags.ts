@@ -3,7 +3,7 @@ const clipPreview = env?.DEV === true || env?.MODE === 'r3-preview';
 const languagePreview =
   env?.DEV === true || env?.MODE === 'r4-preview' || env?.MODE === 'store';
 export const CLIP_DRAFTS_RELEASED = true;
-export const CARD_LANGUAGES_RELEASED = false;
+export const CARD_LANGUAGES_RELEASED = true;
 
 export const FLAGS = {
   app: env?.DEV === true && env.VITE_CLIPCARD_APP === '1',

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## v0.4.0 - 2026-11-21
+
+- Make cards in 30 languages, with right-to-left layouts for Arabic, Urdu and Persian.
+- Switch languages in the extension, web app and landing page. Some interface text still uses English.
+- Add your own mark and set defaults for the card style, QR code, texture and draft history.
+
 ## v0.3.0 - 2026-11-20
 
 - Clip quotes, images and sections with the extension and turn them into a grid with a QR code for each source.

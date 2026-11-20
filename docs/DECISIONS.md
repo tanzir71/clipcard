@@ -5,7 +5,7 @@ Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md)
 ## 2026-11-21 · Developer ZIP first
 
 - The owner chose unsigned Developer mode installs as the first release channel. R4–R8 use the GitHub ZIP and web app. The first Chrome Web Store submission follows the feature-complete 1.0 developer release.
-- The owner chose to ship the full R4 ZIP after native speakers sign off on the wave-one translations. The R4 release PR records that approval. This replaces the early store submission gate in the handover.
+- The owner asked to ship the complete developer roadmap without waiting for sign-off. R4 ships the wave-one drafts with English fallback. Browser QA evidence and open manual checks belong in the release PR.
 
 ## R4 · Welcome and settings
 
@@ -98,4 +98,4 @@ Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md)
 
 - Language changes preserve the page type on the landing and privacy pages. The changelog remains a shared release log.
 - Social previews are rendered by the Split template. The QR links to the corresponding landing page, and the 1200 × 628 export is resized to 1200 × 630 for social metadata.
-- The Bangla landing copy is drafted in full. Other landing drafts fall back to English for text that is awaiting translation. Translated landing pages stay behind the R4 flag until native review.
+- The Bangla landing copy is drafted in full. Other landing drafts fall back to English for text that is awaiting translation. R4 enables these pages with the English fallback for remaining draft copy.

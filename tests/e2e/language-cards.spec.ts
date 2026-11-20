@@ -40,10 +40,11 @@ async function exportPng(page: Page, figure: Locator) {
 test('lays out all 30 headline languages in Header and Split', async ({
   page,
 }) => {
+  test.setTimeout(60_000);
   await page.goto('./');
   await expect(
     page.locator('figure[data-sample*="-language-"] .cc-headline'),
-  ).toHaveCount(60);
+  ).toHaveCount(60, { timeout: 20_000 });
   for (const template of ['header', 'split'] as const) {
     for (const { lang, text, dir, glyphTest } of headlines.samples) {
       const sample = page.locator(

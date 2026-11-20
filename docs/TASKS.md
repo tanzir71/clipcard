@@ -51,11 +51,11 @@
 - [x] Snapshot tests for bn, hi, ur cards against the PNGs, plus smoke renders (no tofu, no clipping) for every other script, with one sample headline per language in `fixtures/headlines.json`.
 
 ## M7 · Welcome & settings
-- [ ] Welcome (O1): language chips, handle, permission. It opens on install.
-- [ ] Settings (O2): all rows functional; default color swatches; clear history.
+- [x] Welcome (O1): language chips, handle, permission. It opens on install.
+- [x] Settings (O2): all rows functional; default color swatches; clear history.
 
 ## M8 · Landing (`apps/landing`)
-- [ ] Sections and routes per `docs/LANDING.md`; CardDemo island using `packages/cards`.
+- [x] Sections and routes per `docs/LANDING.md`; CardDemo island using `packages/cards`.
 - [x] SEO: meta, hreflang, JSON‑LD, OG images generated with the card renderer, sitemap.
 - [x] Pre‑store mode (`LANDING.md` §3.1): Install section, Download .zip / GitHub / clone‑and‑build, beta note; the switch to store mode when `STORE_URL` is set.
 - [x] Footer with tanziro.com link.

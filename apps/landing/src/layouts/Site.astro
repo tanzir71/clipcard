@@ -164,7 +164,11 @@ if (RELEASED.app) navLinks.unshift([strings.nav.app, 'app/']);
         </div>
         {RELEASED.languages && (
           <details class="language-menu">
-            <summary aria-label={strings.nav.language}>
+            <summary
+              aria-label={
+                strings.languageNames[locale] + ' · ' + strings.nav.language
+              }
+            >
               <Icon name="globe" />
               <span lang={locale}>{strings.languageNames[locale]}</span>
             </summary>
