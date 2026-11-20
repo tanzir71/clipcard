@@ -2,6 +2,11 @@
 
 Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md).
 
+## 2026-11-21 · Developer ZIP first
+
+- The owner chose unsigned Developer mode installs as the first release channel. R4–R8 use the GitHub ZIP and web app. The first Chrome Web Store submission follows the feature-complete 1.0 developer release.
+- The owner chose to ship the full R4 ZIP after native speakers sign off on the wave-one translations. The R4 release PR records that approval. This replaces the early store submission gate in the handover.
+
 ## R4 · Welcome and settings
 
 - Welcome uses live cards arranged to match O1, with the original river photo, overlapping panels and the reference headline treatments. The comparison excludes the browser chrome in the PNGs. O1 differs by 2.19%. O2 differs by 1.87%.
@@ -64,7 +69,7 @@ Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md)
 - No server: without the bookmark or extension, a pasted URL gives a slug headline and needs a user photo. We say "made in your browser" and never promise auto‑fetch.
 
 ## 2026‑11‑20 · Release plan
-- Deliver incrementally: R0 landing live → R1 Lite (no install) → R2 extension beta (zip) → R3 clips, grids, drafts → R4 languages + store submission → R5 video clips → R6 one video + GIFs → R7 batch + mobile Lite → R8 1.0. Plan: `docs/ROADMAP.md`.
+- Deliver incrementally: R0 landing live → R1 Lite (no install) → R2 extension beta (zip) → R3 clips, grids, drafts → R4 languages and settings → R5 video clips → R6 one video + GIFs → R7 batch + mobile Lite → R8 1.0. Plan: `docs/ROADMAP.md`.
 - Lite ships first: it needs no store review or install, and it proves the renderer the extension reuses.
 - The landing page shows only shipped features (`RELEASED` flags, **Soon** chips); every release ends with `handover/ship.md`.
 
@@ -89,4 +94,4 @@ Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md)
 
 - Language changes preserve the page type on the landing and privacy pages. The changelog remains a shared release log.
 - Social previews are rendered by the Split template. The QR links to the corresponding landing page, and the 1200 × 628 export is resized to 1200 × 630 for social metadata.
-- The Bangla landing copy is drafted in full. Other landing drafts fall back to English for text that is awaiting translation. Translated landing pages stay behind the R4 flag until native review and store submission.
+- The Bangla landing copy is drafted in full. Other landing drafts fall back to English for text that is awaiting translation. Translated landing pages stay behind the R4 flag until native review.
