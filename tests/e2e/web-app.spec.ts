@@ -104,11 +104,9 @@ test('receives a bookmark payload from a fixture page and creates a canonical qu
 
 test('runs the landing shortcut and opens its draft in the web app', async ({
   page,
+  context,
 }) => {
-  test.skip(
-    process.env.CLIPCARD_PREVIEW_R1 !== '1',
-    'The R1 landing controls are gated by the release flag.',
-  );
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('../');
   const field = page.getByRole('textbox', {
     name: 'Paste any link, copied text or an image',
@@ -116,6 +114,8 @@ test('runs the landing shortcut and opens its draft in the web app', async ({
   await field.fill(source);
   await page.getByRole('button', { name: 'Make card', exact: true }).click();
   await expect(page.locator('[data-hero-output] .cc-solid')).toBeVisible();
+  await page.getByRole('button', { name: 'Copy image', exact: true }).click();
+  await expect(page.getByRole('status').getByText('Copied')).toBeVisible();
   await page.getByRole('button', { name: 'Open in app', exact: true }).click();
   await expect(
     page.getByRole('textbox', { name: 'Headline', exact: true }),

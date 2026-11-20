@@ -105,5 +105,5 @@
 - [ ] `apps/lite` window reusing the popup, storage, cards and video packages; served at `/lite`; PWA with `share_target`.
 - [ ] Bookmarklet under 4 KB, no external loads, works on sites with strict CSP (test on news sites, YouTube, Facebook, X).
 - [ ] postMessage handshake (origin + schema check), reuse of the named window, add‑to‑draft on repeat clicks, moment from the playing video.
-- [ ] Landing "No install? Use the bookmark." block with the draggable link; mobile "Add to Home Screen".
+- [x] Landing "No install? Use the bookmark." block with the draggable link; mobile "Add to Home Screen".
 - [ ] Optional tab recording via `getDisplayMedia` (user prompt every time).

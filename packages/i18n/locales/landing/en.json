@@ -1,7 +1,7 @@
 {
   "brand": "Clipcard",
-  "title": "Clipcard – Photo cards and video clips from any link, with QR code",
-  "description": "Follow Clipcard, a tool in development for turning links, quotes, images and video moments into shareable cards, grids and videos with a QR code.",
+  "title": "Clipcard – Make photo cards with source QR codes",
+  "description": "Turn links, articles and photos into shareable cards in your browser. Every sourced Clipcard includes a QR code back to the original.",
   "nav": {
     "label": "Main navigation",
     "menu": "Menu",
@@ -31,7 +31,7 @@
   "installApp": {
     "action": "Install the app",
     "heading": "Install Clipcard",
-    "offline": "Works offline and appears in your share menu.",
+    "offline": "Open recent cards offline. On Android, send links to Clipcard from the share menu.",
     "ios": "On iPhone, tap Share, then Add to Home Screen.",
     "later": "Not now",
     "install": "Install",
@@ -47,11 +47,11 @@
     "failed": "Copy the link from your address bar."
   },
   "how": {
-    "heading": "Three ways in. No account.",
+    "heading": "Make a card in three steps",
     "items": [
-      { "title": "Share in one click", "description": "Right-click a link. The card is copied." },
-      { "title": "Clip and arrange", "description": "Quotes, images, charts as one grid." },
-      { "title": "Join into a video", "description": "Clips, excerpts, GIFs as one reel." }
+      { "title": "Add a source", "description": "Paste a link, excerpt or photo, or click the bookmark while reading." },
+      { "title": "Make a card", "description": "Clipcard chooses a look. Change it any time with Auto." },
+      { "title": "Share the card", "description": "Copy or save the PNG. The QR code takes readers to the source." }
     ]
   },
   "features": {
@@ -84,10 +84,10 @@
         "description": "Save now, add sources over days, post when ready."
       }
     },
-    "also": "Also: your mark on every card · pick the key phrase and its color · captions from transcripts · old stories show their year · no account, runs on your computer"
+    "also": "Pick the key phrase and its color · old stories show their year · runs in your browser"
   },
   "sources": {
-    "heading": "Every card links back to the source.",
+    "heading": "Every sourced card links back.",
     "bullets": [
       "QR code to the original article",
       "Trackers removed from every link",
@@ -152,7 +152,7 @@
     { "question": "Is it free?", "answer": "Yes. No account, no watermark." },
     {
       "question": "Does it work with Facebook, X and WhatsApp?",
-      "answer": "Clipcard is in development. The planned card exports are PNG images you can share in posts and chats."
+      "answer": "Save your card as a PNG to share in posts and chats. You can also paste it from the clipboard in apps that accept pasted images."
     },
     {
       "question": "Which languages are supported?",
@@ -160,7 +160,7 @@
     },
     {
       "question": "Does my data leave the browser?",
-      "answer": "This site has no analytics or account. Clipcard is designed to process and save your work in your browser."
+      "answer": "Clipcard builds and saves cards in your browser. It may request images from the source site."
     },
     {
       "question": "Edge, Brave, Firefox?",

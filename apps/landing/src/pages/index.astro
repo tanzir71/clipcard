@@ -10,11 +10,18 @@ import SendToComputer from '../components/SendToComputer.astro';
 import { RELEASED, REPO_URL } from '../config';
 import Site from '../layouts/Site.astro';
 import { previewImage } from '../media';
+import webAppPreview from '../media/feature-web-app.webp?url';
 import { sitePath } from '../site';
 
 const { nav, hero, how, features, sources, templates, faq } = strings;
 const heroCards = [
-  { name: 'header-4x5-bn', alt: templates.localizedExamples.bn, order: 2 },
+  {
+    name: RELEASED.cards ? 'header-4x5' : 'header-4x5-bn',
+    alt: RELEASED.cards
+      ? templates.example.replace('{name}', templates.names.header)
+      : templates.localizedExamples.bn,
+    order: 2,
+  },
   {
     name: 'overlay-4x5',
     alt: templates.example.replace('{name}', templates.names.overlay),
@@ -26,8 +33,11 @@ const heroCards = [
     order: 1,
   },
   {
-    name: 'caps-4x5',
-    alt: templates.example.replace('{name}', templates.names.caps),
+    name: RELEASED.cards ? 'solid-4x5' : 'caps-4x5',
+    alt: templates.example.replace(
+      '{name}',
+      RELEASED.cards ? templates.names.solid : templates.names.caps,
+    ),
     order: 4,
   },
   {
@@ -36,7 +46,7 @@ const heroCards = [
     order: 5,
   },
 ];
-const howIcons = ['link', 'grid', 'layers'] as const;
+const howIcons = ['link', 'grid', 'qr'] as const;
 const sourceIcons = ['qr', 'shield', 'edited'] as const;
 const featureKeys = Object.keys(
   features.items,
@@ -138,7 +148,11 @@ const schema = [
       {featureKeys.map((key) => (
         <li class:list={[!RELEASED[key] && 'feature-soon']}>
           <img
-            src={previewImage(`feature-${key}`)}
+            src={
+              key === 'cards' && RELEASED.cards && !RELEASED.extension
+                ? webAppPreview
+                : previewImage(`feature-${key}`)
+            }
             alt=""
             width="384"
             height="280"

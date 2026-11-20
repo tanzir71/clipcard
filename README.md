@@ -1,6 +1,6 @@
 # Clipcard
 
-Clipcard is in development. It will turn links, quotes, images, charts and video moments into cards, grids and videos with a QR code back to each source.
+Clipcard turns links, excerpts and photos into shareable cards in your browser. Sourced cards include a QR code back to the original. [Open the web app](https://tanzir71.github.io/clipcard/app/).
 
 Follow development in the [release roadmap](docs/ROADMAP.md) or visit the [project site](https://tanzir71.github.io/clipcard/).
 
