@@ -11,6 +11,28 @@ test.skip(
 );
 test.use({ syntheticVideo: true, instrumentEvents: true });
 
+test.beforeEach(async ({ worker }) => {
+  await expect
+    .poll(() =>
+      worker.evaluate(async () => {
+        const { chrome } = globalThis as typeof globalThis & {
+          chrome: {
+            scripting: {
+              getRegisteredContentScripts: (match: {
+                ids: string[];
+              }) => Promise<unknown[]>;
+            };
+          };
+        };
+        const scripts = await chrome.scripting.getRegisteredContentScripts({
+          ids: ['clipcard-clipping'],
+        });
+        return scripts.length;
+      }),
+    )
+    .toBe(1);
+});
+
 test('records only the approved player and exports captions and a timestamp QR', async ({
   extension,
   worker,
@@ -153,11 +175,14 @@ test('protected playback offers a moment card and blocks recording', async ({
       player.evaluate((video) => (video as HTMLVideoElement).readyState),
     )
     .toBeGreaterThan(1);
-  await player.evaluate((video) => video.dispatchEvent(new Event('encrypted')));
   await player.hover();
-  await page
-    .getByRole('button', { name: 'Clip this video', exact: true })
-    .click();
+  const trigger = page.getByRole('button', {
+    name: 'Clip this video',
+    exact: true,
+  });
+  await expect(trigger).toBeVisible();
+  await player.evaluate((video) => video.dispatchEvent(new Event('encrypted')));
+  await trigger.click();
   await expect(page.getByRole('button', { name: 'Add clip' })).toBeDisabled();
   await expect(page.getByText("This player can't be recorded")).toBeVisible();
   await expect(

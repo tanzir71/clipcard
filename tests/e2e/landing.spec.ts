@@ -1,6 +1,9 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { CARD_LANGUAGES_RELEASED } from '../../packages/core/flags.ts';
+import {
+  CARD_LANGUAGES_RELEASED,
+  VIDEO_CLIPS_RELEASED,
+} from '../../packages/core/flags.ts';
 import { HtmlValidate } from 'html-validate';
 
 test('shows the web app, upcoming features and keyboard-accessible FAQ', async ({
@@ -10,7 +13,13 @@ test('shows the web app, upcoming features and keyboard-accessible FAQ', async (
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Share the news as cards and grids',
   );
-  await expect(page.getByText('Soon', { exact: true })).toHaveCount(3);
+  await expect(page.getByText('Soon', { exact: true })).toHaveCount(
+    VIDEO_CLIPS_RELEASED ? 2 : 3,
+  );
+  if (VIDEO_CLIPS_RELEASED)
+    await expect(
+      page.getByText('How do video clips work?', { exact: true }),
+    ).toBeVisible();
   await expect(
     page.getByRole('link', { name: 'Follow on GitHub' }).first(),
   ).toHaveAttribute('href', 'https://github.com/tanzir71/clipcard');
