@@ -39,6 +39,15 @@ export default defineConfig({
         suggested_key: { default: 'Alt+Shift+S' },
         description: '__MSG_action_badgeTitle__',
       },
+      ...(process.env.VITE_CLIPCARD_CLIPS === '1' &&
+      process.env.VITE_CLIPCARD_DRAFTS === '1'
+        ? {
+            'clip-selection': {
+              suggested_key: { default: 'Alt+Shift+C' },
+              description: '__MSG_clip_start__',
+            },
+          }
+        : {}),
     },
     web_accessible_resources: [
       { resources: ['sheet.html'], matches: ['http://*/*', 'https://*/*'] },

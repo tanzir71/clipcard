@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { excerptText } from '@clipcard/cards/grid-model';
 import {
   cleanTitle,
   cleanUrl,
@@ -46,7 +47,10 @@ export function validateBookmark(
   return result.data;
 }
 
-export async function draftFromBookmark(data: z.infer<typeof envelope>) {
+export async function draftFromBookmark(
+  data: z.infer<typeof envelope>,
+  clips = false,
+) {
   const address = new URL(data.address);
   const canonical = data.canonical && parseWebUrl(data.canonical, address.href);
   const canonicalUrl = cleanUrl(
@@ -55,7 +59,9 @@ export async function draftFromBookmark(data: z.infer<typeof envelope>) {
   if (canonicalUrl.length > 1500) return null;
   const outlet = data.outlet || outletFromHost(address.hostname);
   const title = cleanTitle(data.title, outlet, address.hostname) || outlet;
-  const selection = limitHeadline(data.selection) || undefined;
+  const selection =
+    (clips ? excerptText(data.selection) : limitHeadline(data.selection)) ||
+    undefined;
   const headline = selection ?? title;
   const lang = detectLang(headline, data.lang);
   let photo = await fetchPhoto(imageUrl(data.image, address.href));
@@ -91,6 +97,7 @@ export async function draftFromBookmark(data: z.infer<typeof envelope>) {
 export function receiveBookmark(
   onDraft: (draft: CardDraft) => void,
   onFailure: () => void,
+  clips = false,
 ) {
   const fragment = new URLSearchParams(location.hash.slice(1));
   const token = fragment.get('token');
@@ -123,7 +130,7 @@ export function receiveBookmark(
     if (!data) return;
     cleanup();
     history.replaceState(null, '', location.pathname + location.search);
-    void draftFromBookmark(data)
+    void draftFromBookmark(data, clips)
       .then((draft) => {
         if (draft) onDraft(draft);
         else onFailure();

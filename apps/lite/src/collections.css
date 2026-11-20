@@ -1,0 +1,49 @@
+.app-collection-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 12px 16px 0;
+}
+
+.app-collection-filters [aria-pressed='true'] {
+  background: #0b0b0c;
+  color: #fff;
+}
+
+.app-collection-thumb {
+  display: grid;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  place-items: center;
+  background: #14243d;
+  color: #a9bcdf;
+}
+
+.app-collection-thumb > div {
+  width: 100%;
+}
+
+.clip-backup-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-block-end: 12px;
+}
+
+.clip-backup-controls label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.clip-backup-controls select {
+  min-height: 40px;
+  padding: 8px;
+  border: 1px solid #dddde1;
+  border-radius: 3px;
+  background: #fff;
+  color: #0b0b0c;
+  font: inherit;
+}

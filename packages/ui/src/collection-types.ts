@@ -1,4 +1,5 @@
 import type { TextRange } from '@clipcard/core';
+import type { GridLayout } from '@clipcard/cards/grid-model';
 import type { CardDraft, Overrides } from './draft.ts';
 
 export interface ClipDraft {
@@ -7,6 +8,7 @@ export interface ClipDraft {
   createdAt: number;
   updatedAt: number;
   mode: 'card' | 'grid' | 'video';
+  gridLayout?: GridLayout;
   overrides: Overrides;
   order: string[];
   legacyCard?: CardDraft;

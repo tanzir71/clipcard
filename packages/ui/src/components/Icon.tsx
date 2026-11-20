@@ -7,9 +7,11 @@ const paths = {
   close: 'm6 6 12 12M18 6 6 18',
   copy: 'M8 8h12v12H8zM16 4H4v12',
   download: 'M12 4v11m-4-4 4 4 4-4M5 16v4h14v-4',
+  grid: 'M3 3h18v18H3zM12 3v18M3 12h18',
   link: 'M10 13a4 4 0 0 0 6 .5l3.5-3.5a4 4 0 0 0-5.7-5.7l-2 2M14 11a4 4 0 0 0-6-.5L4.5 14a4 4 0 0 0 5.7 5.7l2-2',
   photo: 'M3 4h18v16H3zM3 17l5-5 4 4 3-3 6 5M16 8h.01',
   qr: 'M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3zM15 15h2v2h4v4h-2m-4 0h-2',
+  quote: 'M10 5H4v7h6v2l-3 5m13-14h-6v7h6v2l-3 5',
   settings:
     'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2',
   share: 'M12 15V3m-4 4 4-4 4 4M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7',
