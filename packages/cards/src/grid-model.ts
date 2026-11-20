@@ -111,12 +111,20 @@ export function gridModel(
   }
 
   const sources: GridSource[] = [...group].map(([canonicalUrl, clips]) => {
+    const excerpts = clips.flatMap((clip) =>
+      clip.kind === 'text' && clip.text ? [clip.text] : [],
+    );
+    const compactAfter =
+      excerpts.reduce((size, text) => size + text.length, 0) > 160
+        ? 48
+        : undefined;
     const directives = canonicalUrl
-      ? clips.flatMap((clip) => {
-          if (clip.kind !== 'text' || !clip.text) return [];
-          const directive = textFragment(canonicalUrl, clip.text).split(
-            '#:~:',
-          )[1];
+      ? excerpts.flatMap((text) => {
+          const directive = textFragment(
+            canonicalUrl,
+            text,
+            compactAfter,
+          ).split('#:~:')[1];
           return directive ? [directive] : [];
         })
       : [];

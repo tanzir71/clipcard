@@ -200,7 +200,7 @@
 }
 
 .cc-grid[data-layout='excerpts'] .cc-grid-source {
-  min-height: 136px;
+  min-height: 172px;
   background: #fcfcfc;
 }
 
@@ -339,6 +339,10 @@
 .cc-grid[data-wide][data-layout='excerpts'] .cc-grid-content {
   inset-block-end: 64px;
   gap: 12px;
+}
+
+.cc-grid[data-wide][data-layout='excerpts'][data-multiple] .cc-grid-content {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
 .cc-grid[data-wide][data-layout='excerpts'] .cc-grid-extract {

@@ -52,6 +52,15 @@ const separate = 'https://example.org/quotes?edition=2';
 export const gridSamples = [
   { id: 'clips-excerpts-4x5', model: gridModel(excerpts, { mark }) },
   {
+    id: 'clips-excerpts-multiple-sources',
+    model: gridModel(
+      excerpts.map((clip, index) => ({
+        ...clip,
+        sourceUrl: 'https://example.org/story/' + index,
+      })),
+    ),
+  },
+  {
     id: 'clips-grid3-4x5',
     model: gridModel(
       [

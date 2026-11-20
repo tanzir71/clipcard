@@ -49,7 +49,21 @@ async function decodeSources(artwork: Locator, png: PNG) {
 }
 
 const cases = [
-  ['clips-excerpts-4x5', [combined(original, excerpts)]],
+  [
+    'clips-excerpts-4x5',
+    [
+      original +
+        '#:~:text=The%20first%20boats%20left,every%20seat%20was%20taken.' +
+        '&text=Fares%20start%20at%20Tk,open%20before%20the%20monsoon.' +
+        '&text=%E2%80%9CThe%20river%20was%20always,how%20to%20use%20it.%E2%80%9D',
+    ],
+  ],
+  [
+    'clips-excerpts-multiple-sources',
+    excerpts.map((quote, index) =>
+      combined('https://example.org/story/' + index, [quote]),
+    ),
+  ],
   ['clips-grid3-4x5', [original]],
   ['clips-grid4-4x5', [original]],
   ['clips-board-4x5', [combined(original, [riverQuote])]],
@@ -83,7 +97,7 @@ for (const [id, destinations] of cases) {
       await testInfo.attach(id, { body: bytes, contentType: 'image/png' });
       expect(await decodeSources(artwork, png)).toEqual(destinations);
       expect(errors).toEqual([]);
-      if (id === 'clips-multiple-sources') return;
+      if (id.endsWith('multiple-sources')) return;
       const reference = PNG.sync.read(
         await readFile(
           new URL('../../design/cards/' + id + '.png', import.meta.url),
