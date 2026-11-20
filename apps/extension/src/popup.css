@@ -127,6 +127,31 @@ a:focus-visible {
   flex: 1;
 }
 
+.clip-editor-popup .clip-editor-header .clip-editor-name {
+  position: absolute;
+  display: block;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.clip-editor-popup .clip-editor-header {
+  position: static;
+  padding-block: 10px 0;
+}
+
+.clip-editor-popup .clip-editor-inspector {
+  padding-block: 12px;
+}
+
+.clip-editor-popup .clip-editor-inspector .clip-action-area {
+  position: static;
+  margin-inline: 0;
+  border: 0;
+  padding: 0;
+}
+
 .clip-editor-popup .clip-actions .clip-button,
 .clip-editor-popup .clip-actions .clip-icon-button {
   min-block-size: 42px;
@@ -147,6 +172,8 @@ a:focus-visible {
 
 .clip-editor-popup .clip-auto {
   min-block-size: 26px;
+  gap: 6px;
+  padding: 4px 8px;
   font-size: 12px;
 }
 
@@ -166,7 +193,7 @@ a:focus-visible {
 .clip-text-bar {
   position: absolute;
   z-index: 3;
-  inset-inline: 12px;
+  inset-inline: 16px;
   color: #fff;
   font-size: 12px;
 }
@@ -227,6 +254,10 @@ a:focus-visible {
   border: 1px solid #545459;
   padding: 2px 6px;
   line-height: 18px;
+}
+
+.clip-text-palette {
+  margin-inline-start: auto;
 }
 
 .clip-text-palette .clip-control-row {

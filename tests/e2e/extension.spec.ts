@@ -1,4 +1,5 @@
 import { expect, test } from './extension-fixture';
+import AxeBuilder from '@axe-core/playwright';
 import type { Page, Worker } from '@playwright/test';
 import jsQR from 'jsqr';
 import { PNG } from 'pngjs';
@@ -169,7 +170,8 @@ test('opens a sourced card from paste in a clean extension profile', async ({
   await expect(
     page.getByRole('button', { name: /^(Grid|Video)$/ }),
   ).toHaveCount(0);
-  await page.getByRole('button', { name: 'Auto · 4:5' }).click();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.getByRole('button', { name: 'Auto · 4:5' }).press('Enter');
   await page.getByRole('button', { name: '9:16', exact: true }).click();
   await expect(editor.locator('.cc-card')).toHaveAttribute(
     'data-format',

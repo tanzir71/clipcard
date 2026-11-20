@@ -161,7 +161,7 @@ export function CardEditor({
       const box = wrap.getBoundingClientRect();
       const bottom = headline.getBoundingClientRect().bottom;
       setTextBarTop(
-        Math.max(34, Math.min(bottom - box.top + 5, box.height - 50)),
+        Math.max(34, Math.min(bottom - box.top + 26, box.height - 50)),
       );
     };
     const observer = new ResizeObserver(align);
