@@ -56,17 +56,23 @@ const patterns = new Map<string, string>();
 export function halftone(
   width: number,
   height: number,
-  axis: 'down' | 'toward-start',
+  axis: 'down' | 'toward-start' | 'right',
 ) {
   const key = width + '-' + height + '-' + axis;
   const cached = patterns.get(key);
   if (cached) return cached;
   const pitch = tokens.card.texture.halftone.pitch;
-  const alpha = axis === 'down' ? tokens.card.texture.halftone.opacity : 0.045;
+  const alpha =
+    axis === 'toward-start' ? 0.045 : tokens.card.texture.halftone.opacity;
   const circles: string[] = [];
   for (let y = pitch / 2; y < height; y += pitch) {
     for (let x = pitch / 2; x < width; x += pitch) {
-      const falloff = axis === 'down' ? y / height : (width - x) / width;
+      const falloff =
+        axis === 'down'
+          ? y / height
+          : axis === 'right'
+            ? x / width
+            : (width - x) / width;
       const opacity = (1 - smootherstep(falloff)) * alpha;
       if (opacity < 0.002) continue;
       const r = Math.max(0.6, 3.65 * (1 - smootherstep(falloff)));

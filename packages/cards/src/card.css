@@ -56,6 +56,14 @@
   inset-block-end: 0;
 }
 
+.cc-header[data-wide] .cc-header-panel {
+  inset-block: auto 0;
+}
+
+.cc-header[data-wide] .cc-header-content {
+  inset-inline-end: 50%;
+}
+
 .cc-header-panel {
   background: #0b0b0c;
 }
@@ -304,6 +312,120 @@
   text-transform: none;
 }
 
+.cc-caps > .cc-photo-area {
+  inset-block-end: 0;
+}
+
+.cc-hairlines {
+  position: absolute;
+  inset: 0;
+  block-size: min(900px, 100%);
+  background: repeating-linear-gradient(
+    135deg,
+    #fff 0 1px,
+    transparent 1px 14px
+  );
+  opacity: 0.035;
+  pointer-events: none;
+}
+
+.cc-via {
+  color: rgba(255, 255, 255, 0.65);
+  font:
+    400 19px/28px 'Geist',
+    sans-serif;
+}
+
+.cc-caps-title {
+  position: absolute;
+  inset-block-start: 12.6%;
+  inset-inline: 50px;
+  text-align: center;
+}
+
+.cc-caps-title .cc-headline {
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.cc-caps-title .cc-headline strong {
+  font-weight: inherit;
+}
+
+.cc-caps-title p {
+  margin: 16px 0 0;
+  color: rgba(255, 255, 255, 0.74);
+  font:
+    400 24px/32px 'Geist',
+    sans-serif;
+}
+
+.cc-duotone .cc-photo {
+  mix-blend-mode: luminosity;
+  opacity: 0.92;
+}
+
+.cc-duotone .cc-hairlines {
+  inset-block: auto 0;
+  block-size: 360px;
+  opacity: 0.012;
+}
+
+.cc-duotone-title {
+  position: absolute;
+  inset-inline: 60px 150px;
+  inset-block-end: 112px;
+}
+
+.cc-duotone-title .cc-headline {
+  font-weight: 300;
+}
+
+.cc-duotone-key,
+.cc-duotone-title .cc-headline strong {
+  font-weight: 600;
+}
+
+.cc-card[data-wide] .cc-overlay-title,
+.cc-card[data-wide] .cc-caps-title,
+.cc-card[data-wide] .cc-duotone-title {
+  inset-inline-end: 49%;
+}
+
+.cc-caps[data-wide] .cc-caps-title {
+  inset-block: auto 56px;
+  inset-inline-start: 56px;
+  text-align: start;
+}
+
+.cc-solid[data-wide] .cc-solid-title {
+  inset-block: auto 122px;
+  inset-inline-end: 49%;
+  transform: none;
+}
+
+.cc-split[data-wide] .cc-split-title {
+  inset-block-start: var(--cc-wide-title-top);
+  inset-inline: 56px 32px;
+}
+
+.cc-split[data-wide] .cc-kicker,
+.cc-split[data-wide] .cc-meta {
+  inset-inline: calc(var(--cc-split-x) + 56px) auto;
+}
+
+.cc-split[data-wide] .cc-meta {
+  font-size: 14px;
+}
+
+.cc-split[data-wide] .cc-mark {
+  inset-inline-start: 48px;
+}
+
+.cc-split[data-wide]:dir(rtl) .cc-halftone {
+  transform: scaleX(-1);
+}
+
 .cc-split-panel {
   background: var(--cc-deep);
 }
@@ -338,6 +460,13 @@
   inset-block-start: 47.8%;
   inset-inline: 60px;
   transform: translateY(-50%);
+}
+
+.cc-quote[data-wide] .cc-quote-content {
+  inset-block: auto 96px;
+  inset-inline-end: 45%;
+  padding: 24px 32px;
+  transform: none;
 }
 
 .cc-solid-title {

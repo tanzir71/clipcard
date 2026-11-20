@@ -11,11 +11,13 @@ import { tokens } from './tokens.ts';
 export const CARD_TEMPLATES = [
   'header',
   'split',
+  'caps',
   'overlay',
+  'duotone',
   'solid',
   'quote',
 ] as const;
-export const CARD_FORMATS = ['4:5', '1:1', '9:16'] as const;
+export const CARD_FORMATS = ['4:5', '1:1', '9:16', '16:9', '1.91:1'] as const;
 export type Template = (typeof CARD_TEMPLATES)[number];
 export type Format = keyof typeof tokens.card.formats;
 export type EmphasisStyle = 'box' | 'line' | 'color';
@@ -40,6 +42,8 @@ export interface CardModel {
   quote?: boolean;
   quoteAttribution?: string;
   emphasisRange?: TextRange | null;
+  extraEmphasisRange?: TextRange;
+  dek?: string;
   photoLight?: number;
 }
 

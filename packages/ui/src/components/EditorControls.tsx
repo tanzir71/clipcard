@@ -33,6 +33,8 @@ const quietColors = Object.entries(TEXT_COLORS);
 const defaultEmphasis = {
   header: 'box',
   split: 'line',
+  caps: 'color',
+  duotone: 'color',
   solid: 'line',
   quote: 'line',
   overlay: 'color',

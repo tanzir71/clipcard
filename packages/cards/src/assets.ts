@@ -17,7 +17,9 @@ const FONT_FILES = {
 const fontsFor = {
   header: ['geist', 'caps'],
   split: ['serif', 'serifBold', 'mono', 'caps'],
+  caps: ['geist', 'caps'],
   overlay: ['caps', 'mono'],
+  duotone: ['geist', 'caps', 'mono'],
   solid: ['serif', 'serifBold', 'mono', 'caps'],
   quote: ['serif', 'serifBold', 'mono', 'geist', 'caps'],
 } as const;
