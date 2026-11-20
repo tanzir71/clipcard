@@ -1,0 +1,27 @@
+{
+  "_note": "resolveUrl(in) must equal out. Cases with network:true use the mocked redirect in redirectsTo. textFragment cases test textFragment(url, selection).",
+  "resolve": [
+    { "name": "facebook wrapper + utm + fbclid", "in": "https://l.facebook.com/l.php?u=https%3A%2F%2Fdeltadispatch.news%2Fcity%2Felectric-river-buses%3Futm_source%3Dfacebook%26fbclid%3DIwAR0abc&h=AT0xyz", "out": "https://deltadispatch.news/city/electric-river-buses", "network": false },
+    { "name": "messenger wrapper", "in": "https://l.messenger.com/l.php?u=https%3A%2F%2Fexample.com%2Fa%3Fid%3D7", "out": "https://example.com/a?id=7", "network": false },
+    { "name": "google redirect keeps real params", "in": "https://www.google.com/url?sa=t&url=https%3A%2F%2Fexample.com%2Fnews%2Fstory%3Fid%3D42%26utm_medium%3Dsearch&usg=AOv", "out": "https://example.com/news/story?id=42", "network": false },
+    { "name": "reddit outbound", "in": "https://out.reddit.com/t3_abc?url=https%3A%2F%2Fexample.org%2Fa%3Fref_src%3Dtwsrc&token=xyz", "out": "https://example.org/a", "network": false },
+    { "name": "youtube redirect, si kept on non-youtube host", "in": "https://www.youtube.com/redirect?event=video_description&q=https%3A%2F%2Fexample.com%2Fp%3Fsi%3Dabc", "out": "https://example.com/p?si=abc", "network": false },
+    { "name": "youtu.be → watch, drop si, keep t", "in": "https://youtu.be/dQw4w9WgXcQ?si=AbCdEf&t=42", "out": "https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=42", "network": false },
+    { "name": "youtube share params", "in": "https://www.youtube.com/watch?v=abc123&feature=share&si=x", "out": "https://www.youtube.com/watch?v=abc123", "network": false },
+    { "name": "x.com status s/t", "in": "https://x.com/someuser/status/1234567890?s=20&t=AbCd", "out": "https://x.com/someuser/status/1234567890", "network": false },
+    { "name": "instagram wrapper + igsh", "in": "https://l.instagram.com/?u=https%3A%2F%2Fexample.com%2Fstory%3Figsh%3Dabc&e=AT", "out": "https://example.com/story", "network": false },
+    { "name": "host case, default port, fragment, multiple utm", "in": "https://Example.COM:443/path/?utm_source=x&utm_campaign=y&page=2#comments", "out": "https://example.com/path/?page=2", "network": false },
+    { "name": "ad click ids", "in": "https://shop.example.com/item?gclid=abc&msclkid=def&color=blue", "out": "https://shop.example.com/item?color=blue", "network": false },
+    { "name": "double-encoded wrapper", "in": "https://l.facebook.com/l.php?u=https%253A%252F%252Fexample.com%252Fx", "out": "https://example.com/x", "network": false },
+    { "name": "google amp unwrap (canonical resolved later by extract)", "in": "https://www.google.com/amp/s/deltadispatch.news/city/electric-river-buses/amp", "out": "https://deltadispatch.news/city/electric-river-buses/amp", "network": false },
+    { "name": "t.co follow", "in": "https://t.co/AbC123", "network": true, "redirectsTo": "https://deltadispatch.news/city/electric-river-buses?utm_source=twitter", "out": "https://deltadispatch.news/city/electric-river-buses" },
+    { "name": "lnkd.in follow", "in": "https://lnkd.in/gXyZ12", "network": true, "redirectsTo": "https://example.com/report?trk=feed&utm_campaign=li", "out": "https://example.com/report?trk=feed" },
+    { "name": "unsupported scheme", "in": "mailto:editor@example.com", "error": "unsupported-url" },
+    { "name": "no change", "in": "https://nodibarta.news/lifestyle/sylhet-tea", "out": "https://nodibarta.news/lifestyle/sylhet-tea", "network": false }
+  ],
+  "textFragment": [
+    { "name": "short selection", "url": "https://deltadispatch.news/city/electric-river-buses", "selection": "The river was always our oldest road.", "out": "https://deltadispatch.news/city/electric-river-buses#:~:text=The%20river%20was%20always%20our%20oldest%20road." },
+    { "name": "long selection uses start,end", "url": "https://deltadispatch.news/city/electric-river-buses", "selection": "The river was always our oldest road. We just forgot how to use it, said one pilot on Monday.", "out": "https://deltadispatch.news/city/electric-river-buses#:~:text=The%20river%20was%20always,pilot%20on%20Monday." },
+    { "name": "escapes dash and comma", "url": "https://example.com/a", "selection": "cross-city, fast", "out": "https://example.com/a#:~:text=cross%2Dcity%2C%20fast" }
+  ]
+}

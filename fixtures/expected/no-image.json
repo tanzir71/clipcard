@@ -1,0 +1,16 @@
+{
+  "_finalUrl": "https://www.deltadispatch.news/weather/monsoon-early?utm_source=newsletter&mc_eid=123",
+  "_comment": "No og/JSON-LD: title from <title> with the 'Delta Dispatch: ' prefix stripped (fuzzy match with host). The only <img> is < 600 px wide, so image is null → Solid template. siteName falls back to the prettified host.",
+  "canonicalUrl": "https://www.deltadispatch.news/weather/monsoon-early",
+  "title": "Monsoon arrives early this year",
+  "image": null,
+  "siteName": "Deltadispatch",
+  "favicon": "https://www.deltadispatch.news/favicon.ico",
+  "lang": "en",
+  "script": "latin",
+  "dir": "ltr",
+  "description": null,
+  "publishedAt": null,
+  "themeColor": "#0D3A3A",
+  "isArticle": true
+}
