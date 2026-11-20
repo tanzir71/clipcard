@@ -2,6 +2,11 @@
 
 Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md).
 
+## R3 · Draft storage migration
+
+- Each card saved in R1 or R2 becomes a draft under its existing ID. The draft keeps the original card, including the headline edit, overrides, photo and thumbnail. Clipping again starts a new draft, so older cards stay individually restorable.
+- Draft media uses OPFS when the browser can commit a local file. The fallback keeps that media alongside its record in IndexedDB. An isolated Windows WebKit check returned an error while closing an OPFS writer, so both storage paths are covered.
+
 ## 2026-11-20 · R2 popup references
 
 - P1 and P2 show Grid, Video and Save for later. R2 hides those controls as specified in its handover. Copy fills the available space in the action row.
