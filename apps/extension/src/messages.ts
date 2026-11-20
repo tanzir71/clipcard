@@ -58,6 +58,7 @@ export type BackgroundMessage =
   | { to: 'background'; kind: 'paste'; address: string }
   | { to: 'background'; kind: 'remember'; id: string }
   | { to: 'background'; kind: 'sitePrefs'; address: string }
+  | { to: 'background'; kind: 'releaseUpdate' }
   | { to: 'background'; kind: 'offscreenIdle' };
 
 export function forTarget(

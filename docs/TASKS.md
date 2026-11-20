@@ -59,11 +59,11 @@
 - [ ] SEO: meta, hreflang, JSON‑LD, OG images generated with the card renderer, sitemap.
 - [ ] Pre‑store mode (`LANDING.md` §3.1): Install section, Download .zip / GitHub / clone‑and‑build, beta note; the switch to store mode when `STORE_URL` is set.
 - [x] Footer with tanziro.com link.
-- [ ] Mobile "Send to my computer". Lighthouse ≥ 95.
+- [x] Mobile "Send to my computer". Lighthouse ≥ 95.
 
 ## M9 · Release
 - [ ] GitHub Release workflow: tag `v*` → build → attach `clipcard-chrome.zip` (manifest at the root). Test the developer‑mode install from that zip on Chrome, Edge and Brave.
-- [ ] Update‑available check against GitHub Releases (once a day, settings dot) for developer‑mode installs.
+- [x] Update‑available check against GitHub Releases (once a day, settings dot) for developer‑mode installs.
 - [ ] Store assets: icons 16/32/48/128, 1280×800 screenshots made from `design/screens` (real UI captures preferred), localized store names/summaries (`I18N.md` §6).
 - [ ] Privacy policy page; permission justifications for the store review.
 - [ ] Run the full `docs/QA.md` matrix and fix blockers.
@@ -88,7 +88,7 @@
 ## M13 · Video clips
 - [ ] YouTube Clip button + generic `<video>` hover button; range UI snapped to transcript; moment card.
 - [ ] Recording via tabCapture + offscreen + WebCodecs (ARCH §13); clean‑capture style; DRM detection; limits.
-- [ ] Verify the `tabCapture` install warning and record the decision.
+- [x] Verify the `tabCapture` install warning and record the decision.
 
 ## M14 · One video from many sources
 - [ ] Scene renderers (DESIGN §4.6), auto durations, captions, Sources end card; export MP4; progress; Download/Share.

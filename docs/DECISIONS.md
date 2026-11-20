@@ -2,6 +2,15 @@
 
 Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md).
 
+## 2026-11-20 · R2 extension export
+
+- Chromium’s offscreen document captures the rendered DOM with `modern-screenshot` and encodes the resulting canvas synchronously. Profiling showed that Chromium’s async PNG encoding added about one second when the article tab was in front.
+
+## 2026-11-20 · R2 tab recording permission check
+
+- Chrome for Testing 159 reported an added “Read and change all your data on all websites” install warning when a throwaway manifest declared required `tabCapture`. Using `optional_permissions` gave the same install warnings as the R2 manifest. The runtime request waited for consent in the test browser.
+- Keep `tabCapture` out of R2. R5 can declare it optional and request it when the user starts recording. This avoids a required-permission upgrade before anyone uses recording. [Chrome permissions API](https://developer.chrome.com/docs/extensions/reference/api/permissions)
+
 ## 2026-11-20 · R1 page metadata
 
 - For long selections, text fragments use four leading words and up to four trailing words. The supplied fixture drops a leading “one” from the trailing phrase. The implementation follows that fixture and trims an initial determiner from the trailing phrase when present.

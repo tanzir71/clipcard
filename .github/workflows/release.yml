@@ -1,0 +1,81 @@
+name: Publish Clipcard
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ASTRO_TELEMETRY_DISABLED: '1'
+  WXT_TELEMETRY_DISABLED: '1'
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck && pnpm lint && pnpm test
+      - name: Package the Chromium extension
+        env:
+          VITE_CLIPCARD_DEV_RELEASE: '1'
+          VITE_CLIPCARD_REPO: ${{ github.repository }}
+          VITE_CLIPCARD_APP_URL: ${{ vars.CLIPCARD_APP_URL }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release tags must match vX.Y.Z" >&2
+            exit 1
+          fi
+          CLIPCARD_EXTENSION_VERSION="$version" pnpm build:extension
+          node -e 'const m = require("./apps/extension/.output/chrome-mv3/manifest.json"); if (m.version !== process.argv[1]) process.exit(1)' "$version"
+          mkdir -p release
+          (cd apps/extension/.output/chrome-mv3 && zip -qr "$GITHUB_WORKSPACE/release/clipcard-chrome.zip" .)
+          unzip -Z1 release/clipcard-chrome.zip | grep -Fx manifest.json
+          (cd release && sha256sum clipcard-chrome.zip > SHA256SUMS)
+      - name: Attach the extension and checksums
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          import { releaseEntries } from './apps/landing/src/changelog.ts';
+          const release = releaseEntries(readFileSync('CHANGELOG.md', 'utf8'))
+            .find(({ version }) => version === process.env.GITHUB_REF_NAME);
+          if (!release?.changes.length) throw new Error('Changelog entry missing for the tag');
+          writeFileSync('release/notes.md', release.changes.map((line) => '- ' + line).join('\n') + '\n');
+          JS
+          if gh release view "$GITHUB_REF_NAME" --json isDraft > release/state.json 2>/dev/null; then
+            if [[ "$(node -pe 'require("./release/state.json").isDraft')" == true ]]; then
+              gh release upload "$GITHUB_REF_NAME" release/clipcard-chrome.zip release/SHA256SUMS --clobber
+            else
+              gh release view "$GITHUB_REF_NAME" --json assets --jq '.assets[].name' > release/assets.txt
+              grep -Fx clipcard-chrome.zip release/assets.txt
+              grep -Fx SHA256SUMS release/assets.txt
+              exit 0
+            fi
+          else
+            gh release create "$GITHUB_REF_NAME" release/clipcard-chrome.zip release/SHA256SUMS \
+              --draft --verify-tag --title "Clipcard $GITHUB_REF_NAME" --notes-file release/notes.md
+          fi
+          gh release edit "$GITHUB_REF_NAME" --draft=false --latest
+
+  deploy:
+    needs: package
+    uses: ./.github/workflows/deploy.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write

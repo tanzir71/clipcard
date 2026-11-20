@@ -86,6 +86,7 @@
   "settings.clearHistory": "Clear history",
   "settings.clear": "Clear",
   "settings.historyCleared": "Recent cards cleared.",
+  "settings.updateAvailable": "Update available",
   "settings.cardStorage": "The extension and web app save cards separately.",
   "a11y.copied": "Clipcard copied to clipboard",
   "color.ink": "Ink",

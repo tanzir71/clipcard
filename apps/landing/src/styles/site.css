@@ -849,3 +849,107 @@ body {
     font-size: 12px;
   }
 }
+.extension-hero-actions,
+.install-extension-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+.extension-hero-actions {
+  margin-block-end: 16px;
+}
+
+.extension-hero-actions a:not(.button),
+.install-extension-actions a:not(.button) {
+  color: inherit;
+  font-size: 13px;
+  text-underline-offset: 3px;
+}
+
+.install-extension {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: 28px;
+  padding: 28px;
+  background: #0a0a0a;
+  color: #fff;
+}
+
+.install-extension h2 {
+  margin: 0 0 8px;
+}
+
+.install-extension p {
+  margin: 0 0 16px;
+  color: #d4d4d8;
+}
+
+.install-extension ol {
+  margin: 0;
+  padding-inline-start: 20px;
+}
+
+.install-extension li + li {
+  margin-block-start: 10px;
+}
+
+.install-extension .install-extension-pin {
+  margin: 14px 0 0;
+  font-size: 13px;
+}
+
+.install-extension-build {
+  grid-column: 1 / -1;
+  border-block-start: 1px solid #45454a;
+  padding-block-start: 12px;
+}
+
+.install-extension-build summary {
+  cursor: pointer;
+}
+
+.install-extension-build [data-command] {
+  display: block;
+  margin-block: 12px;
+  overflow-wrap: anywhere;
+}
+
+.install-extension-build p {
+  margin-block: 8px 0;
+}
+
+.install-extension-build [role='status']:empty {
+  margin: 0;
+}
+
+.install-extension-phone {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .templates-grid.templates-extension {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .extension-hero-actions {
+    display: none;
+  }
+
+  .install-extension-desktop {
+    display: none;
+  }
+
+  .install-extension-phone {
+    display: grid;
+  }
+
+  .install-extension {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+}

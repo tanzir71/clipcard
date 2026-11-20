@@ -3,6 +3,7 @@ import strings from '@clipcard/i18n/landing/en';
 import BookmarkBlock from '../components/BookmarkBlock.astro';
 import CardImage from '../components/CardImage.astro';
 import HeroAppShortcut from '../components/HeroAppShortcut.astro';
+import InstallExtension from '../components/InstallExtension.astro';
 import Icon from '../components/Icon.astro';
 import Languages from '../components/Languages.astro';
 import LiveCardDemo from '../components/LiveCardDemo.astro';
@@ -52,9 +53,9 @@ const featureKeys = Object.keys(
   features.items,
 ) as (keyof typeof features.items)[];
 const examples = Object.entries(templates.names).filter(([name]) =>
-  RELEASED.cards ? !['duotone', 'caps'].includes(name) : name !== 'solid',
+  RELEASED.extension || (RELEASED.cards ? !['duotone', 'caps'].includes(name) : name !== 'solid'),
 );
-const formats = RELEASED.cards
+const formats = RELEASED.cards && !RELEASED.extension
   ? ['4:5', '1:1', '9:16']
   : ['4:5', '1:1', '9:16', '16:9', '1.91:1'];
 const url = new URL(sitePath(), Astro.site).href;
@@ -174,6 +175,7 @@ const schema = [
     <p class="features-also">{features.also}</p>
   </section>
 
+  {RELEASED.extension ? <InstallExtension /> : null}
   {RELEASED.lite ? <BookmarkBlock /> : null}
 
   <section class="section verifiable" aria-labelledby="sources-heading">
@@ -210,7 +212,7 @@ const schema = [
   >
     <div class="template-heading">
       <h2 id="templates-heading">
-        {RELEASED.cards ? templates.appHeading : templates.heading}
+        {RELEASED.extension ? templates.extensionHeading : RELEASED.cards ? templates.appHeading : templates.heading}
       </h2>
       <ul class="formats" aria-label={templates.formats}>
         {formats.map((format) => (
@@ -230,7 +232,7 @@ const schema = [
         ))}
       </ul>
     </div>
-    <div class="templates-grid">
+    <div class:list={['templates-grid', RELEASED.extension && 'templates-extension']}>
       {examples.map(([name, label]) => (
         <figure>
           <div data-demo-card={RELEASED.cards ? name : undefined}>
