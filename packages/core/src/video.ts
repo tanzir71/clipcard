@@ -50,6 +50,17 @@ export function videoMomentUrl(
   return url.href;
 }
 
+export function timestampedVideoUrl(address: string): string | null {
+  const url = parseWebUrl(address);
+  if (!url) return null;
+  const seconds = youtubeId(url)
+    ? url.searchParams.get('t')
+    : /^#t=(\d+)$/.exec(url.hash)?.[1];
+  return seconds && /^\d+$/.test(seconds)
+    ? videoMomentUrl(url.href, Number(seconds))
+    : null;
+}
+
 const clamp = (n: number, min: number, max: number) =>
   Math.min(max, Math.max(min, n));
 

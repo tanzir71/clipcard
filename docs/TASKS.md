@@ -86,8 +86,8 @@
 - [x] Clip layouts Excerpts, Grid 3, Grid 4, Board with auto choice; multi-`text=` QR; per‑source QR rule.
 
 ## M13 · Video clips
-- [ ] YouTube Clip button + generic `<video>` hover button; range UI snapped to transcript; moment card.
-- [ ] Recording via tabCapture + offscreen + WebCodecs (ARCH §13); clean‑capture style; DRM detection; limits.
+- [x] YouTube Clip button + generic `<video>` hover button; range UI snapped to available caption cues; moment card.
+- [x] Tab chooser, crop to the player, browser encoding and OPFS; clean capture styling; EME refusal and recording limits. See the R5 note in DECISIONS.md.
 - [x] Verify the `tabCapture` install warning and record the decision.
 
 ## M14 · One video from many sources
@@ -104,6 +104,6 @@
 ## M16 · Lite (no install)
 - [ ] `apps/lite` window reusing the popup, storage, cards and video packages; served at `/lite`; PWA with `share_target`.
 - [ ] Bookmarklet under 4 KB, no external loads, works on sites with strict CSP (test on news sites, YouTube, Facebook, X).
-- [ ] postMessage handshake (origin + schema check), reuse of the named window, add‑to‑draft on repeat clicks, moment from the playing video.
+- [x] postMessage handshake (origin + schema check), reuse of the named window, add‑to‑draft on repeat clicks, moment from the playing video.
 - [x] Landing "No install? Use the bookmark." block with the draggable link; mobile "Add to Home Screen".
 - [ ] Optional tab recording via `getDisplayMedia` (user prompt every time).

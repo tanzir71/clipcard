@@ -84,7 +84,7 @@ export async function draftFromBookmark(
     if (!/^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(data.frame))
       return null;
     const blob = await fetch(data.frame).then((result) => result.blob());
-    return inspectPhoto(blob, 600);
+    return inspectPhoto(blob, moment ? 200 : 600);
   };
   const photo = moment
     ? ((await localFrame()) ?? (await fetchPhoto(sourceImage)))

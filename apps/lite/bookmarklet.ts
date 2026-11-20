@@ -48,22 +48,39 @@ declare const __CLIPCARD_BOOKMARK_VIDEO__: boolean;
   } catch {
     image = '';
   }
-  const video = __CLIPCARD_BOOKMARK_VIDEO__
-    ? Array.from(document.querySelectorAll('video')).find((item) => {
-        const bounds = item.getBoundingClientRect();
-        return (
-          item.readyState >= 2 &&
-          item.videoWidth > 0 &&
-          Number.isFinite(item.currentTime) &&
-          (!item.paused || item.currentTime > 0) &&
-          bounds.width >= 200 &&
-          bounds.height >= 100 &&
-          bounds.bottom > 0 &&
-          bounds.top < innerHeight
-        );
-      })
+  const video =
+    __CLIPCARD_BOOKMARK_VIDEO__ && !selection
+      ? Array.from(document.querySelectorAll('video')).find((item) => {
+          const bounds = item.getBoundingClientRect();
+          return (
+            item.readyState >= 2 &&
+            item.videoWidth > 0 &&
+            Number.isFinite(item.currentTime) &&
+            (!item.paused || item.currentTime > 0) &&
+            bounds.width >= 200 &&
+            bounds.height >= 100 &&
+            bounds.bottom > 0 &&
+            bounds.top < innerHeight
+          );
+        })
+      : undefined;
+  const cue =
+    video &&
+    (Array.from(video.textTracks)
+      .flatMap((track) => Array.from(track.cues ?? []))
+      .find(
+        (cue) =>
+          video.currentTime >= cue.startTime && video.currentTime < cue.endTime,
+      ) as VTTCue | undefined);
+  const moment = video
+    ? {
+        time: video.currentTime,
+        caption: bounded(
+          cue?.text || select('.ytp-caption-segment')?.textContent,
+          500,
+        ),
+      }
     : undefined;
-  const moment = video ? { time: video.currentTime, caption: '' } : undefined;
   const payload = {
     type: 'clipcard:bookmark',
     token,
@@ -83,11 +100,40 @@ declare const __CLIPCARD_BOOKMARK_VIDEO__: boolean;
     section: bounded(meta('article:section'), 96),
     published: bounded(meta('article:published_time'), 50),
     lang: bounded(document.documentElement.lang || meta('og:locale'), 50),
-    image: bounded(image, 2200),
+    image: bounded(video?.poster || image, 2200),
     selection: bounded(selection, 500),
     frame: '',
     ...(moment ? { moment } : {}),
   };
+
+  try {
+    const candidate =
+      Array.from(document.images).find(
+        (img) => img.currentSrc === image || img.src === image,
+      ) || picture;
+    const frame = video && !video.mediaKeys ? video : candidate;
+    const width =
+      frame instanceof HTMLVideoElement
+        ? frame.videoWidth
+        : frame?.naturalWidth;
+    const height =
+      frame instanceof HTMLVideoElement
+        ? frame.videoHeight
+        : frame?.naturalHeight;
+    if (frame && width && height) {
+      const canvas = document.createElement('canvas');
+      const scale = Math.min(1, 1600 / Math.max(width, height));
+      canvas.width = Math.floor(width * scale);
+      canvas.height = Math.floor(height * scale);
+      canvas
+        .getContext('2d')
+        ?.drawImage(frame, 0, 0, canvas.width, canvas.height);
+      const data = canvas.toDataURL('image/jpeg', 0.8);
+      if (data.length <= 1_600_000) payload.frame = data;
+    }
+  } catch {
+    // A cross-origin image may be visible while its pixels are unavailable.
+  }
 
   const keep = (event: MessageEvent) => {
     if (event.source !== popup || event.origin !== appOrigin) return;
@@ -95,44 +141,6 @@ declare const __CLIPCARD_BOOKMARK_VIDEO__: boolean;
       return;
     clearInterval(retry);
     removeEventListener('message', keep);
-    try {
-      const candidate =
-        Array.from(document.images).find(
-          (img) => img.currentSrc === image || img.src === image,
-        ) || picture;
-      if (video && moment) {
-        moment.time = video.currentTime;
-        const cue = Array.from(video.textTracks).find(
-          (track) => track.activeCues?.length,
-        )?.activeCues?.[0] as VTTCue | undefined;
-        moment.caption = bounded(
-          cue?.text || select('.ytp-caption-segment')?.textContent,
-          500,
-        );
-      }
-      const frame = video && !video.mediaKeys ? video : candidate;
-      const width =
-        frame instanceof HTMLVideoElement
-          ? frame.videoWidth
-          : frame?.naturalWidth;
-      const height =
-        frame instanceof HTMLVideoElement
-          ? frame.videoHeight
-          : frame?.naturalHeight;
-      if (frame && width && height) {
-        const canvas = document.createElement('canvas');
-        const scale = Math.min(1, 1600 / Math.max(width, height));
-        canvas.width = Math.floor(width * scale);
-        canvas.height = Math.floor(height * scale);
-        canvas
-          .getContext('2d')
-          ?.drawImage(frame, 0, 0, canvas.width, canvas.height);
-        const data = canvas.toDataURL('image/jpeg', 0.8);
-        if (data.length <= 1_600_000) payload.frame = data;
-      }
-    } catch {
-      // A cross-origin image may be visible while its pixels are unavailable.
-    }
     popup.postMessage(payload, appOrigin);
   };
   let tries = 0;

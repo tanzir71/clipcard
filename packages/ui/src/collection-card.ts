@@ -43,7 +43,7 @@ export async function cardFromCollection(
   first: DraftClip | undefined = clips[0],
 ): Promise<CardDraft | null> {
   if (!first) return null;
-  if (draft.legacyCard && first.id === clips[0]?.id)
+  if (draft.legacyCard && first.kind !== 'video' && first.id === clips[0]?.id)
     return { ...draft.legacyCard, overrides: draft.overrides };
   const address = first.sourceUrl ? new URL(first.sourceUrl) : null;
   const headline = first.text || first.video?.cues[0]?.text || first.title;
