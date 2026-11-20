@@ -896,6 +896,39 @@ body {
   margin-block-start: 10px;
 }
 
+.install-extension .install-extension-pin {
+  margin: 14px 0 0;
+  font-size: 13px;
+}
+
+.install-extension-build {
+  grid-column: 1 / -1;
+  border-block-start: 1px solid #45454a;
+  padding-block-start: 12px;
+}
+
+.install-extension-build summary {
+  cursor: pointer;
+}
+
+.install-extension-build [data-command] {
+  display: block;
+  margin-block: 12px;
+  overflow-wrap: anywhere;
+}
+
+.install-extension-build p {
+  margin-block: 8px 0;
+}
+
+.install-extension-build [role='status']:empty {
+  margin: 0;
+}
+
+.install-extension-phone {
+  display: none;
+}
+
 @media (min-width: 768px) {
   .templates-grid.templates-extension {
     grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -905,6 +938,14 @@ body {
 @media (max-width: 767px) {
   .extension-hero-actions {
     display: none;
+  }
+
+  .install-extension-desktop {
+    display: none;
+  }
+
+  .install-extension-phone {
+    display: grid;
   }
 
   .install-extension {

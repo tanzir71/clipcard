@@ -1,26 +1,85 @@
 ---
 import strings from '@clipcard/i18n/landing/en';
 import { INSTALL_URL, REPO_URL, STORE_URL } from '../config';
+import { sitePath } from '../site';
 
 const copy = strings.extension;
+const repository = new URL(REPO_URL).pathname.split('/').filter(Boolean).at(-1);
+const command = `git clone ${REPO_URL}.git && cd ${repository} && pnpm i && pnpm build`;
 ---
 
-<section class="section container" id="install" aria-labelledby="install-extension-heading">
-  <div class="install-extension">
-    <div>
-      <h2 id="install-extension-heading">{copy.heading}</h2>
-      {STORE_URL ? null : <p>{copy.beta}</p>}
-      <div class="install-extension-actions">
-        <a class="button button-light" href={INSTALL_URL}>
-          {STORE_URL ? copy.store : copy.zip}
-        </a>
-        <a href={REPO_URL}>{strings.footer.github}</a>
+<section
+  class="section container"
+  id="install"
+  aria-label={strings.installApp.heading}
+>
+  {STORE_URL ? (
+    <a class="button button-light install-extension-desktop" href={INSTALL_URL}>
+      {copy.store}
+    </a>
+  ) : (
+    <div class="install-extension install-extension-desktop">
+      <div>
+        <h2>{copy.heading}</h2>
+        <p>{copy.beta}</p>
+        <div class="install-extension-actions">
+          <a class="button button-light" href={INSTALL_URL}>
+            {copy.zip}
+          </a>
+          <a href={REPO_URL}>{copy.github}</a>
+        </div>
       </div>
+      <div>
+        <ol class="install-extension-steps">
+          {copy.steps.map((step) => (
+            <li>{step}</li>
+          ))}
+        </ol>
+        <p class="install-extension-pin">{copy.pin}</p>
+      </div>
+      <details class="install-extension-build" data-build>
+        <summary>{copy.build}</summary>
+        <code data-command>{command}</code>
+        <button
+          class="button button-light"
+          type="button"
+          data-copy-build
+          data-copied={copy.copiedBuild}
+          data-failed={copy.copyBuildFailed}
+        >
+          {copy.copyBuild}
+        </button>
+        <p role="status"></p>
+        <p>
+          {copy.loadDirectory} <code>apps/extension/.output/chrome-mv3</code>
+        </p>
+      </details>
     </div>
-    {STORE_URL ? null : (
-      <ol>
-        {copy.steps.map((step) => <li>{step}</li>)}
-      </ol>
-    )}
+  )}
+  <div class="install-extension install-extension-phone">
+    <div>
+      <h2>{strings.installApp.heading}</h2>
+      <p>{strings.installApp.ios}</p>
+      <a class="button button-light" href={sitePath('app/')}>
+        {strings.installApp.open}
+      </a>
+    </div>
   </div>
 </section>
+
+<script>
+  for (const build of document.querySelectorAll<HTMLElement>('[data-build]')) {
+    const command = build.querySelector('[data-command]');
+    const copy = build.querySelector<HTMLButtonElement>('[data-copy-build]');
+    const status = build.querySelector('[role="status"]');
+    if (!command || !copy || !status) continue;
+    copy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(command.textContent ?? '');
+        status.textContent = copy.dataset.copied ?? '';
+      } catch {
+        status.textContent = copy.dataset.failed ?? '';
+      }
+    });
+  }
+</script>

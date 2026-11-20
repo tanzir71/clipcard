@@ -19,9 +19,17 @@
     "heading": "Install the extension",
     "beta": "Developer-mode beta for Chrome, Edge and Brave.",
     "zip": "Download .zip",
+    "github": "View on GitHub",
+    "build": "Build from source",
+    "copyBuild": "Copy build command",
+    "copiedBuild": "Command copied",
+    "copyBuildFailed": "Select the command to copy it.",
+    "loadDirectory": "Load this folder as the unpacked extension.",
+    "pin": "In Edge, open edge://extensions. In Brave, open brave://extensions. Pin Clipcard from your browser’s Extensions menu.",
     "steps": [
       "Download and unzip the file.",
-      "Open your browser’s Extensions page and turn on Developer mode.",
+      "Open chrome://extensions.",
+      "Turn on Developer mode.",
       "Choose Load unpacked and select the folder you unzipped."
     ]
   },
@@ -205,6 +213,10 @@
       "Clipcard has no account, analytics or trackers.",
       "The web app builds cards on your device and keeps recent cards in this browser’s storage.",
       "When you paste or bookmark a page, the web app may ask the original site for an image. You can add a local photo if the site does not allow the request."
+    ],
+    "extensionText": [
+      "The extension can read the current page when you ask it to make a card. With optional site access, it can read linked articles and photos. Cards and recent history stay in browser storage.",
+      "The developer-mode extension asks GitHub for the latest public release at most once a day. The request contains no Clipcard identifiers or card data. Chrome Web Store builds use the store’s update mechanism."
     ]
   },
   "changelog": { "title": "Changelog", "description": "What changed in each Clipcard release." },
