@@ -6,7 +6,7 @@ import {
   useSyncExternalStore,
 } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
-import strings from '@clipcard/i18n/en';
+import { interfaceStrings as strings } from '@clipcard/i18n';
 import { CARD_TEMPLATES, chooseTemplate, tokens } from '@clipcard/cards';
 import type { CardModel, CardOptions, Template } from '@clipcard/cards';
 import type { CardDraft, Overrides } from '../draft.ts';

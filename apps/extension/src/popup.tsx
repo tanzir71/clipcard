@@ -2,7 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { parseWebUrl } from '@clipcard/core';
 import { FLAGS } from '@clipcard/core/flags';
-import strings from '@clipcard/i18n/en';
+import {
+  interfaceLanguage,
+  interfaceStrings as strings,
+  setInterfaceLanguage,
+} from '@clipcard/i18n';
+import { dirFor } from '@clipcard/core';
+import { getUserSettings } from './user-settings.ts';
 import { Icon } from '@clipcard/ui';
 import type { CardDraft } from '@clipcard/ui';
 import { CardEditor } from '@clipcard/ui/card-editor';
@@ -271,10 +277,17 @@ function Popup({
   );
 }
 
-document.title = browser.i18n.getMessage('ext_shortName');
-const lang = browser.i18n.getUILanguage();
+const profile = FLAGS.languages
+  ? await getUserSettings().catch(() => undefined)
+  : undefined;
+const browserLanguage = browser.i18n.getUILanguage();
+const lang = profile?.interfaceLanguage ?? browserLanguage;
+if (FLAGS.languages) setInterfaceLanguage(interfaceLanguage(lang));
+document.title = FLAGS.languages
+  ? strings['ext.shortName']
+  : browser.i18n.getMessage('ext_shortName');
 document.documentElement.lang = lang;
-document.documentElement.dir = /^(ar|fa|ur)(-|$)/i.test(lang) ? 'rtl' : 'ltr';
+document.documentElement.dir = dirFor(lang);
 
 const host = document.querySelector('#root');
 if (host) {

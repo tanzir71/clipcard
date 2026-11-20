@@ -1,5 +1,7 @@
 import { cleanUrl, parseWebUrl, unwrapUrl } from '@clipcard/core';
 import { FLAGS } from '@clipcard/core/flags';
+import { interfaceCopy } from '@clipcard/i18n';
+import type { InterfaceLanguage, UiStrings } from '@clipcard/i18n';
 import {
   sweepDraftCollections,
   updateDraftCollection,
@@ -20,6 +22,7 @@ import type {
 import { destinationFor, rememberPrefs, sitePrefs } from './preferences.ts';
 import { developerUpdate } from './update-check.ts';
 import { persistCapture } from './clip-capture.ts';
+import { getUserSettings, watchUserSettings } from './user-settings.ts';
 
 const clipping = FLAGS.clips && FLAGS.drafts;
 const offscreenPath = '/offscreen.html';
@@ -375,23 +378,39 @@ async function fromShortcut(tab: Browser.tabs.Tab) {
   }
 }
 
-async function installMenus() {
+let installedMenuLanguage: InterfaceLanguage | undefined;
+let menuWork = Promise.resolve();
+
+function refreshMenus(force = false) {
+  menuWork = menuWork.catch(() => undefined).then(() => installMenus(force));
+  void menuWork.catch(() => undefined);
+}
+
+async function installMenus(force: boolean) {
+  const language = FLAGS.languages
+    ? (await getUserSettings()).interfaceLanguage
+    : undefined;
+  if (!force && language === installedMenuLanguage) return;
+  const copy = language ? interfaceCopy(language) : undefined;
+  const localized = (key: Parameters<typeof browser.i18n.getMessage>[0]) =>
+    copy?.[key.replace('_', '.') as keyof UiStrings] ??
+    browser.i18n.getMessage(key);
   await browser.contextMenus.removeAll();
   const linksAndPages: ['link', 'page'] = ['link', 'page'];
   const selection: ['selection'] = ['selection'];
   browser.contextMenus.create({
     id: 'clipcard',
-    title: browser.i18n.getMessage('menu_parent'),
+    title: localized('menu_parent'),
     contexts: clipping
       ? [...linksAndPages, ...selection, 'image']
       : [...linksAndPages, ...selection],
   });
   const items = [
-    ['copy', browser.i18n.getMessage('menu_copy'), linksAndPages],
-    ['edit', browser.i18n.getMessage('menu_edit'), linksAndPages],
-    ['cleanLink', browser.i18n.getMessage('menu_cleanLink'), linksAndPages],
-    ['copyQuote', browser.i18n.getMessage('menu_copyQuote'), selection],
-    ['editQuote', browser.i18n.getMessage('menu_editQuote'), selection],
+    ['copy', localized('menu_copy'), linksAndPages],
+    ['edit', localized('menu_edit'), linksAndPages],
+    ['cleanLink', localized('menu_cleanLink'), linksAndPages],
+    ['copyQuote', localized('menu_copyQuote'), selection],
+    ['editQuote', localized('menu_editQuote'), selection],
   ] as const;
   for (const [id, title, contexts] of items) {
     browser.contextMenus.create({ id, title, contexts, parentId: 'clipcard' });
@@ -399,29 +418,30 @@ async function installMenus() {
   if (clipping) {
     browser.contextMenus.create({
       id: 'startClipping',
-      title: browser.i18n.getMessage('clip_start'),
+      title: localized('clip_start'),
       contexts: ['page'],
       parentId: 'clipcard',
     });
     browser.contextMenus.create({
       id: 'clipText',
-      title: browser.i18n.getMessage('clip_add'),
+      title: localized('clip_add'),
       contexts: ['selection'],
       parentId: 'clipcard',
     });
     browser.contextMenus.create({
       id: 'clipImage',
-      title: browser.i18n.getMessage('clip_image'),
+      title: localized('clip_image'),
       contexts: ['image'],
       parentId: 'clipcard',
     });
     browser.contextMenus.create({
       id: 'addPage',
-      title: browser.i18n.getMessage('clip_addPage'),
+      title: localized('clip_addPage'),
       contexts: linksAndPages,
       parentId: 'clipcard',
     });
   }
+  installedMenuLanguage = language;
 }
 
 async function handleRequest(
@@ -533,6 +553,7 @@ async function syncClippingEntryPoints() {
 }
 
 export function startExtension() {
+  if (FLAGS.languages) watchUserSettings(() => refreshMenus());
   if (clipping) {
     function updateEntryPoints() {
       void syncClippingEntryPoints().catch(() => undefined);
@@ -547,7 +568,7 @@ export function startExtension() {
         .create({ url: browser.runtime.getURL('/welcome.html') })
         .catch(() => undefined);
     }
-    void installMenus().catch(() => undefined);
+    refreshMenus(true);
     void browser.action.setBadgeBackgroundColor({ color: '#187451' });
     void developerUpdate().catch(() => undefined);
   });
