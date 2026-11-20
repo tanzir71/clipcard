@@ -1,5 +1,6 @@
 ---
-import strings from '@clipcard/i18n/landing/en';
+import { landingCopy } from '../languages';
+import type { InterfaceLanguage } from '@clipcard/i18n';
 import CardImage from './CardImage.astro';
 import '@fontsource/anek-bangla/bengali-500.css';
 import '@fontsource/mukta/devanagari-500.css';
@@ -22,6 +23,11 @@ import '@fontsource/be-vietnam-pro/vietnamese-500.css';
 import '@fontsource/be-vietnam-pro/latin-500.css';
 import '@fontsource/noto-sans/latin-500.css';
 import '@fontsource/noto-sans/latin-ext-500.css';
+interface Props {
+  locale: InterfaceLanguage;
+}
+const { locale } = Astro.props;
+const strings = landingCopy(locale);
 
 type Language = {
   code: keyof typeof strings.languageNames;
@@ -78,7 +84,7 @@ const localizedCards = [
           <li
             lang={code}
             dir={dir}
-            class:list={[code === 'en' && 'current-language']}
+            class:list={[code === locale && 'current-language']}
             style={
               font && {
                 'font-family': `"${font}", sans-serif`,

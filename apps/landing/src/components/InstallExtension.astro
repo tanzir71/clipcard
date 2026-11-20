@@ -1,7 +1,12 @@
 ---
-import strings from '@clipcard/i18n/landing/en';
+import { landingCopy, appPath } from '../languages';
+import type { InterfaceLanguage } from '@clipcard/i18n';
 import { INSTALL_URL, REPO_URL, STORE_URL } from '../config';
-import { sitePath } from '../site';
+interface Props {
+  locale: InterfaceLanguage;
+}
+const { locale } = Astro.props;
+const strings = landingCopy(locale);
 
 const copy = strings.extension;
 const repository = new URL(REPO_URL).pathname.split('/').filter(Boolean).at(-1);
@@ -60,7 +65,7 @@ const command = `git clone ${REPO_URL}.git && cd ${repository} && pnpm i && pnpm
     <div>
       <h2>{strings.installApp.heading}</h2>
       <p>{strings.installApp.ios}</p>
-      <a class="button button-light" href={sitePath('app/')}>
+      <a class="button button-light" href={appPath(locale)}>
         {strings.installApp.open}
       </a>
     </div>

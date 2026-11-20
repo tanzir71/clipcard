@@ -84,3 +84,9 @@ Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md)
 
 - A web app opened from a translated landing page remembers that language locally. Its card language still follows the source by default. Extension quick controls use the interface language chosen in Settings.
 - Chrome's manifest locale table omits Urdu and Burmese. In-app settings support both languages, while the manifest publisher emits only Chrome-supported locales. Wave-one translations remain drafts pending native review.
+
+## R4 · Translated landing pages
+
+- Language changes preserve the page type on the landing and privacy pages. The changelog remains a shared release log.
+- Social previews are rendered by the Split template. The QR links to the corresponding landing page, and the 1200 × 628 export is resized to 1200 × 630 for social metadata.
+- The Bangla landing copy is drafted in full. Other landing drafts fall back to English for text that is awaiting translation. Translated landing pages stay behind the R4 flag until native review and store submission.

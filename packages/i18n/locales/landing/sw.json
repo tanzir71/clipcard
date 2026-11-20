@@ -1,0 +1,53 @@
+{
+  "_status": "needs-review",
+  "title": "Clipcard – Shiriki habari kwa kadi",
+  "description": "Geuza kiungo, makala uliyonakili au picha kuwa kadi ya kushiriki inayowaelekeza wasomaji kwenye chanzo.",
+  "nav": {
+    "app": "Programu ya wavuti",
+    "templates": "Violezo",
+    "how": "Jinsi inavyofanya kazi",
+    "faq": "Maswali ya kawaida",
+    "language": "Lugha",
+    "follow": "Fuata kwenye GitHub"
+  },
+  "hero": {
+    "appHeading": "Shiriki habari kwa kadi",
+    "appDescription": "Geuza kiungo, makala uliyonakili au picha kuwa kadi ya kushiriki inayowaelekeza wasomaji kwenye chanzo."
+  },
+  "shortcut": {
+    "submit": "Tengeneza kadi",
+    "open": "Fungua programu kamili",
+    "placeholder": "Bandika kiungo, maandishi au picha"
+  },
+  "features": {
+    "soon": "Inakuja",
+    "items": {
+      "cards": {
+        "title": "Kadi kwa mbofyo mmoja"
+      },
+      "clips": {
+        "title": "Vipande na gridi"
+      },
+      "videoClips": {
+        "title": "Vipande vya video"
+      },
+      "videoJoin": {
+        "title": "Video moja, vyanzo vingi"
+      },
+      "gifs": {
+        "title": "Maktaba na GIF"
+      },
+      "drafts": {
+        "title": "Rasimu"
+      }
+    }
+  },
+  "languages": "Imetengenezwa kwa lugha yako.",
+  "appBand": "Tengeneza Clipcard yako ya kwanza.",
+  "footer": {
+    "privacy": "Faragha"
+  },
+  "privacy": {
+    "title": "Faragha"
+  }
+}
