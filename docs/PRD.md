@@ -83,8 +83,8 @@ As v1, plus: **Your mark** (upload), GIF provider (GIPHY · KLIPY · Off), Draft
 ### F11 — Your mark
 Settings → upload SVG/PNG. It's placed on every card and video (DESIGN §4.1) and used as the oversized pattern. Without a mark, no slot or pattern is shown.
 
-### F12 — Web app (no install) · `P9-web-app.png`, `P8-lite-bookmark.png`, `design/phone/*`
-- **`/app`**: the full Clipcard (Card · Grid · Video, drafts, Library · GIFs) in any browser, reachable from the landing hero, the nav and every "no install" link. Drafts, Library and the GIF cache live in that browser (IndexedDB + OPFS).
+### F12 — Web app (no install) · `design/webapp/*`, `design/phone/*`, `P8-lite-bookmark.png` · screen spec `docs/APP.md`
+- **`/app`**: the full Clipcard (Card · Grid · Video, drafts, Library · GIFs) in any browser, at the same depth as the extension (parity table: `docs/APP.md` §1), reachable from the landing hero, the nav and every "no install" link. Drafts, Library and the GIF cache live in that browser (IndexedDB + OPFS).
 - **Input without the extension**: paste a link, copied article text (with its HTML), or an image (Ctrl+V, drop, or Photo). A browser page can't read other websites by itself, so:
   - URL only → the headline comes from the URL slug (editable), the outlet from the domain, and the QR from the cleaned URL. The photo is Solid until the user adds one ("Add a photo" picks a file or pastes a screenshot). YouTube links use the public thumbnail where the site allows it.
   - Copied article (text/html on the clipboard) → the first heading becomes the headline and the first image is fetched where CORS allows, else the user adds one.

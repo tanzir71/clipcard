@@ -21,3 +21,13 @@
 
 ## Files updated
 `docs/PRD.md` F12 · `docs/ARCHITECTURE.md` §18 · `docs/DESIGN.md` §2 · `docs/LANDING.md` §3, §3.2 · `docs/ROADMAP.md` · `docs/QA.md` · `docs/DECISIONS.md` · `handover/R1-lite.md` · `handover/R7-batch-mobile.md` · `handover/16-lite.md` · `design/figma.md` · new PNGs in `design/screens/` and `design/phone/`.
+
+## Addendum (16:50) · Full web app and phone designs
+
+The earlier `P9-web-app.png` was too thin to build from and is retired (`design/_superseded/`). The web app is the **whole product**, specified screen by screen in **`docs/APP.md`**:
+
+- Desktop workspace: `design/webapp/W1-make-card.png` (sidebar, top bar, Add source, canvas + templates, inspector), `W2-make-video.png` (timeline), `W3-library-gifs.png`, `W4-drafts.png`.
+- Phone: `design/phone/A1`–`A8` (install, home, shared‑into, video editor, card editor, grid, Library · GIFs, drafts).
+- `docs/APP.md` §1 maps every extension feature to its web‑app screen; §4 has the responsive breakpoints.
+
+Impact: **R0 none.** R1 builds the Card‑mode workspace on desktop and Home / Shared / Card editor / Drafts on the phone (the R1 prompt is updated). R3 adds Grid; R6 adds Video and Library · GIFs.

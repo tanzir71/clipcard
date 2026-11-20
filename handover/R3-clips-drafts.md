@@ -10,6 +10,8 @@
 - **Landing**: "Clips and grids" and "Drafts" tiles → live.
 - **Owner**: apply for GIPHY and KLIPY keys now.
 
+- **Web app**: Grid mode on desktop (inspector Layout + clip list) and phone (`design/phone/A6-grid.png`); Drafts W4/A8 with filters.
+
 ## Done when
 - [ ] e2e: clip on page A, restart the browser, add from page B → the draft holds both; Board card copies with per‑source QRs.
 - [ ] Lite: three clicks on three pages with selections → one Excerpts card.

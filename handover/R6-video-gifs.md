@@ -8,6 +8,8 @@
 - **Lite**: Video mode + export in the Lite window (the same renderer), GIFs and Library.
 - **Landing**: "One video, many sources" and "Library and GIFs" tiles live.
 
+- **Web app**: Video mode with the timeline (`design/webapp/W2-make-video.png`, `design/phone/A4-video.png`) and Library · GIFs (`W3`, `A7`).
+
 ## Done when
 - [ ] e2e: 2 clips + 1 excerpt + 1 GIF → MP4 that plays in Chrome and VLC; Sources QRs decode.
 - [ ] GIF attribution visible; works with KLIPY only when there's no GIPHY key.

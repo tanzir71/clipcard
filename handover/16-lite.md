@@ -6,10 +6,10 @@
 
 ## Read first
 - `docs/PRD.md` F12 · `docs/ARCHITECTURE.md` §18 · `docs/LANDING.md` §3 row 4 (no‑install block)
-- **Visual truth:** `design/screens/P8-lite-bookmark.png`, `L1-landing-desktop.png` (Install section)
+- **Visual truth:** `design/webapp/*`, `design/phone/*`, `design/screens/P8-lite-bookmark.png`, `L1-landing-desktop.png` (Install section)
 
 ## Build
-1. `apps/lite`: Vite + React page at **`/app/`** (Vite `base: '/app/'`), usable on its own (`P9-web-app.png`): app bar, paste box (URL / copied HTML / image / drop / Photo), drafts; phone layout per `design/phone/A2`–`A3`. It also works as the bookmark window hosting the same popup components (Card · Grid · Video, Auto chip, text bar, drafts, Library · GIFs). Window bar label "Clipcard" + a "Saved in this browser · no install" note at the bottom.
+1. `apps/lite`: Vite + React page at **`/app/`** (Vite `base: '/app/'`), usable on its own, built to **`docs/APP.md`** (desktop workspace `design/webapp/W1`–`W4`, phone `design/phone/A1`–`A8`). Paste/drop/Photo inputs feed the Add source row. It also works as the bookmark window hosting the same popup components (Card · Grid · Video, Auto chip, text bar, drafts, Library · GIFs). Window bar label "Clipcard" + a "Saved in this browser · no install" note at the bottom.
 2. `bookmarklet.ts` → a `javascript:` URL under 4 KB (minified IIFE): reads metadata, the selection, image candidates and the video moment; opens or reuses the named window; posts the payload after `ready`.
 3. Handshake + validation (origin, schema with zod, length limits, URL sanitizing).
 4. Image fallback chain (CORS fetch → bookmarklet frame → Solid + paste/drop).
