@@ -40,7 +40,7 @@ jobs:
             exit 1
           fi
           CLIPCARD_EXTENSION_VERSION="$version" pnpm build:extension
-          node -e 'const m = require("./apps/extension/.output/chrome-mv3/manifest.json"); if (m.version !== process.argv[1]) process.exit(1)' "$version"
+          node -e 'const m = require("./apps/extension/.output/chrome-mv3/manifest.json"); if (m.version !== process.argv[1] || m.host_permissions?.length || m.content_scripts?.length) process.exit(1)' "$version"
           mkdir -p release
           (cd apps/extension/.output/chrome-mv3 && zip -qr "$GITHUB_WORKSPACE/release/clipcard-chrome.zip" .)
           unzip -Z1 release/clipcard-chrome.zip | grep -Fx manifest.json

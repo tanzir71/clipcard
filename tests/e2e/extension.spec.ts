@@ -35,6 +35,8 @@ test('loads the localized scaffold and starts the service worker', async ({
     'scripting',
   ]);
   expect(manifest.optional_host_permissions).toEqual(['<all_urls>']);
+  expect(manifest.host_permissions ?? []).toEqual([]);
+  expect(manifest.content_scripts ?? []).toEqual([]);
   for (const path of Object.values(manifest.icons) as string[]) {
     const mime = await page.evaluate(
       async (url) => (await fetch(url)).headers.get('content-type'),
