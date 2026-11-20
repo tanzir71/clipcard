@@ -1,4 +1,10 @@
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import {
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import type { ReactNode } from 'react';
 import strings from '@clipcard/i18n/en';
 import { CARD_TEMPLATES, chooseTemplate } from '@clipcard/cards';
@@ -86,6 +92,8 @@ export function CardEditor({
   onClose,
   onPhoto,
   onSave,
+  openExternal,
+  initialShareOpen,
   beforePreview,
   view = 'popup',
 }: {
@@ -93,7 +101,9 @@ export function CardEditor({
   onChange: (draft: CardDraft) => void;
   onClose: () => void;
   onPhoto?: () => void;
-  onSave: () => Promise<void>;
+  onSave?: () => Promise<void>;
+  openExternal?: (address: string) => Promise<unknown>;
+  initialShareOpen?: boolean;
   beforePreview?: ReactNode;
   view?: 'popup' | 'workspace' | 'shared';
 }) {
@@ -101,11 +111,22 @@ export function CardEditor({
   const [tabShown, setTabShown] = useState(false);
   const [autoOpen, setAutoOpen] = useState(false);
   const [inspectorOpen, setInspectorOpen] = useState(false);
-  const phone = useSyncExternalStore(observeViewport, isPhone, desktopOnServer);
+  const [textBarTop, setTextBarTop] = useState(40);
+  const previewWrap = useRef<HTMLDivElement>(null);
+  const narrow = useSyncExternalStore(
+    observeViewport,
+    isPhone,
+    desktopOnServer,
+  );
+  const phone = narrow && view !== 'popup';
   const { model, options } = useDraftArt(draft);
   const selected = draft.overrides.template;
   const templates = availableTemplates(model);
-  const autoLabel = strings['card.auto'] + ' · ' + options.format;
+  const autoLabel = draft.destination
+    ? strings['auto.chip']
+        .replace('{format}', options.format)
+        .replace('{destination}', strings[`destination.${draft.destination}`])
+    : strings['card.auto'] + ' · ' + options.format;
 
   function update(overrides: Partial<Overrides>) {
     onChange({ ...draft, overrides: { ...draft.overrides, ...overrides } });
@@ -122,22 +143,72 @@ export function CardEditor({
   }
 
   function openText() {
+    if (openExternal) {
+      setTabShown((shown) => !shown);
+      return;
+    }
     setActive('text');
     setTabShown(true);
     setInspectorOpen(true);
   }
 
   useEffect(() => {
+    const wrap = previewWrap.current;
+    if (!wrap || !tabShown || !openExternal) return;
+    const align = () => {
+      const headline = wrap.querySelector('.cc-headline');
+      if (!headline) return;
+      const box = wrap.getBoundingClientRect();
+      const bottom = headline.getBoundingClientRect().bottom;
+      setTextBarTop(
+        Math.max(34, Math.min(bottom - box.top + 5, box.height - 50)),
+      );
+    };
+    const observer = new ResizeObserver(align);
+    observer.observe(wrap);
+    align();
+    return () => observer.disconnect();
+  }, [
+    tabShown,
+    openExternal,
+    draft.headline,
+    options.format,
+    options.template,
+  ]);
+  useEffect(() => {
     function closeOnEscape(event: KeyboardEvent) {
       if (event.key !== 'Escape') return;
-      if (autoOpen) setAutoOpen(false);
+      if (openExternal) onClose();
+      else if (autoOpen) setAutoOpen(false);
       else if (inspectorOpen && !phone) setInspectorOpen(false);
       else if (view === 'popup' && tabShown) setTabShown(false);
       else onClose();
     }
     window.addEventListener('keydown', closeOnEscape);
     return () => window.removeEventListener('keydown', closeOnEscape);
-  }, [autoOpen, inspectorOpen, phone, tabShown, view, onClose]);
+  }, [autoOpen, inspectorOpen, phone, tabShown, view, onClose, openExternal]);
+
+  const keyboardCycle = useEffectEvent((event: KeyboardEvent) => {
+    if (
+      !(event.key === 'ArrowLeft' || event.key === 'ArrowRight') ||
+      (event.target instanceof Element &&
+        event.target.closest(
+          'input, textarea, select, button, [contenteditable]',
+        ))
+    ) {
+      return;
+    }
+    event.preventDefault();
+    cycle(event.key === 'ArrowLeft' ? -1 : 1);
+  });
+  useEffect(() => {
+    if (!openExternal) return;
+    const onArrow = (event: KeyboardEvent) => {
+      keyboardCycle(event);
+    };
+    window.addEventListener('keydown', onArrow);
+    return () => window.removeEventListener('keydown', onArrow);
+  }, [openExternal]);
 
   return (
     <section
@@ -162,9 +233,13 @@ export function CardEditor({
             </span>
           ) : null}
         </div>
-        <div className="clip-mode-indicator">
+        <div
+          className="clip-mode-indicator"
+          aria-label={openExternal ? strings['mode.card'] : undefined}
+          role={openExternal ? 'img' : undefined}
+        >
           <Icon name="card" size={14} />
-          {strings['mode.card']}
+          {openExternal ? null : strings['mode.card']}
         </div>
         {view === 'workspace' ? (
           <button
@@ -185,7 +260,10 @@ export function CardEditor({
           }}
           aria-expanded={autoOpen}
         >
-          <span aria-hidden="true"></span>
+          <span
+            aria-hidden="true"
+            style={{ backgroundColor: options.theme?.deep }}
+          ></span>
           {autoLabel}
           <span aria-hidden="true">⌄</span>
         </button>
@@ -194,7 +272,11 @@ export function CardEditor({
         {beforePreview ? (
           <div className="clip-canvas-input">{beforePreview}</div>
         ) : null}
-        <div className="clip-preview-wrap">
+        <div
+          className="clip-preview-wrap"
+          ref={previewWrap}
+          data-text-open={openExternal && tabShown ? '' : undefined}
+        >
           <CardPreview model={model} options={options} onHeadline={openText} />
           <button
             type="button"
@@ -225,6 +307,21 @@ export function CardEditor({
               <Icon name="close" />
             </button>
           ) : null}
+          {openExternal && tabShown ? (
+            <div
+              className="clip-text-bar"
+              style={{ insetBlockStart: textBarTop }}
+            >
+              <TextControls
+                draft={draft}
+                model={model}
+                options={options}
+                update={update}
+                onChange={onChange}
+                compact
+              />
+            </div>
+          ) : null}
         </div>
         {view === 'workspace' ? (
           <TemplateStrip
@@ -251,14 +348,19 @@ export function CardEditor({
         ) : null}
         {view === 'popup' && !tabShown ? (
           <button
-            className="clip-inline-button"
+            className={
+              openExternal
+                ? 'clip-inline-button clip-text-trigger'
+                : 'clip-inline-button'
+            }
             type="button"
             onClick={openText}
           >
             {strings['card.text']}
           </button>
         ) : null}
-        {view === 'workspace' || (view === 'popup' && tabShown) ? (
+        {view === 'workspace' ||
+        (view === 'popup' && tabShown && !openExternal) ? (
           <>
             <div
               className="clip-panel-tabs"
@@ -321,6 +423,8 @@ export function CardEditor({
           model={model}
           options={options}
           onSave={onSave}
+          openExternal={openExternal}
+          initialShareOpen={initialShareOpen}
           emphasis={phone || view === 'shared' ? 'share' : 'copy'}
         />
       </div>

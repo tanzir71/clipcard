@@ -9,13 +9,19 @@
     "typecheck": "wxt prepare && tsc --noEmit"
   },
   "dependencies": {
+    "@clipcard/cards": "workspace:*",
+    "@clipcard/core": "workspace:*",
+    "@clipcard/i18n": "workspace:*",
+    "@clipcard/ui": "workspace:*",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "tldts": "7.5.5"
   },
   "devDependencies": {
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@wxt-dev/module-react": "1.2.2",
+    "linkedom": "0.18.15",
     "vite": "8.3.8",
     "wxt": "0.21.5"
   }

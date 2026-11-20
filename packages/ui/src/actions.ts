@@ -30,9 +30,9 @@ export function downloadPng(png: Blob, title: string) {
   setTimeout(() => URL.revokeObjectURL(url), 3000);
 }
 
-export function shareFile(png: Blob, title: string) {
+export function shareFile(png: Blob, title: string, text?: string) {
   const file = new File([png], fileName(title), { type: 'image/png' });
-  const payload = { files: [file], title };
+  const payload = { files: [file], title, text };
   if (!navigator.canShare?.(payload) || !navigator.share) return null;
   return navigator.share(payload);
 }

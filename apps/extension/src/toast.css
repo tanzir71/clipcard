@@ -1,0 +1,121 @@
+:host {
+  all: initial;
+  position: fixed;
+  z-index: 2147483647;
+  inset-block-start: 12px;
+  inset-inline-end: 12px;
+  max-inline-size: calc(100vw - 24px);
+  font:
+    14px/1.4 'Geist',
+    system-ui,
+    sans-serif;
+  color: #fafafa;
+}
+
+:host([dir='rtl']) {
+  left: 12px;
+  right: auto;
+}
+
+.toast {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px;
+  min-inline-size: min(342px, calc(100vw - 44px));
+  overflow: hidden;
+  background: #0a0a0a;
+  border-radius: 6px;
+  box-shadow:
+    0 14px 50px rgb(0 0 0 / 24%),
+    0 2px 5px rgb(0 0 0 / 28%);
+}
+
+.thumb {
+  inline-size: 64px;
+  block-size: 80px;
+  flex: none;
+  object-fit: cover;
+}
+
+.message {
+  display: grid;
+  flex: 1;
+  gap: 4px;
+}
+
+.status {
+  font-weight: 650;
+}
+
+.status[data-copied]::before {
+  content: '✓';
+  padding-inline-end: 8px;
+  color: #62e99c;
+}
+
+.sr-only {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+button:focus-visible {
+  outline: 2px solid #a9bcdf;
+  outline-offset: 2px;
+}
+
+.text {
+  justify-self: start;
+  padding: 2px 0;
+  background: transparent;
+  color: #e2e7f1;
+  border: 0;
+  font-size: 11px;
+  text-align: start;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.icon {
+  inline-size: 36px;
+  block-size: 36px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  background: #1f1f1f;
+  border: 0;
+  border-radius: 4px;
+  font-size: 18px;
+}
+
+.progress {
+  position: absolute;
+  inset: auto 0 0;
+  block-size: 2px;
+  background: #a9bcdf;
+  transform-origin: left;
+  animation: disappear 6s linear forwards;
+}
+
+.toast:hover .progress,
+.toast:focus-within .progress {
+  animation-play-state: paused;
+}
+
+@keyframes disappear {
+  to {
+    transform: scaleX(0);
+  }
+}
