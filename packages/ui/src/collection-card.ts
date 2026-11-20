@@ -25,6 +25,7 @@ export function appendCardDraft(card: CardDraft, preferGrid = false) {
       sourceUrl: card.source?.canonicalUrl ?? null,
       title: card.source?.title ?? card.original,
       outlet: card.source?.siteName,
+      lang: card.source?.lang,
       publishedAt: card.source?.publishedAt ?? undefined,
       text:
         selection ||
@@ -46,7 +47,7 @@ export async function cardFromCollection({
   if (draft.legacyCard)
     return { ...draft.legacyCard, overrides: draft.overrides };
   const address = first.sourceUrl ? new URL(first.sourceUrl) : null;
-  const lang = detectLang(first.text || first.title);
+  const lang = detectLang(first.text || first.title, first.lang);
   const headline = first.text || first.title;
   const blob = await readClipMedia(first).catch(() => undefined);
   const card = newCardDraft({

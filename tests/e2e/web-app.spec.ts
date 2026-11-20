@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { fileURLToPath } from 'node:url';
 import { readFile } from 'node:fs/promises';
 import { PNG } from 'pngjs';
@@ -47,12 +48,26 @@ test('makes and edits a sourced card, copies a PNG and restores it from history'
   expect(
     jsQR(new Uint8ClampedArray(png.data), png.width, png.height)?.data,
   ).toBe(source);
-  await page.getByRole('button', { name: 'Save for later' }).click();
-  await expect(page.getByText('Saved in this browser')).toBeVisible();
+  await page
+    .getByRole('button', { name: 'Save for later', exact: true })
+    .click();
+  const save = page.locator('form.clip-draft-name');
+  await save
+    .getByRole('textbox', { name: 'Draft name' })
+    .fill('Dhaka ferry story');
+  await save
+    .getByRole('button', { name: 'Save for later', exact: true })
+    .click();
+  await page.getByRole('button', { name: /^Drafts/ }).click();
+  await page.getByRole('button', { name: /Dhaka ferry story/ }).click();
+  await expect(page).toHaveURL((url) => url.searchParams.has('collection'));
   await page.reload();
   await expect(
     page.getByRole('textbox', { name: 'Headline', exact: true }),
   ).toHaveValue('Electric ferry opens in Dhaka');
+  await expect(
+    page.locator('.clip-editor-canvas .cc-card').first(),
+  ).toHaveAttribute('data-format', '9:16');
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
@@ -100,6 +115,100 @@ test('receives a bookmark payload from a fixture page and creates a canonical qu
   await expect(app.locator('.cc-headline').first()).toContainText(
     'The first boats left Gabtoli',
   );
+});
+
+test('combines three bookmark selections and restores the named Excerpts draft', async ({
+  page,
+  baseURL,
+}) => {
+  if (!baseURL) throw new Error('App base URL missing');
+  const bookmark = await buildBookmarklet(baseURL);
+  const sourceOrigin =
+    'http://127.0.0.1:' + (Number(new URL(baseURL).port) + 1);
+  const quotes = [
+    'A short selection from the first page.',
+    'One selected sentence from the second page.',
+    'A third selected passage from a different source.',
+  ];
+  await page.route('**/r3-story-*', async (route) => {
+    const index = Number(new URL(route.request().url()).pathname.slice(-1));
+    await route.fulfill({
+      contentType: 'text/html; charset=utf-8',
+      body:
+        '<!doctype html><html lang=en><title>Story ' +
+        index +
+        '</title><article><h1>Story ' +
+        index +
+        '</h1><p>' +
+        quotes[index] +
+        '</p><a id="run-bookmark">Clipcard</a></article>',
+    });
+  });
+  let popup: Page | undefined;
+  for (const [index] of quotes.entries()) {
+    await page.goto(sourceOrigin + '/r3-story-' + index + '?utm_source=test');
+    const trigger = page.locator('#run-bookmark');
+    await trigger.evaluate((node, href) => {
+      const text = document.querySelector('article p');
+      if (!text) throw new Error('Missing selection');
+      const range = document.createRange();
+      range.selectNodeContents(text);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      node.setAttribute('href', href);
+    }, bookmark);
+    const opened = popup ? undefined : page.waitForEvent('popup');
+    await trigger.click();
+    if (opened) popup = await opened;
+    if (!popup) throw new Error('Bookmark window missing');
+    if (index === 0) {
+      await expect(popup.locator('.cc-quote').first()).toBeVisible();
+    } else {
+      await expect(
+        popup.locator(
+          '.clip-grid-preview-wrap [data-layout="excerpts"] .cc-grid-extract',
+        ),
+      ).toHaveCount(index + 1);
+    }
+  }
+  if (!popup) throw new Error('Bookmark window missing');
+  await expect(popup.locator('.clip-grid-preview-wrap .cc-qr')).toHaveCount(3);
+  await popup
+    .getByRole('button', { name: 'Save for later', exact: true })
+    .click();
+  const form = popup
+    .locator('.clip-grid-controls')
+    .filter({ has: popup.getByRole('textbox') });
+  await form.getByRole('textbox').fill('Three stories');
+  await form
+    .getByRole('button', { name: 'Save for later', exact: true })
+    .click();
+  await expect.poll(() => popup.isClosed()).toBe(true);
+
+  await page.goto('./?drafts');
+  await page.getByRole('button', { name: 'Grids', exact: true }).click();
+  await page.getByRole('button', { name: /Three stories/ }).click();
+  await expect(
+    page.locator('.clip-grid-preview-wrap .cc-grid-extract'),
+  ).toHaveCount(3);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.reload();
+  await expect(
+    page.locator('.clip-grid-preview-wrap .cc-grid-extract'),
+  ).toHaveCount(3);
+  const reorder = page
+    .getByRole('button', { name: 'Move later', exact: true })
+    .first();
+  await reorder.focus();
+  await reorder.press('Enter');
+  await expect(
+    page.locator('.clip-grid-preview-wrap .cc-grid-extract p').first(),
+  ).toHaveText(quotes[1]!);
+  await page.reload();
+  await expect(
+    page.locator('.clip-grid-preview-wrap .cc-grid-extract p').first(),
+  ).toHaveText(quotes[1]!);
 });
 
 test('runs the landing shortcut and opens its draft in the web app', async ({

@@ -12,6 +12,7 @@
   "dependencies": {
     "@astrojs/markdown-remark": "7.3.1",
     "@clipcard/cards": "workspace:*",
+    "@clipcard/core": "workspace:*",
     "@clipcard/i18n": "workspace:*",
     "@clipcard/ui": "workspace:*",
     "@fontsource-variable/geist": "5.3.0",

@@ -11,6 +11,8 @@ Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md)
 
 - Each card saved in R1 or R2 becomes a draft under its existing ID. The draft keeps the original card, including the headline edit, overrides, photo and thumbnail. Clipping again starts a new draft, so older cards stay individually restorable.
 - Draft media uses OPFS when the browser can commit a local file. The fallback keeps that media alongside its record in IndexedDB. An isolated Windows WebKit check returned an error while closing an OPFS writer, so both storage paths are covered.
+- Clip mode starts a grid immediately. A second find also switches a card draft to Grid. Clips that share a canonical URL share a QR, and dense quote links use shorter start and end phrases so all excerpts stay represented in a scannable code.
+- A backup retains the editable card alongside its clips. Import adds missing records by ID and preserves edits made in this browser.
 
 ## 2026-11-20 · R2 popup references
 

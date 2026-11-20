@@ -33,6 +33,11 @@
   position: relative;
 }
 
+.clip-grid-popup .clip-preview {
+  width: min(100%, calc(max(112px, 100vh - 136px) * var(--clip-card-ratio)));
+  margin-inline: auto;
+}
+
 .clip-grid-workspace .clip-grid-preview-wrap {
   width: min(100%, 416px);
   margin: 16px auto 0;

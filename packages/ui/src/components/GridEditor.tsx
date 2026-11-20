@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { CARD_FORMATS, tokens } from '@clipcard/cards';
 import type { Format } from '@clipcard/cards';
 import { prepareCardAssets } from '@clipcard/cards/assets';
@@ -315,7 +315,14 @@ export function GridEditor({
       ) : null}
       <div className="clip-grid-stage">
         {beforePreview}
-        <div className="clip-grid-preview-wrap">
+        <div
+          className="clip-grid-preview-wrap clip-preview-wrap"
+          style={
+            {
+              '--clip-card-ratio': naturalWidth / naturalHeight,
+            } as CSSProperties
+          }
+        >
           <div
             className="clip-preview"
             ref={viewport}

@@ -259,6 +259,17 @@ it('restores a ZIP with both clips and card history into an empty database and m
     { kind: 'image', title: 'Image', sourceUrl: null },
     { now: start + 1, media: new Blob(['stills'], { type: 'image/webp' }) },
   );
+  await saveDraft({
+    id: created.draft.id,
+    createdAt: start,
+    updatedAt: start,
+    original: 'First article',
+    headline: 'The edited first article',
+    version: 1,
+    photo: null,
+    source: null,
+    overrides: { emphasis: 'line' },
+  });
   const archive = await (
     await import('./collection-archive.ts')
   ).exportCollections();
@@ -280,6 +291,7 @@ it('restores a ZIP with both clips and card history into an empty database and m
   expect(await listDraftCollections()).toHaveLength(2);
   const restored = await getDraftCollection(created.draft.id);
   expect(restored?.draft.title).toBe('My local title');
+  expect(restored?.draft.legacyCard?.headline).toBe('The edited first article');
   expect(restored?.clips.map((clip) => clip.title)).toEqual([
     'First article',
     'Image',

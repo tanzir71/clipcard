@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## v0.3.0 - 2026-11-20
+
+- Clip quotes, images and sections with the extension and turn them into a grid with a QR code for each source.
+- Use the bookmark on several pages to make a single Excerpts card in the web app.
+- Name a draft, close it and return to the same clips and layout later.
+- Export drafts to a ZIP, import a backup and choose how long drafts stay in this browser.
+
 ## v0.2.1 - 2026-11-20
 
 - Site access is opt-in. The extension uses temporary access to the current tab when you invoke a toolbar, menu or shortcut action.

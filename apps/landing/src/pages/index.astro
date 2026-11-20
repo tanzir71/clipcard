@@ -12,6 +12,8 @@ import { RELEASED, REPO_URL } from '../config';
 import Site from '../layouts/Site.astro';
 import { previewImage } from '../media';
 import extensionPreview from '../media/feature-extension.webp?url';
+import clipsPreview from '../media/feature-clips.webp?url';
+import draftsPreview from '../media/feature-drafts.webp?url';
 import webAppPreview from '../media/feature-web-app.webp?url';
 import { sitePath } from '../site';
 
@@ -53,6 +55,10 @@ const sourceIcons = ['qr', 'shield', 'edited'] as const;
 const featureKeys = Object.keys(
   features.items,
 ) as (keyof typeof features.items)[];
+const releasedPreviews = {
+  clips: clipsPreview,
+  drafts: draftsPreview,
+};
 const examples = Object.entries(templates.names).filter(
   ([name]) =>
     RELEASED.extension ||
@@ -158,7 +164,9 @@ const schema = [
                 ? RELEASED.extension
                   ? extensionPreview
                   : webAppPreview
-                : previewImage(`feature-${key}`)
+                : (key === 'clips' || key === 'drafts') && RELEASED[key]
+                  ? releasedPreviews[key]
+                  : previewImage(`feature-${key}`)
             }
             alt=""
             width="384"

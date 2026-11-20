@@ -80,4 +80,14 @@ describe('grid layouts', () => {
     const unit = '👨‍👦';
     expect(excerptText(' ' + unit.repeat(281) + ' ')).toBe(unit.repeat(280));
   });
+
+  it.each(['ar', 'ur'])(
+    'keeps the %s source language and RTL direction',
+    (lang) => {
+      const model = gridModel([
+        { ...clip, title: 'شہر کی خبر', text: 'ایک اقتباس', lang },
+      ]);
+      expect(model).toMatchObject({ lang, dir: 'rtl' });
+    },
+  );
 });

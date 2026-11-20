@@ -468,7 +468,10 @@ async function handleRequest(
       return true;
     }
     case 'open':
-      await open(sender.tab, message.id, message.share);
+      if (clipping && message.collection) {
+        await updateDraftCollection(message.collection, { mode: 'card' });
+      }
+      await open(sender.tab, message.id, message.share, message.collection);
       return true;
     case 'allowPhotos':
       await fallback(sender.tab, undefined, undefined, true);

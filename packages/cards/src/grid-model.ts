@@ -12,6 +12,7 @@ export interface GridClip {
   sourceUrl: string | null;
   title: string;
   outlet?: string;
+  lang?: string;
   publishedAt?: string;
   text?: string;
   image?: string;
@@ -135,7 +136,7 @@ export function gridModel(
         : canonicalUrl,
     };
   });
-  const lang = detectLang(headline);
+  const lang = detectLang(headline, clips[0]?.lang);
   return {
     headline,
     mark,

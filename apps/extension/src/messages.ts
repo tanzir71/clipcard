@@ -84,7 +84,13 @@ export type BridgeMessage =
   | { to: 'bridge'; kind: 'tray'; tray: ClipTray };
 
 export type BackgroundMessage =
-  | { to: 'background'; kind: 'open'; id: string; share?: boolean }
+  | {
+      to: 'background';
+      kind: 'open';
+      id: string;
+      share?: boolean;
+      collection?: string;
+    }
   | { to: 'background'; kind: 'allowPhotos' }
   | { to: 'background'; kind: 'paste'; address: string }
   | { to: 'background'; kind: 'remember'; id: string }

@@ -109,6 +109,7 @@ export const archiveSchema = z.object({
       text: text.optional(),
       sourceUrl: url.nullable(),
       outlet: text.optional(),
+      lang: text.optional(),
       publishedAt: text.optional(),
       range: range.optional(),
       rect: point.extend({ width: z.number(), height: z.number() }).optional(),
