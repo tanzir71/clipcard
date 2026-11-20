@@ -81,7 +81,40 @@ const navLinks = [
     <header class="site-header dark">
       <nav class="container nav" aria-label={strings.nav.label}>
         <a class="brand" href={sitePath()}>
-          <img src={mark} width="28" height="28" alt="" />
+          <svg
+            class="brand-mark"
+            aria-hidden="true"
+            focusable="false"
+            width="26"
+            height="26"
+            viewBox="0 0 26 26"
+          >
+            <rect width="26" height="26" rx="7" fill="currentColor" />
+            <rect
+              x="5.5"
+              y="5.5"
+              width="15"
+              height="9"
+              rx="1.4"
+              fill="#0a0a0a"
+            />
+            <rect
+              x="5.5"
+              y="16.5"
+              width="9"
+              height="2.2"
+              rx="0.7"
+              fill="#0a0a0a"
+            />
+            <rect
+              x="16.2"
+              y="16"
+              width="4.3"
+              height="4.3"
+              rx="0.75"
+              fill="#a9bcdf"
+            />
+          </svg>
           {strings.brand}
         </a>
         <div class="nav-links">
