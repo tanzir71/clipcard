@@ -197,9 +197,10 @@ test('bookmark uses the playing video frame and timestamp', async ({
   expect(jsQR(new Uint8ClampedArray(qr), 264, 264)?.data).toBe(
     origin + '/video.html#t=1',
   );
-  await expect(
-    app.locator('.clip-editor-canvas img.cc-photo').first(),
-  ).toBeVisible();
+  await expect(app.locator('.clip-editor-canvas .cc-photo').first()).toHaveCSS(
+    'background-image',
+    /url\(/,
+  );
 });
 
 test('combines three bookmark selections and restores the named Excerpts draft', async ({
