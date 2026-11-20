@@ -213,6 +213,14 @@ test.describe('registered browser actions', () => {
       }
     }
     expect(brightPhotoSamples).toBeGreaterThan(20);
+    if (process.env.CLIPCARD_LANDING_SCREENSHOT) {
+      const viewport = page.viewportSize();
+      if (!viewport) throw new Error('Missing landing capture viewport');
+      await page.screenshot({
+        path: process.env.CLIPCARD_LANDING_SCREENSHOT,
+        clip: { x: viewport.width - 525, y: 0, width: 525, height: 383 },
+      });
+    }
     await clickToastButton(page, 'Copy link for the comment');
     await expect
       .poll(() => page.evaluate(() => navigator.clipboard.readText()))

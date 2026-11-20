@@ -174,7 +174,23 @@ a:focus-visible {
   min-block-size: 26px;
   gap: 6px;
   padding: 4px 8px;
+  background: #f4f4f5;
   font-size: 12px;
+}
+
+.clip-editor-popup .clip-auto span:first-child {
+  inline-size: 6px;
+  block-size: 6px;
+}
+
+.clip-editor-popup .clip-preview-close {
+  border-radius: 0;
+  background: rgb(10 10 10 / 60%);
+}
+
+.clip-editor-popup .clip-preview-close svg {
+  inline-size: 12px;
+  block-size: 12px;
 }
 
 .clip-text-trigger:not(:focus) {
@@ -203,10 +219,19 @@ a:focus-visible {
 .clip-text-shortcuts {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 7px;
+  gap: 8px;
+  padding: 4px 8px;
   overflow-x: auto;
   background: #0a0a0a;
+}
+
+.clip-text-shortcuts > .clip-control-row {
+  flex: none;
+}
+
+.clip-text-shortcuts > .clip-control-row:first-child {
+  padding-inline-end: 15px;
+  border-inline-end: 1px solid rgb(255 255 255 / 20%);
 }
 
 .clip-text-shortcuts .clip-control-row > span {
@@ -227,23 +252,49 @@ a:focus-visible {
 }
 
 .clip-text-shortcuts .clip-segment {
-  padding-inline: 6px;
+  min-inline-size: 40px;
+  padding-inline: 7px;
+  font-weight: 500;
+}
+
+.clip-text-shortcuts .clip-segment:first-child {
+  min-inline-size: 36px;
 }
 
 .clip-text-shortcuts .clip-segment[aria-pressed='true'] {
-  background: #303034;
+  background: #323232;
+  font-weight: 500;
 }
 
-.clip-text-shortcuts .clip-swatch {
-  inline-size: 21px;
+.clip-text-shortcuts .clip-swatch,
+.clip-text-shortcuts .clip-custom-color {
+  inline-size: 22px;
+}
+
+.clip-text-shortcuts .clip-swatch::after {
+  inline-size: 12px;
+  block-size: 12px;
 }
 
 .clip-text-shortcuts .clip-swatch[aria-pressed='true'] {
-  border: 1px solid #fff;
+  border: 0;
 }
 
-.clip-text-shortcuts .clip-custom-color {
+.clip-text-shortcuts .clip-swatch[aria-pressed='true']::before {
+  position: absolute;
   inline-size: 18px;
+  block-size: 18px;
+  border: 1px solid #fff;
+  content: '';
+}
+
+.clip-text-shortcuts .clip-custom-color::-webkit-color-swatch-wrapper {
+  padding: 6px 5px;
+}
+
+.clip-text-shortcuts .clip-custom-color::-webkit-color-swatch {
+  border: 1px dashed rgb(255 255 255 / 55%);
+  background: transparent !important;
 }
 
 .clip-text-palette summary,
@@ -259,7 +310,10 @@ a:focus-visible {
 }
 
 .clip-text-palette {
+  flex: none;
   margin-inline-start: auto;
+  padding-inline-start: 8px;
+  border-inline-start: 1px solid rgb(255 255 255 / 20%);
 }
 
 .clip-text-palette .clip-control-row {
@@ -275,9 +329,7 @@ a:focus-visible {
   padding: 2px 8px;
   width: fit-content;
   text-align: center;
-  text-shadow:
-    0 1px 3px #000,
-    0 0 3px #000;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 60%);
 }
 
 .clip-text-word-menu .clip-text-controls {

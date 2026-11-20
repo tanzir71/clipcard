@@ -2,6 +2,11 @@
 
 Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md).
 
+## 2026-11-20 · R2 popup references
+
+- P1 and P2 show Grid, Video and Save for later. R2 hides those controls as specified in its handover. Copy fills the available space in the action row.
+- The R2 visual comparison masks the surrounding page and includes the full popup. The measured differences after refining the text controls were 3.67% for P1 and 5.02% for P2.
+
 ## 2026-11-20 · R2 extension export
 
 - Chromium’s offscreen document captures the rendered DOM with `modern-screenshot` and encodes the resulting canvas synchronously. Profiling showed that Chromium’s async PNG encoding added about one second when the article tab was in front.

@@ -15,6 +15,7 @@
     "prepare:landing": "node scripts/tokens.ts && pnpm --filter @clipcard/landing prepare:media",
     "test": "node scripts/tokens.ts && vitest run",
     "e2e": "playwright test",
+    "capture:landing": "node apps/landing/scripts/capture-extension.ts",
     "build:landing": "pnpm prepare:landing && pnpm --filter @clipcard/landing build",
     "build:extension": "pnpm prepare:assets && pnpm --filter @clipcard/extension build",
     "build": "pnpm prepare:assets && tsc -b && pnpm --filter @clipcard/extension build && pnpm build:landing && pnpm --filter @clipcard/lite build",
