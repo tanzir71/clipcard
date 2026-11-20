@@ -1,4 +1,4 @@
-import { prepareCardAssets } from './assets.ts';
+import { prepareGridAssets } from './assets.ts';
 import { GridCard } from './components/GridCard.tsx';
 import type { GridModel, GridOptions } from './grid-model.ts';
 import { renderArtwork } from './render-artwork.tsx';
@@ -9,7 +9,7 @@ export async function renderGrid(
   options: GridOptions,
   { chromiumOffscreen = false }: { chromiumOffscreen?: boolean } = {},
 ): Promise<Blob> {
-  const assets = await prepareCardAssets('grid');
+  const assets = await prepareGridAssets(model);
   const [width, height] = tokens.card.formats[options.format];
   return renderArtwork(
     <GridCard model={model} options={options} assets={assets} />,

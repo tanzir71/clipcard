@@ -1,5 +1,5 @@
 {
-  "_note": "Rendering samples for smoke tests: no tofu (missing glyphs), no clipping, correct font family and direction. They are not reviewed translations; don't ship them as copy. glyphTest strings must render with the script's headline font, or its declared fallback. TODO: add a real Zawgyi-encoded Burmese sample captured from a page and assert it is converted to Unicode.",
+  "_note": "Rendering samples for smoke tests. Verify glyphs, clipping, font family and direction. The text is test data. Glyph probes use the bundled headline font or its declared fallback.",
   "samples": [
     { "lang": "en", "dir": "ltr", "text": "New electric river buses cut city commutes in half" },
     { "lang": "bn", "dir": "ltr", "text": "নতুন বৈদ্যুতিক নদী বাসে শহরের যাতায়াতের সময় অর্ধেক" },
@@ -31,5 +31,10 @@
     { "lang": "th", "dir": "ltr", "text": "รถบัสทางน้ำไฟฟ้าใหม่ช่วยลดเวลาเดินทางในเมืองลงครึ่งหนึ่ง" },
     { "lang": "ms", "dir": "ltr", "text": "Bas sungai elektrik baharu memendekkan masa perjalanan bandar separuh" },
     { "lang": "or", "dir": "ltr", "text": "ନୂଆ ବିଦ୍ୟୁତ୍ ନଦୀ ବସ୍ ସହରର ଯାତ୍ରା ସମୟକୁ ଅଧା କମାଇଲା" }
-  ]
+  ],
+  "zawgyi": {
+    "source": "Google Myanmar Tools, resources/mmgov_zawgyi_src.txt, 26 July 2018",
+    "text": "ေနျပည္ေတာ္ ဇူလုိင္ ၂၆",
+    "unicode": "နေပြည်တော် ဇူလိုင် ၂၆"
+  }
 }

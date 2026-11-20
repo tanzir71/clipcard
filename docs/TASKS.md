@@ -47,8 +47,8 @@
 ## M6 · Languages & RTL
 - [ ] `packages/i18n` with locale JSON → `_locales` generator. `en` and `bn` complete; other wave‑1 locales generated and marked `needs-review`.
 - [ ] Card fonts for **every script** in `I18N.md` §2 (30 languages), lazy‑loaded subsets; numerals per §3; Urdu in Lateef; RTL mirroring for `ur`, `ar`, `fa` (cards + UI).
-- [ ] Glyph‑coverage fallback for `ha` and `yo` (Noto Sans); Thai and Burmese line breaking with `Intl.Segmenter`; Zawgyi → Unicode for Burmese.
-- [ ] Snapshot tests for bn, hi, ur cards against the PNGs, plus smoke renders (no tofu, no clipping) for every other script, with one sample headline per language in `fixtures/headlines.json`.
+- [x] Glyph‑coverage fallback for `ha` and `yo` (Noto Sans); Thai and Burmese line breaking with `Intl.Segmenter`; Zawgyi → Unicode for Burmese.
+- [x] Snapshot tests for bn, hi, ur cards against the PNGs, plus smoke renders (no tofu, no clipping) for every other script, with one sample headline per language in `fixtures/headlines.json`.
 
 ## M7 · Welcome & settings
 - [ ] Welcome (O1): language chips, handle, permission. It opens on install.

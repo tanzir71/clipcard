@@ -21,7 +21,10 @@ export default defineConfig(async ({ command }) => {
         registerType: 'autoUpdate',
         injectRegister: false,
         injectManifest: {
-          globPatterns: ['**/*.{js,css,html,png,svg,woff2,webmanifest}'],
+          globPatterns: [
+            '**/*.{js,css,html,png,svg,webmanifest}',
+            '**/{geist*,libre-caslon-text*,schibsted-grotesk*}.woff2',
+          ],
         },
         includeAssets: ['icon/*.png'],
         manifest: {

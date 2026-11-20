@@ -8,6 +8,7 @@ import type {
   GridSource,
 } from '../grid-model.ts';
 import { tokens } from '../tokens.ts';
+import { typefaceFor } from '../typefaces.ts';
 import { Qr } from './Qr.tsx';
 import '../card.css';
 import '../grid.css';
@@ -15,7 +16,15 @@ import '../grid.css';
 const imageStyle = (image?: string) =>
   image ? { backgroundImage: 'url(' + JSON.stringify(image) + ')' } : undefined;
 
-function ClipCell({ clip }: { clip: GridClip }) {
+function ClipCell({
+  clip,
+  lang,
+  assets,
+}: {
+  clip: GridClip;
+  lang: string;
+  assets: CardAssets;
+}) {
   if (clip.image && clip.kind !== 'text') {
     return (
       <div
@@ -27,13 +36,28 @@ function ClipCell({ clip }: { clip: GridClip }) {
       />
     );
   }
+  const text = clip.text || clip.title;
+  const language = clip.lang ?? lang;
+  const face = typefaceFor(text, language);
   return (
     <div
       className="cc-grid-extract"
       data-quote={clip.kind === 'text' || undefined}
     >
       {clip.kind === 'text' ? <span aria-hidden="true">“</span> : null}
-      <p dir="auto">{clip.text || clip.title}</p>
+      <p
+        dir="auto"
+        lang={language}
+        style={
+          face && {
+            fontFamily: '"' + face.family + '", "Libre Caslon Text", serif',
+            fontWeight: face.weight,
+            letterSpacing: 'normal',
+          }
+        }
+      >
+        {assets.converted.get(text) ?? text}
+      </p>
     </div>
   );
 }
@@ -51,7 +75,15 @@ function sourceMeta(clip?: GridClip, lang = 'en'): string {
   return [date, outlet].filter(Boolean).join(' · ');
 }
 
-function SourceCell({ source, lang }: { source: GridSource; lang: string }) {
+function SourceCell({
+  source,
+  lang,
+  assets,
+}: {
+  source: GridSource;
+  lang: string;
+  assets: CardAssets;
+}) {
   const [first] = source.clips;
   const meta = sourceMeta(first, lang);
   return (
@@ -61,7 +93,7 @@ function SourceCell({ source, lang }: { source: GridSource; lang: string }) {
     >
       <div className="cc-grid-source-items">
         {source.clips.map((clip) => (
-          <ClipCell key={clip.id} clip={clip} />
+          <ClipCell key={clip.id} clip={clip} assets={assets} lang={lang} />
         ))}
       </div>
       {meta ? <div className="cc-grid-source-meta">{meta}</div> : null}
@@ -89,6 +121,7 @@ export function GridCard({
   assets: CardAssets;
 }) {
   const { layout, clips, sources } = model;
+  const face = typefaceFor(model.headline, model.lang);
   const { format, theme = THEMES.midnight } = options;
   const [width, height] = tokens.card.formats[format];
   const excerpt = layout === 'excerpts';
@@ -148,12 +181,31 @@ export function GridCard({
                 key={source.canonicalUrl ?? ''}
                 source={source}
                 lang={model.lang}
+                assets={assets}
               />
             ))
-          : clips.map((clip) => <ClipCell key={clip.id} clip={clip} />)}
+          : clips.map((clip) => (
+              <ClipCell
+                key={clip.id}
+                clip={clip}
+                assets={assets}
+                lang={model.lang}
+              />
+            ))}
       </div>
       <footer className="cc-grid-footer" data-qr={Boolean(mainQr) || undefined}>
-        <p className="cc-grid-headline">{model.headline}</p>
+        <p
+          className="cc-grid-headline"
+          style={
+            face && {
+              fontFamily: '"' + face.family + '", "Libre Caslon Text", serif',
+              fontWeight: face.strong,
+              letterSpacing: 'normal',
+            }
+          }
+        >
+          {assets.converted.get(model.headline) ?? model.headline}
+        </p>
         {meta ? <p className="cc-grid-meta">{meta}</p> : null}
         {mainQr ? <Qr url={mainQr} size={128} minModulePx={2} /> : null}
       </footer>

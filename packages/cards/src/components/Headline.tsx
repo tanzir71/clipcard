@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { Fragment, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { fitText } from '../fit-text.ts';
 import type { EmphasisStyle } from '../model.ts';
@@ -6,6 +6,8 @@ import type { TextRange } from '@clipcard/core';
 
 interface Props {
   title: string;
+  wordBreakLocale?: 'th' | 'my';
+  boxWidthRatio?: number;
   range?: TextRange | null;
   secondRange?: TextRange;
   emphasis: EmphasisStyle;
@@ -20,8 +22,25 @@ interface Props {
   secondLine?: boolean;
 }
 
+const wordSegmenters = {
+  my: new Intl.Segmenter('my', { granularity: 'word' }),
+  th: new Intl.Segmenter('th', { granularity: 'word' }),
+};
+
+function withWordBreaks(text: string, locale?: Props['wordBreakLocale']) {
+  if (!locale) return text;
+  return Array.from(wordSegmenters[locale].segment(text), (part) => (
+    <Fragment key={part.index}>
+      {part.index > 0 && part.isWordLike ? <wbr /> : null}
+      {part.segment}
+    </Fragment>
+  ));
+}
+
 export function Headline({
   title,
+  wordBreakLocale,
+  boxWidthRatio = 0.75,
   range,
   secondRange,
   emphasis,
@@ -52,10 +71,16 @@ export function Headline({
     measure.style.fontFamily = defined.fontFamily;
     measure.style.fontWeight = defined.fontWeight;
     measure.style.fontSize = maxSize + 'px';
+    const card = element.closest('article');
+    measure.lang = card?.lang ?? '';
+    measure.dir = card?.dir ?? '';
     document.body.append(measure);
     try {
       const highlight = title.slice(start, end);
-      const maxLine = Math.min(element.clientWidth * 0.75, maxSize * 14);
+      const maxLine = Math.min(
+        element.clientWidth * boxWidthRatio,
+        maxSize * 14,
+      );
       measure.textContent = highlight;
       if (measure.offsetWidth + 20 <= maxLine) {
         setBreakAt(0);
@@ -72,7 +97,7 @@ export function Headline({
     } finally {
       measure.remove();
     }
-  }, [shapeBox, title, start, end, maxSize]);
+  }, [shapeBox, title, start, end, maxSize, boxWidthRatio]);
 
   const wrappedKey = shapeBox && breakAt > start && breakAt < end;
   const extra =
@@ -125,6 +150,7 @@ export function Headline({
     WebkitLineClamp: lines,
     '--cc-key': keyColor,
   } as CSSProperties;
+  const words = (text: string) => withWordBreaks(text, wordBreakLocale);
 
   return (
     <div
@@ -135,37 +161,37 @@ export function Headline({
     >
       {validRange && secondLine && start > 0 ? (
         <>
-          {title.slice(0, start).trimEnd()}
+          {words(title.slice(0, start).trimEnd())}
           <br />
           <span className="cc-duotone-key">
-            <strong>{title.slice(start, end)}</strong>
-            {title.slice(end)}
+            <strong>{words(title.slice(start, end))}</strong>
+            {words(title.slice(end))}
           </span>
         </>
       ) : validRange ? (
         <>
-          {title.slice(0, start)}
+          {words(title.slice(0, start))}
           {wrappedKey ? (
             <>
-              <strong>{title.slice(start, breakAt)}</strong>
+              <strong>{words(title.slice(start, breakAt))}</strong>
               <br />
-              <strong>{title.slice(breakAt, end).trimStart()}</strong>
+              <strong>{words(title.slice(breakAt, end).trimStart())}</strong>
             </>
           ) : (
-            <strong>{title.slice(start, end)}</strong>
+            <strong>{words(title.slice(start, end))}</strong>
           )}
           {extra ? (
             <>
-              {title.slice(end, extra[0])}
-              <strong>{title.slice(extra[0], extra[1])}</strong>
-              {title.slice(extra[1])}
+              {words(title.slice(end, extra[0]))}
+              <strong>{words(title.slice(extra[0], extra[1]))}</strong>
+              {words(title.slice(extra[1]))}
             </>
           ) : (
-            title.slice(end)
+            words(title.slice(end))
           )}
         </>
       ) : (
-        title
+        words(title)
       )}
     </div>
   );

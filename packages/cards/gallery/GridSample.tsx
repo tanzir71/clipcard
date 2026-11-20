@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import strings from '@clipcard/i18n/en';
-import { prepareCardAssets } from '../src/assets.ts';
+import { prepareGridAssets } from '../src/assets.ts';
 import type { CardAssets } from '../src/assets.ts';
 import { GridCard } from '../src/components/GridCard.tsx';
 import { renderGrid } from '../src/grid-export.tsx';
@@ -17,10 +17,10 @@ export function GridSample({ id, model }: { id: string; model: GridModel }) {
   const scale = previewWidth / width;
 
   useEffect(() => {
-    prepareCardAssets('grid')
+    prepareGridAssets(model)
       .then(setAssets)
       .catch(() => setError(true));
-  }, []);
+  }, [model]);
 
   async function download() {
     try {

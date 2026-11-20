@@ -8,7 +8,7 @@
     "node": ">=24.16.0"
   },
   "scripts": {
-    "prepare:assets": "node scripts/tokens.ts && node scripts/icons.ts && node packages/i18n/scripts/gen-locales.ts",
+    "prepare:assets": "node scripts/tokens.ts && node scripts/icons.ts && node packages/i18n/scripts/gen-locales.ts && node scripts/font-licenses.ts",
     "dev:ext": "pnpm prepare:assets && pnpm --filter @clipcard/extension dev",
     "dev:landing": "pnpm prepare:landing && pnpm --filter @clipcard/landing dev",
     "dev:gallery": "node scripts/tokens.ts && vite --config packages/cards/gallery/vite.config.ts",

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { gridModel } from '@clipcard/cards/grid-model';
-import { prepareCardAssets } from '@clipcard/cards/assets';
+import { prepareGridAssets } from '@clipcard/cards/assets';
 import { GridCard } from '@clipcard/cards/grid-view';
 import type { ComponentProps } from 'react';
 import { cardFromCollection } from '../collection-card.ts';
@@ -33,22 +33,22 @@ export function CollectionThumbnail({ draft }: { draft: ClipDraft }) {
       const collection = await getDraftCollection(id);
       if (!collection || !active) return;
       if (mode === 'grid') {
-        const [clips, assets] = await Promise.all([
-          gridClipsForCollection(collection, (blob) => {
-            if (!active) return undefined;
-            const url = URL.createObjectURL(blob);
-            urls.push(url);
-            return url;
-          }),
-          prepareCardAssets('grid'),
-        ]);
+        const clips = await gridClipsForCollection(collection, (blob) => {
+          if (!active) return undefined;
+          const url = URL.createObjectURL(blob);
+          urls.push(url);
+          return url;
+        });
+        if (!active) return;
+        const model = gridModel(clips, {
+          headline: collection.draft.title,
+          layout: collection.draft.gridLayout,
+        });
+        const assets = await prepareGridAssets(model);
         if (active)
           setPreview({
             grid: {
-              model: gridModel(clips, {
-                headline: collection.draft.title,
-                layout: collection.draft.gridLayout,
-              }),
+              model,
               options: {
                 format: '4:5',
                 theme: collection.draft.overrides.theme,

@@ -496,3 +496,40 @@
     400 21px/28px 'Geist',
     sans-serif;
 }
+
+.cc-card[data-script-face]
+  :is(.cc-headline, .cc-meta, .cc-kicker, .cc-attribution, .cc-caps-title p) {
+  font-family: var(--cc-script-face), sans-serif;
+  font-weight: var(--cc-script-weight);
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.cc-card[data-script-face] :is(.cc-headline strong, .cc-panel-kicker) {
+  font-family: var(--cc-script-face), sans-serif;
+  font-weight: var(--cc-script-strong);
+  letter-spacing: normal;
+}
+
+.cc-card[data-script-face] .cc-panel-kicker span {
+  font-weight: var(--cc-script-weight);
+}
+
+.cc-header:is([data-script-face='bengali'], [data-script-face='devanagari'])
+  .cc-headline {
+  margin-block-start: 14px;
+}
+
+.cc-header:is([data-script-face='bengali'], [data-script-face='devanagari'])
+  .cc-meta {
+  margin-block-start: 26px;
+}
+
+.cc-header[data-script-face='devanagari'][data-format='4:5'] .cc-headline {
+  inline-size: 72%;
+  margin-block-start: 12px;
+}
+
+.cc-header[data-script-face='devanagari'][data-format='4:5'] .cc-meta {
+  margin-block-start: 28px;
+}

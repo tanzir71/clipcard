@@ -1,0 +1,36 @@
+diff --git a/build_node/zawgyi_detector.js b/build_node/zawgyi_detector.js
+index 7e9060df07fa4aee00356ce3c5b7e0de7dc979cb..a95e7b67bdf7879fc01c85c9621c2feef1aa0d51 100644
+--- a/build_node/zawgyi_detector.js
++++ b/build_node/zawgyi_detector.js
+@@ -109,15 +109,9 @@ function checkMagicNumberAndVersion(stream, offset, expectedBinaryTagLead, expec
+ // This is different on Node vs Browser.
+ var getArrayBuffer;
+ getArrayBuffer = function () {
+-    // Buffer is defined on Node
+-    // @ts-ignore
+-    var nodeBuffer = new Buffer(DATA, "base64");
+-    var arrayBuffer = new ArrayBuffer(nodeBuffer.length);
+-    var u8view = new Uint8Array(arrayBuffer);
+-    for (var i = 0; i < nodeBuffer.length; i++) {
+-        u8view[i] = nodeBuffer[i];
+-    }
+-    return arrayBuffer;
++    return Uint8Array.from(atob(DATA), function (character) {
++        return character.charCodeAt(0);
++    }).buffer;
+ };
+ var BinaryMarkov = /** @class */ (function () {
+     function BinaryMarkov(stream, offset) {
+diff --git a/index.d.ts b/index.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..ce313d2e5b163d9631298b84e14d10a41115b824
+--- /dev/null
++++ b/index.d.ts
+@@ -0,0 +1,7 @@
++export class ZawgyiDetector {
++  getZawgyiProbability(text: string): number;
++}
++
++export class ZawgyiConverter {
++  zawgyiToUnicode(text: string): string;
++}
