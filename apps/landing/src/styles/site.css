@@ -129,9 +129,12 @@ body {
   font-weight: 600;
   text-decoration: none;
 }
-.site-header .brand img {
-  background: #fff;
-  border-radius: 7px;
+.site-header .brand {
+  gap: 10px;
+}
+.brand-mark {
+  display: block;
+  flex: none;
 }
 .nav-links {
   display: flex;
@@ -531,7 +534,7 @@ body {
     min-block-size: 56px;
     justify-content: space-between;
   }
-  .site-header .brand img {
+  .brand-mark {
     inline-size: 24px;
     block-size: 24px;
   }
