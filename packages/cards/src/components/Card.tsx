@@ -32,7 +32,7 @@ const typography = {
     lines: 4,
     family: 'Schibsted Grotesk',
   },
-  duotone: { size: 52, line: 61, min: 32, lines: 3, family: 'Geist' },
+  duotone: { size: 53, line: 62, min: 32, lines: 3, family: 'Geist' },
   solid: { size: 62, line: 82, min: 38, lines: 4, family: 'Libre Caslon Text' },
   quote: { size: 44, line: 60, min: 28, lines: 5, family: 'Libre Caslon Text' },
 } as const;
@@ -243,11 +243,7 @@ export function Card({ model, options, assets }: CardProps) {
   const keyColor = options.keyColor ?? theme.light;
   const textColor = options.textColor ?? TEXT_COLORS.white;
   const typographyForTemplate = typography[template];
-  const sizing = wideSplit
-    ? { size: 44, line: 56 }
-    : template === 'duotone' && format === '1:1'
-      ? { size: 53, line: 62 }
-      : typographyForTemplate;
+  const sizing = wideSplit ? { size: 44, line: 56 } : typographyForTemplate;
   const size = Math.round(
     sizing.size * Math.min(width / 1080, wide ? height / 900 : 1, 1),
   );
