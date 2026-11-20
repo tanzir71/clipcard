@@ -16,6 +16,18 @@ test('fits the viewport and sends the canonical URL with the share sheet', async
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
     await page.evaluate(() => window.innerWidth),
   );
+  const hero = page.locator('.hero-copy');
+  await expect(hero.locator('.app-shortcut-paths')).toBeHidden();
+  const paste = hero.getByRole('textbox', { name: 'Paste a link or text' });
+  await expect(paste).toBeVisible();
+  const install = await hero
+    .getByRole('button', { name: 'Install the app' })
+    .boundingBox();
+  const share = await hero
+    .getByRole('button', { name: 'Send to my computer' })
+    .boundingBox();
+  expect(install?.height).toBe(48);
+  expect(share && install && share.y > install.y + install.height).toBe(true);
   await page
     .getByRole('button', { name: 'Send to my computer' })
     .first()

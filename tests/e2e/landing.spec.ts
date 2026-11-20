@@ -8,7 +8,7 @@ test('shows the web app, upcoming features and keyboard-accessible FAQ', async (
 }) => {
   await page.goto('./');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-    'Share the news as cards',
+    'Share the news as cards and grids',
   );
   await expect(page.getByText('Soon', { exact: true })).toHaveCount(3);
   await expect(
@@ -17,16 +17,32 @@ test('shows the web app, upcoming features and keyboard-accessible FAQ', async (
   await expect(
     page.getByRole('link', { name: 'Download for Chrome' }),
   ).toBeVisible();
-  const centerOffset = await page.locator('.hero-copy').evaluate((hero) => {
-    const actions = [...hero.querySelectorAll('.extension-hero-actions a')].map(
+  const paths = page.locator('.app-shortcut-paths');
+  await expect(paths.getByRole('link')).toHaveText([
+    'Download for Chrome',
+    'Clipcard drag to bookmarks',
+    'Open full app',
+  ]);
+  await expect(paths.locator('[draggable="true"]')).toHaveAttribute(
+    'href',
+    /^javascript:/,
+  );
+  const geometry = await page.locator('.hero-copy').evaluate((hero) => {
+    const actions = [...hero.querySelectorAll('.app-shortcut-paths a')].map(
       (link) => link.getBoundingClientRect(),
     );
     const left = Math.min(...actions.map((box) => box.left));
     const right = Math.max(...actions.map((box) => box.right));
     const paste = hero.querySelector('.app-shortcut')!.getBoundingClientRect();
-    return Math.abs((left + right - paste.left - paste.right) / 2);
+    return {
+      centerOffset: Math.abs((left + right - paste.left - paste.right) / 2),
+      gapAfterPaste: Math.min(...actions.map((box) => box.top)) - paste.bottom,
+      formHeight: paste.height,
+    };
   });
-  expect(centerOffset).toBeLessThanOrEqual(1);
+  expect(geometry.centerOffset).toBeLessThanOrEqual(1);
+  expect(geometry.gapAfterPaste).toBeCloseTo(50, 0);
+  expect(geometry.formHeight).toBe(60);
   await expect(
     page.getByRole('link', { name: 'Web app', exact: true }),
   ).toHaveAttribute('href', '/clipcard/app/');
@@ -46,9 +62,6 @@ test('shows the web app, upcoming features and keyboard-accessible FAQ', async (
   await expect(
     install.getByRole('button', { name: 'Copy build command' }),
   ).toBeVisible();
-  await expect(
-    page.getByRole('link', { name: 'No install? Use the bookmark' }),
-  ).toHaveAttribute('href', '#bookmark');
   await expect(page.locator('.language-words li')).toHaveCount(30);
   for (const [lang, font] of [
     ['ur', 'Lateef'],
@@ -85,7 +98,7 @@ test('serves valid HTML, discovery metadata and legal and changelog pages', asyn
     rules: { 'require-sri': ['error', { target: 'crossorigin' }] },
   });
   for (const [path, heading] of [
-    ['./', 'Share the news as cards'],
+    ['./', 'Share the news as cards and grids'],
     ['privacy/', 'Privacy'],
     ['changelog/', 'Changelog'],
   ] as const) {

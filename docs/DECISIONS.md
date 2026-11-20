@@ -85,6 +85,10 @@ Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md)
 - A web app opened from a translated landing page remembers that language locally. Its card language still follows the source by default. Extension quick controls use the interface language chosen in Settings.
 - Chrome's manifest locale table omits Urdu and Burmese. In-app settings support both languages, while the manifest publisher emits only Chrome-supported locales. Wave-one translations remain drafts pending native review.
 
+## Landing hero
+
+- The hero follows the desktop and mobile layouts in Figma's Landing page. The title and lead describe the released card and grid features. The desktop note explains the Developer mode install, and the mobile note describes offline access to recent cards.
+
 ## R4 · Translated landing pages
 
 - Language changes preserve the page type on the landing and privacy pages. The changelog remains a shared release log.
