@@ -4,3 +4,5 @@ packages:
 onlyBuiltDependencies:
   - esbuild
   - sharp
+patchedDependencies:
+  myanmar-tools@1.1.3: patches/myanmar-tools@1.1.3.patch

@@ -1,14 +1,21 @@
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import strings from '@clipcard/i18n/en';
+import { FLAGS } from '@clipcard/core/flags';
 import { prepareCardAssets } from '../src/assets.ts';
 import type { CardAssets } from '../src/assets.ts';
 import { Card } from '../src/components/Card.tsx';
 import { renderCard } from '../src/export.tsx';
 import { tokens } from '../src/tokens.ts';
+import { typefaceFor } from '../src/typefaces.ts';
 import { samples } from './samples.ts';
 import { GridSample } from './GridSample.tsx';
 import { gridSamples } from './grid-samples.ts';
+import {
+  encodingSamples,
+  languageReferences,
+  languageSamples,
+} from './language-samples.ts';
 import './style.css';
 
 function Sample({ sample }: { sample: (typeof samples)[number] }) {
@@ -20,10 +27,14 @@ function Sample({ sample }: { sample: (typeof samples)[number] }) {
   const scale = previewWidth / width;
 
   useEffect(() => {
-    prepareCardAssets(template)
+    prepareCardAssets(
+      template,
+      [typefaceFor(model.headline, model.lang, model.script)],
+      [model.headline],
+    )
       .then(setAssets)
       .catch(() => setError(true));
-  }, [template]);
+  }, [template, model]);
 
   async function download() {
     try {
@@ -79,6 +90,10 @@ if (root)
         {gridSamples.map((sample) => (
           <GridSample key={sample.id} {...sample} />
         ))}
+        {FLAGS.languages &&
+          [...languageReferences, ...languageSamples, ...encodingSamples].map(
+            (sample) => <Sample key={sample.id} sample={sample} />,
+          )}
       </div>
     </main>,
   );

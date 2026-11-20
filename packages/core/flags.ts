@@ -1,6 +1,8 @@
 const env = import.meta.env;
 const clipPreview = env?.DEV === true || env?.MODE === 'r3-preview';
+const languagePreview = env?.DEV === true || env?.MODE === 'r4-preview';
 export const CLIP_DRAFTS_RELEASED = true;
+export const CARD_LANGUAGES_RELEASED = false;
 
 export const FLAGS = {
   app: env?.DEV === true && env.VITE_CLIPCARD_APP === '1',
@@ -11,7 +13,9 @@ export const FLAGS = {
     CLIP_DRAFTS_RELEASED || (clipPreview && env?.VITE_CLIPCARD_CLIPS === '1'),
   drafts:
     CLIP_DRAFTS_RELEASED || (clipPreview && env?.VITE_CLIPCARD_DRAFTS === '1'),
-  languages: env?.DEV === true && env.VITE_CLIPCARD_LANGUAGES === '1',
+  languages:
+    CARD_LANGUAGES_RELEASED ||
+    (languagePreview && env?.VITE_CLIPCARD_LANGUAGES === '1'),
   videoClips: env?.DEV === true && env.VITE_CLIPCARD_VIDEO_CLIPS === '1',
   videoJoin: env?.DEV === true && env.VITE_CLIPCARD_VIDEO_JOIN === '1',
   gifs: env?.DEV === true && env.VITE_CLIPCARD_GIFS === '1',

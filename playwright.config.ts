@@ -51,7 +51,11 @@ export default defineConfig({
     },
   ],
   webServer: [
-    { command: 'pnpm dev:gallery --port ' + (port + 2), url: local(2) + '/' },
+    {
+      command: 'pnpm dev:gallery --port ' + (port + 2),
+      url: local(2) + '/',
+      env: { VITE_CLIPCARD_LANGUAGES: '1' },
+    },
     {
       command:
         'node scripts/serve-static.ts ' +

@@ -7,6 +7,7 @@ import {
   textFragment,
 } from '@clipcard/core';
 import { tokens } from './tokens.ts';
+import type { Numerals } from './numerals.ts';
 
 export const CARD_TEMPLATES = [
   'header',
@@ -59,6 +60,7 @@ export interface CardOptions {
   emphasis?: EmphasisStyle;
   keyColor?: string;
   textColor?: string;
+  numerals?: Numerals;
 }
 
 export function chooseTemplate(model: CardModel): Template {

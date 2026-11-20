@@ -3,6 +3,7 @@ import { prepareCardAssets } from './assets.ts';
 import type { CardModel, CardOptions } from './model.ts';
 import { renderArtwork } from './render-artwork.tsx';
 import { tokens } from './tokens.ts';
+import { typefaceFor } from './typefaces.ts';
 
 export async function renderCard(
   model: CardModel,
@@ -10,7 +11,11 @@ export async function renderCard(
   { chromiumOffscreen = false }: { chromiumOffscreen?: boolean } = {},
 ): Promise<Blob> {
   const [width, height] = tokens.card.formats[options.format];
-  const assets = await prepareCardAssets(options.template);
+  const assets = await prepareCardAssets(
+    options.template,
+    [typefaceFor(model.headline, model.lang, model.script)],
+    [model.headline],
+  );
   return renderArtwork(
     <Card model={model} options={options} assets={assets} />,
     width,

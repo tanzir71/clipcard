@@ -5,6 +5,7 @@ import type { CardModel, CardOptions } from '@clipcard/cards';
 import { tokens } from '@clipcard/cards';
 import { prepareCardAssets } from '@clipcard/cards/assets';
 import type { CardAssets } from '@clipcard/cards/assets';
+import { typefaceFor } from '@clipcard/cards/typefaces';
 import strings from '@clipcard/i18n/en';
 import { modelForDraft, optionsForDraft } from '../draft.ts';
 import type { CardDraft } from '../draft.ts';
@@ -47,28 +48,33 @@ export function CardPreview({
   const viewport = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
   const [ready, setReady] = useState<{
-    template: CardOptions['template'];
+    key: string;
     assets: CardAssets;
   } | null>(null);
-  const [failure, setFailure] = useState<CardOptions['template'] | null>(null);
+  const [failure, setFailure] = useState<string | null>(null);
   const template = options.template;
+  const typeface = typefaceFor(model.headline, model.lang, model.script);
+  const convertText =
+    typeface && model.script === 'myanmar' ? model.headline : '';
+  const assetKey =
+    template + ':' + (typeface?.family ?? '') + ':' + convertText;
 
   useEffect(() => {
     let live = true;
-    prepareCardAssets(template)
+    prepareCardAssets(template, [typeface], [convertText])
       .then((assets) => {
         if (live) {
-          setReady({ template, assets });
+          setReady({ key: assetKey, assets });
           setFailure(null);
         }
       })
       .catch(() => {
-        if (live) setFailure(template);
+        if (live) setFailure(assetKey);
       });
     return () => {
       live = false;
     };
-  }, [template]);
+  }, [template, typeface, assetKey, convertText]);
 
   useEffect(() => {
     const div = viewport.current;
@@ -92,14 +98,14 @@ export function CardPreview({
       onClick={onHeadline ? click : undefined}
       style={{ maxWidth, aspectRatio: naturalWidth + ' / ' + naturalHeight }}
     >
-      {ready?.template === template && width > 0 ? (
+      {ready?.key === assetKey && width > 0 ? (
         <div
           className="clip-preview-scale"
           style={{ transform: 'scale(' + width / naturalWidth + ')' }}
         >
           <Card model={model} options={options} assets={ready.assets} />
         </div>
-      ) : failure === template ? (
+      ) : failure === assetKey ? (
         <p role="alert">{strings['card.renderFailed']}</p>
       ) : null}
     </div>

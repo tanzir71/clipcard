@@ -2,6 +2,12 @@
 
 Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md).
 
+## R4 · Card languages
+
+- Header uses Anek Bangla and Mukta at regular and semibold weights, following the matching artworks and the role weights in DESIGN §3. Urdu Split uses Lateef. All three exported fixtures match their references within 2%.
+- The Myanmar Tools 1.2.0 npm tarball omits its built JavaScript. Use 1.1.3 with a local patch that decodes the bundled model using `atob`. It runs only when artwork contains Myanmar script. The original selection remains available for the source link. [Myanmar Tools](https://github.com/google/myanmar-tools)
+- The app loads script font subsets on first use and caches those fonts locally for offline export. The Chromium preview package contains 2.07 MB of WOFF2 assets. Font and Myanmar Tools notices travel with the builds.
+
 ## 2026-11-20 · R2 host permissions
 
 - The published v0.2.0 manifest contained required HTTP and HTTPS host matches. WXT adds them for content scripts configured with runtime registration.

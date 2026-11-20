@@ -2,10 +2,14 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { CARD_FORMATS, tokens } from '@clipcard/cards';
 import type { Format } from '@clipcard/cards';
-import { prepareCardAssets } from '@clipcard/cards/assets';
+import { prepareGridAssets } from '@clipcard/cards/assets';
 import type { CardAssets } from '@clipcard/cards/assets';
 import { gridLayouts, gridModel } from '@clipcard/cards/grid-model';
-import type { GridClip, GridLayout } from '@clipcard/cards/grid-model';
+import type {
+  GridClip,
+  GridLayout,
+  GridModel,
+} from '@clipcard/cards/grid-model';
 import { GridCard } from '@clipcard/cards/grid-view';
 import strings from '@clipcard/i18n/en';
 import { copyPng, downloadPng, shareFile } from '../actions.ts';
@@ -41,7 +45,7 @@ export function GridEditor({
   const dragging = useRef<string | undefined>(undefined);
   const viewport = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
-  const [assets, setAssets] = useState<CardAssets>();
+  const [art, setArt] = useState<{ model: GridModel; assets: CardAssets }>();
   const [loaded, setLoaded] = useState<{
     forClips: typeof clips;
     grid: GridClip[];
@@ -51,20 +55,6 @@ export function GridEditor({
   const [share, setShare] = useState(false);
   const [working, setWorking] = useState(false);
   const [status, setStatus] = useState('');
-
-  useEffect(() => {
-    let active = true;
-    void prepareCardAssets('grid')
-      .then((value) => {
-        if (active) setAssets(value);
-      })
-      .catch(() => {
-        if (active) setStatus(strings['card.renderFailed']);
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -117,6 +107,21 @@ export function GridEditor({
       gridModel(grid, { headline: draft.title, layout: draft.gridLayout }),
     [grid, draft.title, draft.gridLayout],
   );
+  useEffect(() => {
+    if (!model) return;
+    let active = true;
+    void prepareGridAssets(model)
+      .then((assets) => {
+        if (active) setArt({ model, assets });
+      })
+      .catch(() => {
+        if (active) setStatus(strings['card.renderFailed']);
+      });
+    return () => {
+      active = false;
+    };
+  }, [model]);
+  const assets = art?.model === model ? art?.assets : undefined;
   const supported = grid ? gridLayouts(grid) : [];
   const options = {
     format: draft.overrides.format ?? '4:5',

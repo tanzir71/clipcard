@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
+import { CacheFirst } from 'workbox-strategies';
 import { draftFromInput } from '@clipcard/ui/input';
 import { FLAGS } from '@clipcard/core/flags';
 import { appendCardDraft } from '@clipcard/ui/collection-card';
@@ -19,6 +20,15 @@ registerRoute(
     createHandlerBoundToURL(new URL('index.html', scope).href),
   ),
 );
+if (FLAGS.languages) {
+  registerRoute(
+    ({ sameOrigin, url }) =>
+      sameOrigin &&
+      url.pathname.startsWith(scope.pathname + 'assets/') &&
+      url.pathname.endsWith('.woff2'),
+    new CacheFirst({ cacheName: 'clipcard-script-fonts' }),
+  );
+}
 
 self.addEventListener('install', () => void self.skipWaiting());
 self.addEventListener('activate', (event) =>

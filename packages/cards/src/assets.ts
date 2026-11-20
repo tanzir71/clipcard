@@ -4,7 +4,11 @@ import geist from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff
 import mono from '@fontsource-variable/geist-mono/files/geist-mono-latin-wght-normal.woff2?url';
 import grotesk from '@fontsource-variable/schibsted-grotesk/files/schibsted-grotesk-latin-wght-normal.woff2?url';
 import type { Template } from './model.ts';
+import type { GridModel } from './grid-model.ts';
 import { prepareGrain } from './texture.ts';
+import type { Typeface } from './typefaces.ts';
+import { typefaceFor } from './typefaces.ts';
+import { prepareCardText } from './card-text.ts';
 
 const FONT_FILES = {
   geist: ['Geist', geist, '100 900'],
@@ -24,8 +28,13 @@ const fontsFor = {
   quote: ['serif', 'serifBold', 'mono', 'geist', 'caps'],
   grid: ['serif', 'serifBold', 'mono', 'geist'],
 } as const;
-type Font = keyof typeof FONT_FILES;
-const loaded = new Map<Font, Promise<string>>();
+type FontFile = readonly [
+  family: string,
+  url: string,
+  weight: string,
+  unicodeRange?: string,
+];
+const loaded = new Map<string, Promise<string>>();
 
 export function dataUrlFor(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -36,11 +45,11 @@ export function dataUrlFor(blob: Blob): Promise<string> {
   });
 }
 
-function loadFont(font: Font) {
-  const pending = loaded.get(font);
+function loadFont([family, url, weight, unicodeRange]: FontFile) {
+  const key = family + '\n' + weight + '\n' + url;
+  const pending = loaded.get(key);
   if (pending) return pending;
 
-  const [family, url, weight] = FONT_FILES[font];
   const next = (async () => {
     const response = await fetch(url, { cache: 'force-cache' });
     if (!response.ok) throw new Error('Could not load ' + family);
@@ -48,6 +57,7 @@ function loadFont(font: Font) {
     const face = await new FontFace(family, bytes, {
       weight,
       style: 'normal',
+      unicodeRange,
     }).load();
     document.fonts.add(face);
     const data = await dataUrlFor(new Blob([bytes], { type: 'font/woff2' }));
@@ -56,29 +66,56 @@ function loadFont(font: Font) {
       family +
       '";font-weight:' +
       weight +
-      ';font-style:normal;src:url("' +
+      ';font-style:normal;' +
+      (unicodeRange ? 'unicode-range:' + unicodeRange + ';' : '') +
+      'src:url("' +
       data +
       '") format("woff2")}'
     );
   })().catch((error: unknown) => {
-    loaded.delete(font);
+    loaded.delete(key);
     throw error;
   });
-  loaded.set(font, next);
+  loaded.set(key, next);
   return next;
 }
 
 export interface CardAssets {
   grain: string;
   fontCss: string;
+  converted: ReadonlyMap<string, string>;
 }
 
 export async function prepareCardAssets(
   template: Template | 'grid',
+  typefaces: Iterable<Typeface | undefined> = [],
+  texts: Iterable<string> = [],
 ): Promise<CardAssets> {
-  const [grain, fonts] = await Promise.all([
+  const files: FontFile[] = fontsFor[template].map((font) => FONT_FILES[font]);
+  for (const typeface of new Set(typefaces)) {
+    if (!typeface) continue;
+    for (const [url, weight, unicodeRange] of typeface.files)
+      files.push([typeface.family, url, String(weight), unicodeRange]);
+  }
+  const [grain, fonts, converted] = await Promise.all([
     prepareGrain(),
-    Promise.all(fontsFor[template].map(loadFont)),
+    Promise.all(files.map(loadFont)),
+    prepareCardText(texts),
   ]);
-  return { grain, fontCss: fonts.join('\n') };
+  return { grain, fontCss: fonts.join('\n'), converted };
+}
+
+export function prepareGridAssets(model: GridModel) {
+  const content = [
+    { text: model.headline, lang: model.lang },
+    ...model.clips.map((clip) => ({
+      text: clip.text || clip.title,
+      lang: clip.lang ?? model.lang,
+    })),
+  ];
+  return prepareCardAssets(
+    'grid',
+    content.map(({ text, lang }) => typefaceFor(text, lang)),
+    content.map(({ text }) => text),
+  );
 }

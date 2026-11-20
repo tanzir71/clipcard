@@ -1,6 +1,9 @@
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import type { CSSProperties } from 'react';
 import strings from '@clipcard/i18n/en';
+import { cardLabels } from '@clipcard/i18n';
+import { keyphrase } from '@clipcard/core';
+import { FLAGS } from '@clipcard/core/flags';
 import type { CardAssets } from '../assets.ts';
 import { guardText, INK, TEXT_COLORS, THEMES } from '../color.ts';
 import type {
@@ -11,6 +14,9 @@ import type {
 } from '../model.ts';
 import { fade, halftone } from '../texture.ts';
 import { tokens } from '../tokens.ts';
+import { numberingSystem } from '../numerals.ts';
+import type { Numerals } from '../numerals.ts';
+import { typefaceFor } from '../typefaces.ts';
 import { Headline } from './Headline.tsx';
 import { Qr } from './Qr.tsx';
 import '../card.css';
@@ -122,34 +128,58 @@ function Brand({
       {mark.split(/[.\s]/)[0]}
     </div>
   ) : (
-    <div className="cc-mark">{mark}</div>
+    <div className="cc-mark">
+      {mark.startsWith('@') ? <bdi dir="ltr">{mark}</bdi> : mark}
+    </div>
+  );
+}
+
+function Outlet({ model }: { model: CardModel }) {
+  const outlet = model.outlet;
+  return outlet &&
+    model.dir === 'rtl' &&
+    (/^(?:@|https?:\/\/)/i.test(outlet) ||
+      /^[a-z\d.-]+\.[a-z]{2,}$/i.test(outlet)) ? (
+    <bdi dir="ltr">{outlet}</bdi>
+  ) : (
+    outlet
   );
 }
 
 function Kicker({
   model,
   variant,
+  numerals,
 }: {
   model: CardModel;
   variant: 'panel' | 'chip' | 'quote' | 'via';
+  numerals?: Numerals;
 }) {
+  const labels = cardLabels(FLAGS.languages ? model.lang : 'en');
   if (model.oldNewsYear) {
     const year = new Intl.NumberFormat(model.lang, {
       useGrouping: false,
+      ...(FLAGS.languages && {
+        numberingSystem: numberingSystem(model.lang, numerals),
+      }),
     }).format(model.oldNewsYear);
     return <div className="cc-kicker cc-chip cc-year">{year}</div>;
   }
   if (variant === 'quote')
     return (
       <div className="cc-kicker cc-quote-kicker">
-        {strings['card.quote']}{' '}
-        {model.outlet ? <span>{model.outlet}</span> : null}
+        {labels.quoted}{' '}
+        {model.outlet ? (
+          <span>
+            <Outlet model={model} />
+          </span>
+        ) : null}
       </div>
     );
   if (variant === 'via') {
     return model.outlet ? (
       <div className="cc-kicker cc-via">
-        {strings['card.via']} | {model.outlet}
+        {labels.via} | <Outlet model={model} />
       </div>
     ) : null;
   }
@@ -167,43 +197,78 @@ function Kicker({
 function Meta({
   model,
   variant = 'mono',
+  numerals,
 }: {
   model: CardModel;
   variant?: 'mono' | 'panel' | 'overlay' | 'wide';
+  numerals?: Numerals;
 }) {
   let date = '';
   if (model.publishedAt) {
     const day = new Date(model.publishedAt.slice(0, 10) + 'T00:00:00Z');
     if (Number.isFinite(day.getTime())) {
       const locale = model.lang.startsWith('en') ? 'en-GB' : model.lang;
-      date = new Intl.DateTimeFormat(locale, {
+      const localPanel =
+        FLAGS.languages &&
+        variant === 'panel' &&
+        (model.script === 'bengali' || model.script === 'devanagari');
+      const formatter = new Intl.DateTimeFormat(locale, {
         timeZone: 'UTC',
         day: 'numeric',
-        month: 'short',
+        month: localPanel ? 'long' : 'short',
         year: 'numeric',
-      }).format(day);
+        ...(FLAGS.languages && {
+          numberingSystem: numberingSystem(model.lang, numerals),
+        }),
+      });
+      date = localPanel
+        ? formatter
+            .formatToParts(day)
+            .filter(({ type }) => type !== 'literal')
+            .map(({ value }) => value)
+            .join(' ')
+        : formatter.format(day);
     }
   }
   const panel = variant === 'panel';
-  const source = model.outlet
-    ? strings['card.source'] + (panel ? ' : ' : ': ') + model.outlet
-    : '';
+  const outlet = model.outlet ? <Outlet model={model} /> : null;
+  const source = outlet ? (
+    <>
+      {cardLabels(FLAGS.languages ? model.lang : 'en').source}
+      {panel ? ' : ' : ': '}
+      {outlet}
+    </>
+  ) : null;
   const edited = model.edited ? strings['state.edited'] : '';
   const fields = panel
     ? [source, date, edited]
     : variant === 'overlay'
-      ? [model.section, date, model.outlet, edited]
-      : [date, variant === 'wide' ? model.outlet : source, edited];
-  const text = fields
-    .filter(Boolean)
-    .join(panel ? '   |   ' : variant === 'overlay' ? '  ·  ' : '  |  ');
-  return text ? (
-    <div className={panel ? 'cc-meta cc-meta-panel' : 'cc-meta'}>{text}</div>
+      ? [model.section, date, outlet, edited]
+      : [date, variant === 'wide' ? outlet : source, edited];
+  const visible = fields.filter(Boolean);
+  const separator = panel
+    ? '   |   '
+    : variant === 'overlay'
+      ? '  ·  '
+      : '  |  ';
+  return visible.length ? (
+    <div className={panel ? 'cc-meta cc-meta-panel' : 'cc-meta'}>
+      {visible.map((field, index) => (
+        <Fragment key={index}>
+          {index > 0 && separator}
+          {field}
+        </Fragment>
+      ))}
+    </div>
   ) : null;
 }
 
 export function Card({ model, options, assets }: CardProps) {
-  const { format, template } = options;
+  const { format, template, numerals } = options;
+  const typeface = typefaceFor(model.headline, model.lang, model.script);
+  const headline = assets.converted.get(model.headline) ?? model.headline;
+  const headlineChanged = headline !== model.headline;
+  const localHeader = template === 'header' && format === '4:5' && typeface;
   const [width, height] = tokens.card.formats[format];
   const story = format === '9:16';
   const wide = width > height;
@@ -227,16 +292,24 @@ export function Card({ model, options, assets }: CardProps) {
   const textColor = options.textColor ?? TEXT_COLORS.white;
   const typographyForTemplate = typography[template];
   const sizing = wideSplit ? { size: 44, line: 56 } : typographyForTemplate;
+  const baseSize = typeface
+    ? Math.round((sizing.size * typeface.size) / typography.header.size)
+    : sizing.size;
   const size = Math.round(
-    sizing.size * Math.min(width / 1080, wide ? height / 900 : 1, 1),
+    baseSize * Math.min(width / 1080, wide ? height / 900 : 1, 1),
   );
-  const lineHeight = sizing.line / sizing.size;
+  const lineHeight = typeface?.lineHeight ?? sizing.line / sizing.size;
+  const extraLine =
+    typeface && (model.script === 'tamil' || model.script === 'malayalam')
+      ? 1
+      : 0;
   const lines =
     wideSplit && format === '16:9'
       ? 5
       : format === '1.91:1'
         ? Math.min(3, typographyForTemplate.lines)
-        : typographyForTemplate.lines -
+        : typographyForTemplate.lines +
+          extraLine -
           Number(format === '1:1' && template !== 'duotone');
   const qrBaseSize = wide
     ? tokens.card.qrSize['16x9']
@@ -245,9 +318,12 @@ export function Card({ model, options, assets }: CardProps) {
       : story
         ? tokens.card.qr.tile['9:16']
         : tokens.card.qrSize.default4x5;
-  const headerHeight = Math.round(
-    height * (story ? 588 / 1920 : wide ? 0.47 : 388 / 1350),
-  );
+  const headerHeight =
+    localHeader && model.script === 'bengali'
+      ? 406
+      : localHeader && model.script === 'devanagari'
+        ? 400
+        : Math.round(height * (story ? 588 / 1920 : wide ? 0.47 : 388 / 1350));
   const splitHeight = story
     ? height - bottom - 335
     : Math.round(height * 0.726);
@@ -276,6 +352,12 @@ export function Card({ model, options, assets }: CardProps) {
     color: guarded.text,
     backgroundColor: background,
     '--cc-family': '"' + typographyForTemplate.family + '"',
+    ...(typeface && {
+      '--cc-script-face':
+        '"' + typeface.family + '", "' + typographyForTemplate.family + '"',
+      '--cc-script-weight': typeface.weight,
+      '--cc-script-strong': typeface.strong,
+    }),
     '--cc-top': top + 'px',
     '--cc-bottom': bottom + 'px',
     '--cc-deep': background,
@@ -287,9 +369,20 @@ export function Card({ model, options, assets }: CardProps) {
   } as CSSProperties;
   const title = (
     <Headline
-      title={model.headline}
-      range={model.emphasisRange}
-      secondRange={template === 'caps' ? model.extraEmphasisRange : undefined}
+      title={headline}
+      wordBreakLocale={
+        typeface && model.script === 'thai'
+          ? 'th'
+          : typeface && model.script === 'myanmar'
+            ? 'my'
+            : undefined
+      }
+      range={headlineChanged ? keyphrase(headline) : model.emphasisRange}
+      secondRange={
+        template === 'caps' && !headlineChanged
+          ? model.extraEmphasisRange
+          : undefined
+      }
       emphasis={emphasis}
       keyColor={guarded.key}
       color={template === 'quote' ? INK : guarded.text}
@@ -299,6 +392,9 @@ export function Card({ model, options, assets }: CardProps) {
       lineHeight={lineHeight}
       availableHeight={availableHeight}
       panel={template === 'header'}
+      boxWidthRatio={
+        localHeader && model.script === 'devanagari' ? 0.8 : undefined
+      }
       secondLine={template === 'duotone'}
     />
   );
@@ -322,9 +418,10 @@ export function Card({ model, options, assets }: CardProps) {
       className={'cc-card cc-' + template}
       data-format={format}
       data-wide={wide ? '' : undefined}
+      data-script-face={typeface ? model.script : undefined}
       lang={model.lang}
       dir={model.dir}
-      aria-label={model.headline}
+      aria-label={headline}
       style={style}
     >
       {template === 'header' ? (
@@ -348,9 +445,9 @@ export function Card({ model, options, assets }: CardProps) {
             <Brand mark={model.mark} echo />
             <Grain assets={assets} />
             <div className="cc-header-content">
-              <Kicker model={model} variant="panel" />
+              <Kicker model={model} variant="panel" numerals={numerals} />
               {title}
-              <Meta model={model} variant="panel" />
+              <Meta model={model} variant="panel" numerals={numerals} />
             </div>
           </div>
           <Brand mark={model.mark} />
@@ -381,8 +478,12 @@ export function Card({ model, options, assets }: CardProps) {
             <div className="cc-split-title">{title}</div>
           </div>
           <Brand mark={model.mark} />
-          <Kicker model={model} variant="chip" />
-          <Meta model={model} variant={wideSplit ? 'wide' : 'mono'} />
+          <Kicker model={model} variant="chip" numerals={numerals} />
+          <Meta
+            model={model}
+            variant={wideSplit ? 'wide' : 'mono'}
+            numerals={numerals}
+          />
         </>
       ) : template === 'caps' ? (
         <>
@@ -408,7 +509,7 @@ export function Card({ model, options, assets }: CardProps) {
           />
           <Grain assets={assets} />
           <Brand mark={model.mark} />
-          <Kicker model={model} variant="via" />
+          <Kicker model={model} variant="via" numerals={numerals} />
           <div className="cc-caps-title">
             {title}
             {model.dek ? <p>{model.dek}</p> : null}
@@ -429,9 +530,9 @@ export function Card({ model, options, assets }: CardProps) {
           />
           <Grain assets={assets} />
           <Brand mark={model.mark} />
-          <Kicker model={model} variant="chip" />
+          <Kicker model={model} variant="chip" numerals={numerals} />
           <div className="cc-duotone-title">{title}</div>
-          <Meta model={model} />
+          <Meta model={model} numerals={numerals} />
         </>
       ) : template === 'overlay' ? (
         <>
@@ -451,9 +552,11 @@ export function Card({ model, options, assets }: CardProps) {
             <Grain assets={assets} />
           </div>
           <Brand mark={model.mark} />
-          {model.oldNewsYear ? <Kicker model={model} variant="chip" /> : null}
+          {model.oldNewsYear ? (
+            <Kicker model={model} variant="chip" numerals={numerals} />
+          ) : null}
           <div className="cc-overlay-title">{title}</div>
-          <Meta model={model} variant="overlay" />
+          <Meta model={model} variant="overlay" numerals={numerals} />
         </>
       ) : template === 'quote' ? (
         <>
@@ -461,14 +564,14 @@ export function Card({ model, options, assets }: CardProps) {
           <Brand mark={model.mark} echo />
           <Grain assets={assets} />
           <Brand mark={model.mark} />
-          <Kicker model={model} variant="quote" />
+          <Kicker model={model} variant="quote" numerals={numerals} />
           <div className="cc-quote-content">
             {title}
             {model.quoteAttribution ? (
               <div className="cc-attribution">{model.quoteAttribution}</div>
             ) : null}
           </div>
-          <Meta model={model} />
+          <Meta model={model} numerals={numerals} />
         </>
       ) : (
         <>
@@ -476,12 +579,18 @@ export function Card({ model, options, assets }: CardProps) {
           <Brand mark={model.mark} echo />
           <Grain assets={assets} />
           <Brand mark={model.mark} />
-          <Kicker model={model} variant="chip" />
+          <Kicker model={model} variant="chip" numerals={numerals} />
           <div className="cc-solid-title">{title}</div>
-          <Meta model={model} />
+          <Meta model={model} numerals={numerals} />
         </>
       )}
-      {model.qrUrl ? <Qr url={model.qrUrl} size={qrBaseSize} /> : null}
+      {model.qrUrl ? (
+        <Qr
+          url={model.qrUrl}
+          size={qrBaseSize}
+          minModulePx={typeface ? 2.5 : undefined}
+        />
+      ) : null}
     </article>
   );
 }

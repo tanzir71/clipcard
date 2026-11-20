@@ -1,5 +1,7 @@
 export { tokens } from './tokens.ts';
 export { capsPhrases } from './caps-phrases.ts';
+export { numberingSystem } from './numerals.ts';
+export type { Numerals } from './numerals.ts';
 export {
   contrastWithLuminance,
   guardText,
