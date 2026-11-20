@@ -1,9 +1,13 @@
 import { encode } from 'uqr';
 import { tokens } from './tokens.ts';
 
-export function qrGeometry(url: string, baseSize: number) {
+export function qrGeometry(
+  url: string,
+  baseSize: number,
+  minModulePx: number = tokens.card.qr.minModulePx,
+) {
   const qr = encode(url, { ecc: 'M', boostEcc: false, border: 0 });
-  const { padding, minModulePx } = tokens.card.qr;
+  const { padding } = tokens.card.qr;
   const possible = baseSize + 48;
   const size = Math.min(
     possible,

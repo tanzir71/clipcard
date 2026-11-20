@@ -7,6 +7,8 @@ import { Card } from '../src/components/Card.tsx';
 import { renderCard } from '../src/export.tsx';
 import { tokens } from '../src/tokens.ts';
 import { samples } from './samples.ts';
+import { GridSample } from './GridSample.tsx';
+import { gridSamples } from './grid-samples.ts';
 import './style.css';
 
 function Sample({ sample }: { sample: (typeof samples)[number] }) {
@@ -73,6 +75,9 @@ if (root)
       <div className="gallery">
         {samples.map((sample) => (
           <Sample key={sample.id} sample={sample} />
+        ))}
+        {gridSamples.map((sample) => (
+          <GridSample key={sample.id} {...sample} />
         ))}
       </div>
     </main>,

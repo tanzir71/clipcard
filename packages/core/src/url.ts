@@ -111,7 +111,14 @@ const encodeText = (text: string) =>
     '%2D',
   );
 
-export function textFragment(input: string, selection: string): string {
+export function textFragment(
+  input: string,
+  selection: string,
+  {
+    compactAfter = 80,
+    edgeWords = 4,
+  }: { compactAfter?: number; edgeWords?: number } = {},
+): string {
   const url = webUrl(cleanUrl(unwrapUrl(input)).url);
   const text = selection.trim().replace(/\s+/gu, ' ');
   if (!text) {
@@ -121,10 +128,10 @@ export function textFragment(input: string, selection: string): string {
 
   const words = text.split(' ');
   let directive = encodeText(text);
-  if ([...text].length > 80 && words.length > 8) {
-    const end = words.slice(-4);
+  if ([...text].length > compactAfter && words.length > 8) {
+    const end = words.slice(-edgeWords);
     if (/^(a|an|one|the)$/i.test(end[0]!)) end.shift();
-    directive = [words.slice(0, 4).join(' '), end.join(' ')]
+    directive = [words.slice(0, edgeWords).join(' '), end.join(' ')]
       .map(encodeText)
       .join(',');
   }
