@@ -275,11 +275,23 @@ test.describe('registered browser actions', () => {
       .toBe('•');
 
     const sheetUrl = new URL('sheet.html', worker.url()).href;
-    const [frame] = await Promise.all([
+    const [drafts] = await Promise.all([
       page.waitForEvent('framenavigated', (event) =>
         event.url().startsWith(sheetUrl),
       ),
       runBrowserAction(worker, page.url(), { kind: 'toolbar' }),
+    ]);
+    await expect(
+      drafts.getByRole('heading', { name: /^Drafts/ }),
+    ).toBeVisible();
+    const [frame] = await Promise.all([
+      page.waitForEvent(
+        'framenavigated',
+        (event) =>
+          event.url().startsWith(sheetUrl) &&
+          new URL(event.url()).searchParams.has('draft'),
+      ),
+      drafts.getByRole('button', { name: 'Card from this page' }).click(),
     ]);
     const headline = await page.locator('h1').innerText();
     await expect(
@@ -305,6 +317,74 @@ test.describe('registered browser actions', () => {
     await expect(
       fallback.getByRole('textbox', { name: 'Paste any link…' }),
     ).toBeFocused();
+  });
+
+  test('retains clips from multiple pages in one sourced grid', async ({
+    extension,
+    worker,
+  }) => {
+    const page = await extension.newPage();
+    await page.goto(origin + '/feed-story.html');
+    await runMenu(
+      worker,
+      page.url(),
+      'clipText',
+      undefined,
+      'A quote from the first source.',
+    );
+    await page.locator('clipcard-clipping').waitFor({ state: 'attached' });
+
+    async function clipCount() {
+      return worker.evaluate(async () => {
+        if (!(await indexedDB.databases()).some((db) => db.name === 'clipcard'))
+          return 0;
+        const db = await new Promise<IDBDatabase>((resolve, reject) => {
+          const request = indexedDB.open('clipcard');
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+        try {
+          if (!db.objectStoreNames.contains('clips')) return 0;
+          return await new Promise<number>((resolve, reject) => {
+            const request = db
+              .transaction('clips')
+              .objectStore('clips')
+              .count();
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+          });
+        } finally {
+          db.close();
+        }
+      });
+    }
+
+    await expect.poll(clipCount).toBe(1);
+    await page.goto(origin + '/no-image.html');
+    await runMenu(
+      worker,
+      page.url(),
+      'clipText',
+      undefined,
+      'A quote from the second source.',
+    );
+    await expect.poll(clipCount).toBe(2);
+
+    const [frame] = await Promise.all([
+      page.waitForEvent('framenavigated', (event) =>
+        event.url().includes('/sheet.html?drafts='),
+      ),
+      runBrowserAction(worker, page.url(), { kind: 'toolbar' }),
+    ]);
+    await frame.locator('.clip-popup-draft').first().click();
+    const grid = frame.locator(
+      '.clip-grid-preview-wrap [data-layout="excerpts"]',
+    );
+    await expect(grid.locator('.cc-grid-extract p')).toHaveText([
+      'A quote from the first source.',
+      'A quote from the second source.',
+    ]);
+    await expect(grid.locator('.cc-qr')).toHaveCount(2);
   });
 
   test('copies the hovered link, selection or current page from the shortcut', async ({

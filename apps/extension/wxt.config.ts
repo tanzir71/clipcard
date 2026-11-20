@@ -1,4 +1,5 @@
 import { defineConfig } from 'wxt';
+import { CLIP_DRAFTS_RELEASED } from '@clipcard/core/flags';
 
 export default defineConfig({
   manifestVersion: 3,
@@ -39,8 +40,9 @@ export default defineConfig({
         suggested_key: { default: 'Alt+Shift+S' },
         description: '__MSG_action_badgeTitle__',
       },
-      ...(process.env.VITE_CLIPCARD_CLIPS === '1' &&
-      process.env.VITE_CLIPCARD_DRAFTS === '1'
+      ...(CLIP_DRAFTS_RELEASED ||
+      (process.env.VITE_CLIPCARD_CLIPS === '1' &&
+        process.env.VITE_CLIPCARD_DRAFTS === '1')
         ? {
             'clip-selection': {
               suggested_key: { default: 'Alt+Shift+C' },

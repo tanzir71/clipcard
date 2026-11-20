@@ -289,6 +289,7 @@ if (host) {
         initialId={collectionId ?? undefined}
         card={draft}
         close={closeWindow}
+        share={initialShareOpen}
       />,
     );
   } else {

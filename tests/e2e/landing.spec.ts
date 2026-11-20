@@ -9,7 +9,7 @@ test('shows the web app, upcoming features and keyboard-accessible FAQ', async (
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Share the news as cards',
   );
-  await expect(page.getByText('Soon', { exact: true })).toHaveCount(5);
+  await expect(page.getByText('Soon', { exact: true })).toHaveCount(3);
   await expect(
     page.getByRole('link', { name: 'Follow on GitHub' }).first(),
   ).toHaveAttribute('href', 'https://github.com/tanzir71/clipcard');

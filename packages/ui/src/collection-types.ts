@@ -19,6 +19,7 @@ export interface ClipInput {
   sourceUrl: string | null;
   title: string;
   outlet?: string;
+  lang?: string;
   publishedAt?: string;
   text?: string;
   range?: TextRange;

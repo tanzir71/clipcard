@@ -32,7 +32,11 @@ function captureFor(element: Element): ClipCapture {
     };
   }
   if (element.matches('blockquote,p,h1,h2,h3,h4,a')) {
-    return { kind: 'text', text: element.textContent?.trim() };
+    return {
+      kind: 'text',
+      text:
+        element instanceof HTMLElement ? element.innerText.trim() : undefined,
+    };
   }
   return { kind: 'section', rect: rectFor(element.getBoundingClientRect()) };
 }

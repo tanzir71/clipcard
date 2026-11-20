@@ -82,8 +82,8 @@
 - [x] Toast moves to the top right and adds "Copy link for the comment".
 
 ## M12 · Clips → grid
-- [ ] Clip mode (outline, kind tag, region drag, Esc), selection toolbar "+ Clip", image context menu, tray (top right).
-- [ ] Clip layouts Excerpts, Grid 3, Grid 4, Board with auto choice; multi‑`text=` QR; per‑source QR rule.
+- [x] Clip mode (outline, kind tag, region drag, Esc), selection toolbar "+ Clip", image context menu, tray (top right).
+- [x] Clip layouts Excerpts, Grid 3, Grid 4, Board with auto choice; multi-`text=` QR; per‑source QR rule.
 
 ## M13 · Video clips
 - [ ] YouTube Clip button + generic `<video>` hover button; range UI snapped to transcript; moment card.
@@ -97,7 +97,7 @@
 ## M15 · Library, GIFs, drafts, batch
 - [ ] IndexedDB + OPFS storage (ARCH §12), Save to library, tags, search, export/import.
 - [ ] GIPHY/KLIPY search with optional host permissions, attribution, cache, Settings key field (ARCH §15).
-- [ ] Drafts: auto‑append, 6 h rule, list in the popup, restore exactly, retention sweep.
+- [x] Drafts: auto‑append, 6 h rule, list in the popup, restore exactly, retention sweep.
 - [ ] Batch: marquee over links, open tabs, paste list → Roundup / Carousel / Digest video (ARCH §16).
 - [ ] Privacy page + store data disclosure updated for GIF search.
 

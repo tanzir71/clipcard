@@ -174,6 +174,7 @@ export async function persistCapture(
         slugHeadline(address.href) ||
         address.hostname,
       outlet: source?.siteName ?? outletFromHost(address.hostname),
+      lang: source?.lang,
       publishedAt: source?.publishedAt ?? undefined,
       text,
       rect: section && {

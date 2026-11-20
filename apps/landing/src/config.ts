@@ -1,3 +1,5 @@
+import { CLIP_DRAFTS_RELEASED } from '@clipcard/core/flags';
+
 export const STORE_URL = import.meta.env.STORE_URL ?? '';
 export const REPO_URL =
   import.meta.env.CLIPCARD_REPO_URL ?? 'https://github.com/tanzir71/clipcard';
@@ -7,8 +9,8 @@ export const RELEASED = {
   lite: true,
   cards: true,
   extension: true,
-  clips: false,
-  drafts: false,
+  clips: CLIP_DRAFTS_RELEASED,
+  drafts: CLIP_DRAFTS_RELEASED,
   languages: false,
   videoClips: false,
   videoJoin: false,

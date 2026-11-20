@@ -129,6 +129,9 @@ importers:
       '@clipcard/cards':
         specifier: workspace:*
         version: link:../../packages/cards
+      '@clipcard/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       '@clipcard/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n

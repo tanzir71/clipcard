@@ -22,10 +22,12 @@ export function CollectionPopup({
   initialId,
   card,
   close,
+  share,
 }: {
   initialId?: string;
   card?: CardDraft;
   close: () => void;
+  share?: boolean;
 }) {
   const [collection, setCollection] = useState<DraftCollection>();
   const [cardState, setCard] = useState<CardDraft | null>(card ?? null);
@@ -134,6 +136,7 @@ export function CollectionPopup({
           }
         }}
         onClose={close}
+        initialShareOpen={share}
         onSaveForLater={
           collection
             ? async (title) => {

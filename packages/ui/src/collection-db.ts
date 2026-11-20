@@ -39,6 +39,7 @@ async function migrateCards(transaction: Parameters<Upgrade>[3]) {
       title: card.original,
       sourceUrl,
       outlet: card.source?.siteName,
+      lang: card.source?.lang,
       publishedAt: card.source?.publishedAt ?? undefined,
       text: card.selection ?? (card.source ? undefined : card.original),
       textFragment:

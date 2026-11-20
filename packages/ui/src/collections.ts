@@ -234,7 +234,11 @@ export function sweepDraftCollections(now = Date.now()): Promise<number> {
   return withMediaLock(() => sweep(now));
 }
 
-async function sweep(now: number): Promise<number> {
+export async function clearDraftCollections(): Promise<void> {
+  await withMediaLock(() => sweep(Date.now(), true));
+}
+
+async function sweep(now: number, clearAll = false): Promise<number> {
   const db = await collectionDatabase();
   const tx = db.transaction(
     ['prefs', 'drafts', 'clips', 'cards', 'expiredMedia'],
@@ -242,12 +246,13 @@ async function sweep(now: number): Promise<number> {
   );
   const prefs = tx.objectStore('prefs');
   const drafts = tx.objectStore('drafts');
-  const expired =
-    (await prefs.get('retention')) === 'forever'
-      ? []
-      : await drafts
-          .index('updatedAt')
-          .getAll(IDBKeyRange.upperBound(now - retentionPeriod, true));
+  let expired: ClipDraft[] = [];
+  if (clearAll) expired = await drafts.getAll();
+  else if ((await prefs.get('retention')) !== 'forever') {
+    expired = await drafts
+      .index('updatedAt')
+      .getAll(IDBKeyRange.upperBound(now - retentionPeriod, true));
+  }
   const current = await prefs.get('currentDraftId');
   const clips = tx.objectStore('clips');
   const expiredMedia = tx.objectStore('expiredMedia');
@@ -257,13 +262,19 @@ async function sweep(now: number): Promise<number> {
       if (clip.mediaKey) await expiredMedia.put(clip.mediaKey, clip.mediaKey);
       await clips.delete(clip.id);
     }
-    if (draft.legacyCard) {
+    if (!draft.legacyCard) {
+      await cards.delete(draft.id);
+    } else {
       const card = await cards.get(draft.id);
       if (card?.updatedAt === draft.legacyCard.updatedAt)
         await cards.delete(draft.id);
     }
     await drafts.delete(draft.id);
     if (draft.id === current) await prefs.delete('currentDraftId');
+  }
+  if (clearAll) {
+    await cards.clear();
+    await prefs.delete('currentDraftId');
   }
   const toRemove = await expiredMedia.getAllKeys();
   await tx.done;

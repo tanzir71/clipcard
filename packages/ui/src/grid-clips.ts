@@ -8,7 +8,8 @@ export function gridClipsForCollection(
 ) {
   return Promise.all(
     clips.map(async (clip): Promise<GridClip> => {
-      const { id, kind, sourceUrl, title, text, outlet, publishedAt } = clip;
+      const { id, kind, sourceUrl, title, text, outlet, lang, publishedAt } =
+        clip;
       const blob =
         id === 'legacy:' + draft.id && draft.legacyCard?.photo
           ? draft.legacyCard.photo.blob
@@ -19,6 +20,7 @@ export function gridClipsForCollection(
         title,
         text,
         outlet,
+        lang,
         publishedAt,
         image: blob ? imageUrl(blob) : undefined,
         kind:

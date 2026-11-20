@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import strings from '@clipcard/i18n/en';
 import { FLAGS } from '@clipcard/core/flags';
 import { CollectionBackupControls } from '@clipcard/ui/collection-backup-controls';
+import { clearDraftCollections } from '@clipcard/ui/collections';
 import { clearDrafts } from '@clipcard/ui/storage';
 import { browser } from 'wxt/browser';
 import { webApp } from './site.ts';
@@ -31,7 +32,8 @@ function Settings() {
   }, []);
   async function clear() {
     try {
-      await clearDrafts();
+      if (FLAGS.clips && FLAGS.drafts) await clearDraftCollections();
+      else await clearDrafts();
       setStatus(strings['settings.historyCleared']);
     } catch {
       setStatus(strings['card.savedFailed']);

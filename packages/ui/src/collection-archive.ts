@@ -28,13 +28,18 @@ export function exportCollections(): Promise<Blob> {
 
 async function writeArchive(): Promise<Blob> {
   const db = await collectionDatabase();
-  const tx = db.transaction(['drafts', 'clips', 'library'], 'readonly');
-  const [drafts, clips, library] = await Promise.all([
+  const tx = db.transaction(
+    ['drafts', 'clips', 'library', 'cards'],
+    'readonly',
+  );
+  const [drafts, clips, library, cards] = await Promise.all([
     tx.objectStore('drafts').getAll(),
     tx.objectStore('clips').getAll(),
     tx.objectStore('library').getAll(),
+    tx.objectStore('cards').getAll(),
     tx.done,
   ]);
+  const currentCards = new Map(cards.map((card) => [card.id, card]));
   const files: Record<string, Uint8Array> = {};
   let entries = 0;
   let bytes = 0;
@@ -70,10 +75,10 @@ async function writeArchive(): Promise<Blob> {
   const manifest: ArchiveManifest = {
     version: 1,
     drafts: await Promise.all(
-      drafts.map(async ({ legacyCard, ...draft }) => ({
-        ...draft,
-        legacyCard: legacyCard && (await encodeCard(legacyCard)),
-      })),
+      drafts.map(async ({ legacyCard, ...draft }) => {
+        const card = currentCards.get(draft.id) ?? legacyCard;
+        return { ...draft, legacyCard: card && (await encodeCard(card)) };
+      }),
     ),
     clips: await Promise.all(clips.map(encodeMedia<DraftClip>)),
     library: await Promise.all(library.map(encodeMedia<LibraryItem>)),

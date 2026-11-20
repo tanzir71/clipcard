@@ -5,9 +5,13 @@ afterEach(() => {
   vi.resetModules();
 });
 
-it('starts with every feature off', async () => {
+it('enables only clips and drafts by default', async () => {
   const { FLAGS } = await import('../flags.ts');
-  expect(Object.values(FLAGS).every((enabled) => !enabled)).toBe(true);
+  expect(
+    Object.entries(FLAGS)
+      .filter(([, enabled]) => enabled)
+      .map(([feature]) => feature),
+  ).toEqual(['clips', 'drafts']);
 });
 
 it('only activates overrides in development', async () => {
