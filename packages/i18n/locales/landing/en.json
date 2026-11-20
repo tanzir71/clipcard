@@ -15,11 +15,31 @@
   "hero": {
     "heading": "Share the news as cards, grids and video",
     "description": "Coming soon. Clips from any page, joined into one card or one video. Every one links back to the source.",
+    "appHeading": "Share the news as cards",
+    "appDescription": "Turn a link, copied article or photo into a shareable card that links back to the source.",
     "gallery": "Example cards"
   },
   "shortcut": {
     "placeholder": "Paste any link, copied text or an image",
-    "submit": "Make card"
+    "submit": "Make card",
+    "failed": "Paste a link, text or a supported photo.",
+    "local": "Made in your browser. Nothing is uploaded.",
+    "open": "Open full app",
+    "bookmark": "Clipcard",
+    "drag": "Drag to bookmarks"
+  },
+  "installApp": {
+    "action": "Install the app",
+    "heading": "Install Clipcard",
+    "offline": "Works offline and appears in your share menu.",
+    "ios": "On iPhone, tap Share, then Add to Home Screen.",
+    "later": "Not now",
+    "install": "Install",
+    "open": "Open the app"
+  },
+  "bookmark": {
+    "heading": "No install? Use the bookmark.",
+    "hint": "Drag Clipcard to your bookmarks bar. Click it on a page to make a card."
   },
   "share": {
     "label": "Send to my computer",
@@ -37,6 +57,7 @@
   "features": {
     "heading": "Everything it does",
     "soon": "Soon",
+    "appCards": "Paste a link or click the bookmark to make a sourced card in your browser.",
     "items": {
       "cards": {
         "title": "One-click cards",
@@ -76,6 +97,7 @@
   },
   "templates": {
     "heading": "Six looks. Every format.",
+    "appHeading": "Five looks. Three formats.",
     "formats": "Example formats",
     "example": "Clipcard example: {name} template",
     "names": {
@@ -84,7 +106,8 @@
       "duotone": "Duotone",
       "header": "Header",
       "quote": "Quote",
-      "caps": "Caps"
+      "caps": "Caps",
+      "solid": "Solid"
     },
     "localizedExamples": {
       "bn": "Clipcard example in Bangla",
@@ -145,6 +168,7 @@
     }
   ],
   "band": "Follow Clipcard’s development.",
+  "appBand": "Make your first clipcard.",
   "footer": {
     "label": "Footer navigation",
     "privacy": "Privacy",
@@ -162,6 +186,11 @@
       "This website has no account, analytics or trackers.",
       "Clipcard is in development. The planned browser tools will process clips and keep drafts and exports in browser storage.",
       "In the future extension, you can grant optional access to read links you choose and enable on-page clip controls."
+    ],
+    "appText": [
+      "Clipcard has no account, analytics or trackers.",
+      "The web app builds cards on your device and keeps recent cards in this browser’s storage.",
+      "When you paste or bookmark a page, the web app may ask the original site for an image. You can add a local photo if the site does not allow the request."
     ]
   },
   "changelog": { "title": "Changelog", "description": "What changed in each Clipcard release." },

@@ -1,5 +1,6 @@
 ---
 import strings from '@clipcard/i18n/landing/en';
+import { RELEASED } from '../config';
 import Site from '../layouts/Site.astro';
 const { brand, privacy } = strings;
 ---
@@ -11,7 +12,7 @@ const { brand, privacy } = strings;
 >
   <article class="container document">
     <h1>{privacy.title}</h1>
-    {privacy.text.map((paragraph) => (
+    {(RELEASED.app ? privacy.appText : privacy.text).map((paragraph) => (
       <p>{paragraph}</p>
     ))}
   </article>

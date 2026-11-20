@@ -1,0 +1,24 @@
+---
+import strings from '@clipcard/i18n/landing/en';
+import { landingBookmarklet } from '../bookmarklet';
+import { sitePath } from '../site';
+const url = new URL(sitePath('app/'), Astro.site);
+const bookmark = await landingBookmarklet(url);
+const copy = strings.bookmark;
+---
+
+<section
+  class="section container"
+  id="bookmark"
+  aria-labelledby="bookmark-heading"
+>
+  <div class="bookmark-block">
+    <div>
+      <h2 id="bookmark-heading">{copy.heading}</h2>
+      <p>{copy.hint}</p>
+    </div>
+    <a class="button bookmark-link" href={bookmark} draggable="true">
+      ✂ {strings.shortcut.bookmark}
+    </a>
+  </div>
+</section>
