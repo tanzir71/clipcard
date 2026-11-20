@@ -1,0 +1,12 @@
+pnpm-lock.yaml
+design/
+fixtures/
+handover/
+docs/
+AGENTS.md
+README.md
+packages/i18n/locales/
+apps/extension/public/
+packages/cards/src/tokens.ts
+packages/cards/src/tokens.css
+apps/landing/src/media/generated/

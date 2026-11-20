@@ -19,7 +19,7 @@ Copy lives in `apps/landing/src/i18n/<lang>.json` and is short by design (≈ 30
 | # | Section | Content |
 |---|---|---|
 | 1 | Nav (on dark) | Logo · Templates · How it works · FAQ · language switcher (globe + native name) · **Download** (pre‑store) / **Add to Chrome** (after publishing) |
-| 2 | Hero (dark `#0A0A0A`) | H1 "Share the news as cards, grids and video" · sub "Clips from any page, joined into one card or one video. Every one links back to the source." · **Download for Chrome** + **Install guide** (→ `#install`) · small muted "Beta · Chrome Web Store listing coming soon" · a row of 5 cards bleeding off both edges |
+| 2 | Hero (dark `#0A0A0A`) = **app shortcut** | H1 "Share the news as cards, grids and video" · sub · **paste bar** (680×60, white: link icon, "Paste any link, copied text or an image", ink **Make card**). It runs the web app flow in place: the result replaces the center card of the card row, with a small bar Copy · Download · Open in app. Under it: "Card · Grid · Video, made in your browser. Nothing is uploaded." · **paths row**: [⤓ Download for Chrome] (outline) · [✂ Clipcard · drag to bookmarks] (dashed, a real bookmarklet link) · "Open full app →" (`/app/`) · beta line · the card row bleeding off both edges. **Mobile**: paste bar (350×52) · **Install the app** (white, primary; triggers the PWA install prompt, or opens the app if installed) · iPhone hint "Share → Add to Home Screen" · **Send to my computer** (outline) · beta line. Nav adds **Web app** (first link). |
 | 3 | How it works | H2 "Three ways in. No account." · 3 tiles: Share in one click · Clip and arrange · Join into a video |
 | 3b | **Features** | H2 "Everything it does" · 6 tiles (384×280 visual + title + one line): One‑click cards · Clips and grids · Video clips · One video, many sources · Library and GIFs · Drafts. Then one "Also:" line (your mark · key phrase and color · captions from transcripts · old stories show their year · no account). Mobile: a list of title + line. |
 | 4 | **Install** (`#install`, pre‑store only) | H2 "Install in a minute." + "Until it’s on the Chrome Web Store." · **Download .zip** (latest GitHub Release asset) + **View on GitHub** · a dark code bar "or build": `git clone … && cd share-card && pnpm i && pnpm build` with a Copy button (load `apps/extension/.output/chrome-mv3`) · 4 step tiles, each with a tiny visual: 01 Unzip (file chip) · 02 Open extensions (`chrome://extensions` pill) · 03 Developer mode (switch on) · 04 Load unpacked (button) · footnote: Edge `edge://extensions` · Brave `brave://extensions` · pin from the puzzle menu · **No‑install block** (bordered): "No install? Use the bookmark." + a draggable ink **✂ Clipcard** bookmarklet link (`<a href="javascript:…">`, built from `apps/lite/bookmarklet.ts`) + "← drag to bookmarks". On mobile, show "Add to Home Screen" instructions instead (Lite as a PWA). |
@@ -62,13 +62,14 @@ export const RELEASED = {
   videoClips: false,  // R5: "Video clips" tile, recording FAQ
   videoJoin: false,   // R6: "One video, many sources" tile
   gifs: false,        // R6: "Library and GIFs" tile, privacy line
+  app: false,         // R1: hero paste bar works, nav "Web app", "Open full app" path
+  pwa: false,         // R1: mobile "Install the app" + share target
   batch: false,       // R7: Roundup in templates
-  pwa: false,         // R7: mobile "Add to Home Screen"
 } as const;
 ```
 
 - An unreleased Features tile keeps its visual but drops to 60% opacity with a quiet mono **Soon** chip (Geist Mono 11, `#F4F4F5` fill) after the title. No links or CTAs on it.
-- Hero CTA by state: before R1 "Follow on GitHub"; R1 "Try it now: drag the bookmark"; from R2 "Download for Chrome" + secondary "No install? Use the bookmark"; with `STORE_URL` "Add to Chrome" + the same secondary.
+- Hero by state: **R0** H1 + sub + "Follow on GitHub" (no paste bar). **R1** the paste bar works + paths "✂ bookmark · Open full app"; mobile "Install the app". **R2+** adds "Download for Chrome" to the paths. With `STORE_URL`: "Add to Chrome" replaces Download.
 - `/changelog/`: generated from `CHANGELOG.md` at build time, newest first, one block per version with the date. Linked in the footer.
 - The ship checklist (`handover/ship.md`) updates `RELEASED` in the same PR that tags the release.
 

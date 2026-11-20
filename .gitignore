@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.astro/
+.wxt/
+.output/
+*.tsbuildinfo
+playwright-report/
+test-results/
+.env*
+!.env.example
+apps/extension/public/_locales/
+apps/extension/public/icon/
+packages/cards/src/tokens.ts
+packages/cards/src/tokens.css
+apps/landing/src/media/generated/

@@ -1,0 +1,145 @@
+---
+import strings from '@clipcard/i18n/landing/en';
+import geist from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url';
+import mark from '../../../../design/brand/mark.svg?url';
+import { RELEASED, REPO_URL } from '../config';
+import Icon from '../components/Icon.astro';
+import { socialImage } from '../media';
+import { sitePath } from '../site';
+import '@clipcard/cards/tokens.css';
+import '../styles/site.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  path?: string;
+  schema?: object[];
+  noindex?: boolean;
+}
+const {
+  title = strings.title,
+  description = strings.description,
+  path = '',
+  schema = [],
+  noindex = false,
+} = Astro.props;
+const canonical = new URL(sitePath(path), Astro.site);
+const ogImage = new URL(socialImage, Astro.site);
+const navLinks = [
+  ...(RELEASED.app ? [[strings.nav.app, 'app/']] : []),
+  [strings.nav.templates, '#templates'],
+  [strings.nav.how, '#how-it-works'],
+  [strings.nav.faq, '#faq'],
+];
+---
+
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={canonical} />
+    <link rel="alternate" hreflang="x-default" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={mark} />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href={geist}
+      crossorigin="anonymous"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content={strings.brand} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    {schema.length > 0 && (
+      <script
+        is:inline
+        type="application/ld+json"
+        set:html={JSON.stringify(schema).replaceAll('<', '\\u003c')}
+      />
+    )}
+  </head>
+  <body>
+    <a class="skip" href="#main">
+      {strings.nav.skip}
+    </a>
+    <header class="site-header dark">
+      <nav class="container nav" aria-label={strings.nav.label}>
+        <a class="brand" href={sitePath()}>
+          <img src={mark} width="28" height="28" alt="" />
+          {strings.brand}
+        </a>
+        <div class="nav-links">
+          {navLinks.map(([label, hash]) => (
+            <a href={sitePath(hash)}>{label}</a>
+          ))}
+        </div>
+        <a class="button button-light nav-follow" href={REPO_URL}>
+          {strings.nav.follow}
+        </a>
+        <details class="nav-menu">
+          <summary aria-label={strings.nav.menu}>
+            <Icon name="menu" />
+          </summary>
+          <ul>
+            {navLinks.map(([label, hash]) => (
+              <li>
+                <a href={sitePath(hash)}>{label}</a>
+              </li>
+            ))}
+            <li>
+              <a href={REPO_URL}>{strings.nav.follow}</a>
+            </li>
+          </ul>
+        </details>
+      </nav>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="site-footer dark">
+      <div class="container">
+        <nav aria-label={strings.footer.label}>
+          <a class="brand" href={sitePath()}>
+            {strings.brand}
+          </a>
+          <ul>
+            <li>
+              <a href={sitePath('privacy/')}>{strings.footer.privacy}</a>
+            </li>
+            <li>
+              <a href={sitePath('changelog/')}>{strings.footer.changelog}</a>
+            </li>
+            <li>
+              <a href={REPO_URL}>{strings.footer.github}</a>
+            </li>
+            <li>
+              <a href="https://tanziro.com/">{strings.footer.site}</a>
+            </li>
+          </ul>
+        </nav>
+        <p>
+          {strings.footer.credit}{' '}
+          <a href="https://tanziro.com/">{strings.footer.site}</a>
+          {strings.footer.inspired}{' '}
+          <a href="https://frame.zibon.design/">{strings.footer.zibon}</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

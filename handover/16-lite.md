@@ -1,4 +1,6 @@
-# Codex task · M16 · Lite (no install: bookmark + Clipcard window)
+# Codex task · M16 · Web app at /app (no install: paste, bookmark, phone app)
+
+> Updated 2026‑11‑20: see `UPDATE-2026-11-20-web-app.md`. Route `/app/`, standalone paste flows, and the PWA + share target ship in R1.
 
 **Branch:** `feat/m16-lite` · **Needs:** M11, M15a (storage) · **Parallel with:** M12–M14
 
@@ -7,7 +9,7 @@
 - **Visual truth:** `design/screens/P8-lite-bookmark.png`, `L1-landing-desktop.png` (Install section)
 
 ## Build
-1. `apps/lite`: Vite + React page at `/lite` hosting the same popup components (Card · Grid · Video, Auto chip, text bar, drafts, Library · GIFs). Window bar label "Clipcard" + a "Saved in this browser · no install" note at the bottom.
+1. `apps/lite`: Vite + React page at **`/app/`** (Vite `base: '/app/'`), usable on its own (`P9-web-app.png`): app bar, paste box (URL / copied HTML / image / drop / Photo), drafts; phone layout per `design/phone/A2`–`A3`. It also works as the bookmark window hosting the same popup components (Card · Grid · Video, Auto chip, text bar, drafts, Library · GIFs). Window bar label "Clipcard" + a "Saved in this browser · no install" note at the bottom.
 2. `bookmarklet.ts` → a `javascript:` URL under 4 KB (minified IIFE): reads metadata, the selection, image candidates and the video moment; opens or reuses the named window; posts the payload after `ready`.
 3. Handshake + validation (origin, schema with zod, length limits, URL sanitizing).
 4. Image fallback chain (CORS fetch → bookmarklet frame → Solid + paste/drop).

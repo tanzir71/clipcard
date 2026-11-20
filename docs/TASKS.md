@@ -3,9 +3,9 @@
 **Build in release order (`docs/ROADMAP.md`, prompts `handover/R0`–`R8`).** Each release ships a working product and an updated landing page. The milestone checklists below are the full specs; each release prompt says which boxes belong to it. Each milestone also has a detailed prompt in `handover/NN-*.md`. Each task lists its acceptance criteria. Tick boxes as you go. Record decisions in `docs/DECISIONS.md`.
 
 ## M0 · Scaffold
-- [ ] pnpm workspace with `apps/extension` (WXT + React + TS), `apps/landing` (Astro), `packages/{core,cards,i18n}`; shared `tsconfig`, ESLint, Prettier, Vitest, Playwright.
-- [ ] Root scripts from `AGENTS.md` work. CI workflow (GitHub Actions): install, typecheck, lint, test, build.
-- [ ] `design/tokens.json` → generated `packages/cards/src/tokens.ts` and CSS variables `--pc-*`.
+- [x] pnpm workspace with `apps/extension` (WXT + React + TS), `apps/landing` (Astro), `packages/{core,cards,i18n}`; shared `tsconfig`, ESLint, Prettier, Vitest, Playwright.
+- [x] Root scripts from `AGENTS.md` work. CI workflow (GitHub Actions): install, typecheck, lint, test, build.
+- [x] `design/tokens.json` → generated `packages/cards/src/tokens.ts` and CSS variables `--pc-*`.
 **Done when** `pnpm build` produces a loadable extension zip and a static landing build.
 
 ## M1 · Core (`packages/core`)

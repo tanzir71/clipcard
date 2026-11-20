@@ -1,0 +1,169 @@
+{
+  "brand": "Clipcard",
+  "title": "Clipcard – Photo cards and video clips from any link, with QR code",
+  "description": "Follow Clipcard, a tool in development for turning links, quotes, images and video moments into shareable cards, grids and videos with a QR code.",
+  "nav": {
+    "label": "Main navigation",
+    "menu": "Menu",
+    "skip": "Skip to content",
+    "app": "Web app",
+    "templates": "Templates",
+    "how": "How it works",
+    "faq": "FAQ",
+    "follow": "Follow on GitHub"
+  },
+  "hero": {
+    "heading": "Share the news as cards, grids and video",
+    "description": "Coming soon. Clips from any page, joined into one card or one video. Every one links back to the source.",
+    "gallery": "Example cards"
+  },
+  "shortcut": {
+    "placeholder": "Paste any link, copied text or an image",
+    "submit": "Make card"
+  },
+  "share": {
+    "label": "Send to my computer",
+    "copied": "Link copied",
+    "failed": "Copy the link from your address bar."
+  },
+  "how": {
+    "heading": "Three ways in. No account.",
+    "items": [
+      { "title": "Share in one click", "description": "Right-click a link. The card is copied." },
+      { "title": "Clip and arrange", "description": "Quotes, images, charts as one grid." },
+      { "title": "Join into a video", "description": "Clips, excerpts, GIFs as one reel." }
+    ]
+  },
+  "features": {
+    "heading": "Everything it does",
+    "soon": "Soon",
+    "items": {
+      "cards": {
+        "title": "One-click cards",
+        "description": "Right-click any link. A sourced card is on your clipboard."
+      },
+      "clips": {
+        "title": "Clips and grids",
+        "description": "Clip quotes, images and charts. Arrange them as one card."
+      },
+      "videoClips": {
+        "title": "Video clips",
+        "description": "Mark a moment on YouTube or any page video. Linked to the timestamp."
+      },
+      "videoJoin": {
+        "title": "One video, many sources",
+        "description": "Join clips, excerpts and reactions. Sources roll at the end."
+      },
+      "gifs": {
+        "title": "Library and GIFs",
+        "description": "Keep memes and clips for later. Search GIPHY and KLIPY."
+      },
+      "drafts": {
+        "title": "Drafts",
+        "description": "Save now, add sources over days, post when ready."
+      }
+    },
+    "also": "Also: your mark on every card · pick the key phrase and its color · captions from transcripts · old stories show their year · no account, runs on your computer"
+  },
+  "sources": {
+    "heading": "Every card links back to the source.",
+    "bullets": [
+      "QR code to the original article",
+      "Trackers removed from every link",
+      "Edited headlines are marked"
+    ],
+    "scan": "Scan → original"
+  },
+  "templates": {
+    "heading": "Six looks. Every format.",
+    "formats": "Example formats",
+    "example": "Clipcard example: {name} template",
+    "names": {
+      "split": "Split",
+      "overlay": "Overlay",
+      "duotone": "Duotone",
+      "header": "Header",
+      "quote": "Quote",
+      "caps": "Caps"
+    },
+    "localizedExamples": {
+      "bn": "Clipcard example in Bangla",
+      "hi": "Clipcard example in Hindi",
+      "ur": "Clipcard example in Urdu"
+    }
+  },
+  "languages": "Made for your language.",
+  "languageNames": {
+    "bn": "বাংলা",
+    "hi": "हिन्दी",
+    "ur": "اردو",
+    "ne": "नेपाली",
+    "mr": "मराठी",
+    "ta": "தமிழ்",
+    "te": "తెలుగు",
+    "ml": "മലയാളം",
+    "kn": "ಕನ್ನಡ",
+    "gu": "ગુજરાતી",
+    "pa": "ਪੰਜਾਬੀ",
+    "si": "සිංහල",
+    "id": "Indonesia",
+    "fil": "Filipino",
+    "my": "မြန်မာ",
+    "sw": "Kiswahili",
+    "ha": "Hausa",
+    "yo": "Yorùbá",
+    "am": "አማርኛ",
+    "ar": "العربية",
+    "es": "Español",
+    "pt-BR": "Português",
+    "en": "English",
+    "fr": "Français",
+    "fa": "فارسی",
+    "uk": "Українська",
+    "vi": "Tiếng Việt",
+    "th": "ไทย",
+    "ms": "Bahasa Melayu",
+    "or": "ଓଡ଼ିଆ"
+  },
+  "faq": [
+    { "question": "Is it free?", "answer": "Yes. No account, no watermark." },
+    {
+      "question": "Does it work with Facebook, X and WhatsApp?",
+      "answer": "Clipcard is in development. The planned card exports are PNG images you can share in posts and chats."
+    },
+    {
+      "question": "Which languages are supported?",
+      "answer": "Card support for 30 languages is planned. The examples above show Bangla, Hindi and Urdu."
+    },
+    {
+      "question": "Does my data leave the browser?",
+      "answer": "This site has no analytics or account. Clipcard is designed to process and save your work in your browser."
+    },
+    {
+      "question": "Edge, Brave, Firefox?",
+      "answer": "The first extension release is planned for Chrome. Edge and Brave are part of beta testing, with Firefox planned for a later release."
+    }
+  ],
+  "band": "Follow Clipcard’s development.",
+  "footer": {
+    "label": "Footer navigation",
+    "privacy": "Privacy",
+    "github": "GitHub",
+    "changelog": "Changelog",
+    "credit": "© 2026 Clipcard · Made by",
+    "site": "tanziro.com",
+    "inspired": " · Inspired by",
+    "zibon": "Zibon"
+  },
+  "privacy": {
+    "title": "Privacy",
+    "description": "How Clipcard handles data.",
+    "text": [
+      "This website has no account, analytics or trackers.",
+      "Clipcard is in development. The planned browser tools will process clips and keep drafts and exports in browser storage.",
+      "In the future extension, you can grant optional access to read links you choose and enable on-page clip controls."
+    ]
+  },
+  "changelog": { "title": "Changelog", "description": "What changed in each Clipcard release." },
+  "notFound": { "title": "Page not found", "home": "Back to Clipcard" }
+}

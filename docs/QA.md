@@ -1,6 +1,6 @@
 # QA — test matrix
 
-**Release tags (cumulative):** run every section introduced up to the current release. **[R1]** Sources, Output (cards), Lite rows below · **[R2]** Behaviour, Performance, Popup · **[R3]** Clips, Drafts · **[R4]** languages (30‑language smoke), store package · **[R5]** Video clips · **[R6]** Video join, GIFs · **[R7]** Batch, Lite PWA · **[R8]** everything.
+**Release tags (cumulative):** run every section introduced up to the current release. **[R1]** Sources, Output (cards), web app + bookmark + phone app rows below · **[R2]** Behaviour, Performance, Popup · **[R3]** Clips, Drafts · **[R4]** languages (30‑language smoke), store package · **[R5]** Video clips · **[R6]** Video join, GIFs · **[R7]** Batch, Lite PWA · **[R8]** everything.
 
 ## Sources (manual + recorded fixtures)
 | Where the link is | Check |
@@ -48,3 +48,5 @@
 - GIFs: offline (graceful), rate‑limited (429 → friendly message), attribution visible.
 - Batch: a news homepage marquee (nav/footer links ignored), 10 tabs, a pasted list with duplicates.
 - Lite: strict‑CSP sites, popup blockers (the click is the gesture), Safari/Firefox bookmarklets, Android share target.
+- Web app: paste a bare URL (slug headline), copied article HTML (headline + image), a screenshot; reopen offline; drafts survive reload. Landing hero paste → card in place.
+- Phone app: Android install prompt; share a link and an image from Facebook, YouTube and Chrome into Clipcard; native Share sends PNG/MP4; iPhone Add to Home Screen + Share sheet.

@@ -2,6 +2,19 @@
 
 Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md).
 
+## 2026-11-20 · R0 scaffold and site
+
+- The owner confirmed `tanzir71/clipcard` as the public repository. GitHub Pages serves the site under `/clipcard/`. The unpublished web app scaffold builds under `/clipcard/app/`; its nav link and hero paste bar stay behind `RELEASED.app`.
+- R0 uses the six permissions from the scaffold handover. `unlimitedStorage` and `tabCapture` are deferred to the releases that need them.
+- Toolchain: Node 24 LTS, pnpm 10, Astro 7, WXT 0.21, React 19 and TypeScript 6. The TypeScript ESLint parser and Astro checker both support TypeScript 6.
+- The revised mobile mock omits the source and template sections and shows three FAQ rows. R0 keeps the sections reachable on mobile and uses the same five questions for both layouts. Mobile keeps Follow on GitHub as the primary action, with Send to my computer available underneath.
+- R0 uses a social image cropped from the supplied Split card artwork. Renderer-generated social images depend on the card engine in R1.
+
+## 2026‑11‑20 · Web app route
+- The no‑install product is a **web app at `/app/`** (package `apps/lite`), linked from the landing hero (a working paste bar), the nav and "Open full app". The bookmark is the one‑click accelerator, not the only way in.
+- The **phone app** is the same web app installed as a PWA with an Android share target. It moved from R7 to **R1**. The mobile landing page leads with **Install the app**.
+- No server: without the bookmark or extension, a pasted URL gives a slug headline and needs a user photo. We say "made in your browser" and never promise auto‑fetch.
+
 ## 2026‑11‑20 · Release plan
 - Deliver incrementally: R0 landing live → R1 Lite (no install) → R2 extension beta (zip) → R3 clips, grids, drafts → R4 languages + store submission → R5 video clips → R6 one video + GIFs → R7 batch + mobile Lite → R8 1.0. Plan: `docs/ROADMAP.md`.
 - Lite ships first: it needs no store review or install, and it proves the renderer the extension reuses.

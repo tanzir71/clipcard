@@ -1,6 +1,6 @@
 # AGENTS.md — Clipcard
 
-You are implementing **Clipcard**: find things on the web (links, quotes, images, charts, video moments) and Clipcard turns them into a sourced **card, grid or video** automatically, with a QR back to every original. It ships as a browser extension, a **no‑install bookmark version (Lite)** and a landing page. Everything you need is in this repo. Read this file fully, then `docs/TASKS.md`. Work comes one milestone at a time as a prompt in `handover/` (order in `handover/README.md`).
+You are implementing **Clipcard**: find things on the web (links, quotes, images, charts, video moments) and Clipcard turns them into a sourced **card, grid or video** automatically, with a QR back to every original. It ships as a browser extension, a **no‑install web app at `/app`** (also installable on phones, with a one‑click bookmark on desktop) and a landing page whose hero is a working shortcut to the app. Everything you need is in this repo. Read this file fully, then `docs/TASKS.md`. Work comes one milestone at a time as a prompt in `handover/` (order in `handover/README.md`).
 
 Store title: **Clipcard – Link to Photo Card & Video Clip Maker with QR Code**
 

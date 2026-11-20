@@ -1,0 +1,28 @@
+---
+import strings from '@clipcard/i18n/landing/en';
+import markdown from '../../../../CHANGELOG.md?raw';
+import { releaseEntries } from '../changelog';
+import Site from '../layouts/Site.astro';
+const { brand, changelog } = strings;
+---
+
+<Site
+  title={`${changelog.title} · ${brand}`}
+  description={changelog.description}
+  path="changelog/"
+>
+  <article class="container document">
+    <h1>{changelog.title}</h1>
+    {releaseEntries(markdown).map(({ version, date, changes }) => (
+      <section>
+        <h2>{version}</h2>
+        <time datetime={date}>{date}</time>
+        <ul>
+          {changes.map((change) => (
+            <li>{change}</li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </article>
+</Site>

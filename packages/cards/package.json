@@ -1,0 +1,9 @@
+{
+  "name": "@clipcard/cards",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens.css": "./src/tokens.css"
+  }
+}

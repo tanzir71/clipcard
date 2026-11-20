@@ -1,0 +1,6 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": { "noEmit": true, "types": ["astro/client"] },
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
+}

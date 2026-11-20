@@ -1,0 +1,16 @@
+---
+import strings from '@clipcard/i18n/landing/en';
+import Icon from './Icon.astro';
+---
+
+<div class="app-shortcut">
+  <Icon name="link" />
+  <input
+    type="text"
+    aria-label={strings.shortcut.placeholder}
+    placeholder={strings.shortcut.placeholder}
+  />
+  <button class="button" type="button">
+    {strings.shortcut.submit}
+  </button>
+</div>

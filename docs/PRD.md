@@ -83,13 +83,15 @@ As v1, plus: **Your mark** (upload), GIF provider (GIPHY · KLIPY · Off), Draft
 ### F11 — Your mark
 Settings → upload SVG/PNG. It's placed on every card and video (DESIGN §4.1) and used as the oversized pattern. Without a mark, no slot or pattern is shown.
 
-### F12 — Lite: no install, just a bookmark · `P8-lite-bookmark.png`
-- On the landing page, the user drags **✂ Clipcard** to the bookmarks bar. Clicking it on any page reads the page (title, image, canonical URL, date, outlet, the selected text, and the playing video's time and frame) and opens a small **Clipcard window** with the same popup (Card · Grid · Video, Auto chip, Copy · Save · Share).
-- Drafts, the Library and the GIF cache live in the Clipcard site's browser storage (IndexedDB + OPFS). They're shared across every site where the bookmark is used, in that browser.
-- Clicking the bookmark again adds the current page (or the selection) to the open draft. A second click on a video page adds a **moment** (frame + timestamp QR).
-- Not in Lite (extension only): right‑click menus, the hover button, the selection toolbar, clip mode, one‑click copy without a window, video recording. Lite can record a clip only after the browser's "Share this tab" prompt (`getDisplayMedia`), every time.
-- Cross‑origin images that can't be read become Solid, with "Paste or drop a photo" (Ctrl+V works in the window).
-- Mobile: Lite installs as a PWA; on Android it's a **share target** (share a link to Clipcard → card from the title; paste or pick a photo).
+### F12 — Web app (no install) · `P9-web-app.png`, `P8-lite-bookmark.png`, `design/phone/*`
+- **`/app`**: the full Clipcard (Card · Grid · Video, drafts, Library · GIFs) in any browser, reachable from the landing hero, the nav and every "no install" link. Drafts, Library and the GIF cache live in that browser (IndexedDB + OPFS).
+- **Input without the extension**: paste a link, copied article text (with its HTML), or an image (Ctrl+V, drop, or Photo). A browser page can't read other websites by itself, so:
+  - URL only → the headline comes from the URL slug (editable), the outlet from the domain, and the QR from the cleaned URL. The photo is Solid until the user adds one ("Add a photo" picks a file or pastes a screenshot). YouTube links use the public thumbnail where the site allows it.
+  - Copied article (text/html on the clipboard) → the first heading becomes the headline and the first image is fetched where CORS allows, else the user adds one.
+  - **One‑click**: the ✂ Clipcard bookmark (desktop) reads the open page fully and sends it to `/app`.
+- **Phone app**: `/app` installs as an app (PWA). The landing page asks for it on phones ("Install the app"; iPhone: Share → Add to Home Screen). On Android, Clipcard appears in the **share menu**: sharing a link or image from Facebook, YouTube or the browser opens it straight into a card. **Share** uses the phone's share sheet with the image or MP4 file.
+- **Landing shortcut**: the hero's paste bar runs the same flow in place, with the result shown in the hero (Copy · Download · Open in app).
+- Not in the web app (extension only): right‑click menus, the hover button, the selection toolbar, clip mode on other sites, recording without a prompt. The web app can record a tab only after the browser's "Share this tab" prompt.
 
 ## 5. Automatic decisions (overridable)
 

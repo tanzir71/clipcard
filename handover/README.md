@@ -20,6 +20,8 @@ If you choose a different owner or repo name, tell Codex in the M0 task. It will
 - **Codex cloud / IDE**: create one task per prompt on its own branch, paste the prompt and let it open a PR.
 - After each PR, run **`handover/review.md`** in a *fresh* Codex task. It checks the work against the spec without having written it. Then merge.
 
+> **Change note for work in progress:** `UPDATE-2026-11-20-web-app.md` (web app at `/app`, hero app shortcut, phone app moved to R1).
+
 ## 2. Order: ship in releases
 
 Give Codex **one release prompt at a time**, in this order. Each one names the milestone prompts it uses, the scope cut, and the lanes that can run in parallel, and it ends with `ship.md`. Full plan, landing state per release and your own actions: `docs/ROADMAP.md`.
@@ -27,13 +29,13 @@ Give Codex **one release prompt at a time**, in this order. Each one names the m
 | # | Release prompt | You can use after it ships |
 |---|---|---|
 | R0 | `R0-landing-live.md` | Landing page live (features marked Soon) |
-| R1 | `R1-lite.md` | **No‑install bookmark** → card from any article |
+| R1 | `R1-lite.md` | **Web app at `/app`** + bookmark + **phone app** (PWA, share target) → cards with no install |
 | R2 | `R2-extension-beta.md` | Extension zip: right‑click → card copied; popup |
 | R3 | `R3-clips-drafts.md` | Clips → grid cards; drafts; Save for later |
 | R4 | `R4-languages-store.md` | 30 languages, settings, **Chrome Web Store submission** |
 | R5 | `R5-video-clips.md` | YouTube and page‑video clips; moment cards |
 | R6 | `R6-video-gifs.md` | One video from many sources; Library and GIFs |
-| R7 | `R7-batch-mobile.md` | Roundup / Carousel / Digest; Lite on phones |
+| R7 | `R7-batch-mobile.md` | Roundup / Carousel / Digest |
 | R8 | `R8-v1.md` | 1.0: hardened, localized, Firefox |
 
 To run one: open a fresh Codex task, paste "Read `handover/R1-lite.md` and do it", and let it open one PR per lane plus the ship PR. Review each PR with `review.md`.
