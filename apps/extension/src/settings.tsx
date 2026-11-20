@@ -1,14 +1,32 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import strings from '@clipcard/i18n/en';
 import { clearDrafts } from '@clipcard/ui/storage';
 import { browser } from 'wxt/browser';
 import { webApp } from './site.ts';
+import type { BackgroundMessage } from './messages.ts';
 import './popup.css';
 import '@clipcard/ui/style.css';
 
 function Settings() {
   const [status, setStatus] = useState('');
+  const [update, setUpdate] = useState<string | null>(null);
+  useEffect(() => {
+    let active = true;
+    const request: BackgroundMessage = {
+      to: 'background',
+      kind: 'releaseUpdate',
+    };
+    void browser.runtime
+      .sendMessage(request)
+      .then((value: unknown) => {
+        if (active && typeof value === 'string') setUpdate(value);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, []);
   async function clear() {
     try {
       await clearDrafts();
@@ -20,6 +38,16 @@ function Settings() {
   return (
     <main className="popup-empty">
       <h1>{strings['ext.shortName']}</h1>
+      {update ? (
+        <a
+          className="popup-update"
+          href={update}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {strings['settings.updateAvailable']}
+        </a>
+      ) : null}
       <section aria-labelledby="storage-title">
         <h2 id="storage-title">{strings['settings.privacy']}</h2>
         <p>{strings['settings.cardStorage']}</p>

@@ -101,6 +101,22 @@ a:focus-visible {
   font-size: 12px;
 }
 
+.popup-update {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: inherit;
+  font-size: 12px;
+}
+
+.popup-update::before {
+  inline-size: 7px;
+  block-size: 7px;
+  border-radius: 50%;
+  background: #187451;
+  content: '';
+}
+
 .popup-status {
   color: #5a5a63;
   margin: 6px 12px;

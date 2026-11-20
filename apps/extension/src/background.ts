@@ -12,6 +12,7 @@ import type {
   OffscreenMessage,
 } from './messages.ts';
 import { destinationFor, rememberPrefs, sitePrefs } from './preferences.ts';
+import { developerUpdate } from './update-check.ts';
 
 const allSites = { origins: ['<all_urls>'] };
 const offscreenPath = '/offscreen.html';
@@ -302,6 +303,8 @@ async function handleRequest(
       return sender.url === browser.runtime.getURL(offscreenPath)
         ? sitePrefs(message.address)
         : {};
+    case 'releaseUpdate':
+      return developerUpdate();
     case 'offscreenIdle':
       if (sender.url === browser.runtime.getURL(offscreenPath)) {
         await closeIdleOffscreen();
@@ -319,6 +322,10 @@ export function startExtension() {
   browser.runtime.onInstalled.addListener(() => {
     void installMenus().catch(() => undefined);
     void browser.action.setBadgeBackgroundColor({ color: '#187451' });
+    void developerUpdate().catch(() => undefined);
+  });
+  browser.runtime.onStartup.addListener(() => {
+    void developerUpdate().catch(() => undefined);
   });
   browser.contextMenus.onClicked.addListener((info, tab) => {
     void fromMenu(info, tab).catch(() => report(tab?.id));

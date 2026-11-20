@@ -22,19 +22,26 @@ interface Check {
 }
 
 async function latestTag(): Promise<string | null> {
-  const cached = (await browser.storage.local.get(cacheKey))[cacheKey] as Check | undefined;
+  const cached = (await browser.storage.local.get(cacheKey))[cacheKey] as
+    Check | undefined;
   const checkedAt = Date.now();
   if (cached && checkedAt - cached.checkedAt < day) return cached.tag;
   let tag = cached?.tag ?? null;
   try {
-    const response = await fetch('https://api.github.com/repos/' + repo + '/releases/latest', {
-      credentials: 'omit',
-      referrerPolicy: 'no-referrer',
-      signal: AbortSignal.timeout(4500),
-    });
+    const response = await fetch(
+      'https://api.github.com/repos/' + repo + '/releases/latest',
+      {
+        credentials: 'omit',
+        referrerPolicy: 'no-referrer',
+        signal: AbortSignal.timeout(4500),
+      },
+    );
     if (response.ok) {
       const data = (await response.json()) as { tag_name?: unknown };
-      if (typeof data.tag_name === 'string' && /^v\d+\.\d+\.\d+$/.test(data.tag_name)) {
+      if (
+        typeof data.tag_name === 'string' &&
+        /^v\d+\.\d+\.\d+$/.test(data.tag_name)
+      ) {
         tag = data.tag_name;
       }
     }
@@ -47,7 +54,9 @@ async function latestTag(): Promise<string | null> {
 
 export async function developerUpdate(): Promise<string | null> {
   if (import.meta.env.VITE_CLIPCARD_DEV_RELEASE !== '1') return null;
-  pending ??= latestTag().finally(() => { pending = undefined; });
+  pending ??= latestTag().finally(() => {
+    pending = undefined;
+  });
   const tag = await pending;
   return tag && isNewer(tag, browser.runtime.getManifest().version)
     ? 'https://github.com/' + repo + '/releases/tag/' + tag
