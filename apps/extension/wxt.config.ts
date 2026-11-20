@@ -3,6 +3,13 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
   manifestVersion: 3,
   modules: ['@wxt-dev/module-react'],
+  hooks: {
+    'build:manifestGenerated': (_wxt, manifest) => {
+      // WXT adds runtime content-script matches as required hosts.
+      // Clipcard uses activeTab and requests persistent access on demand.
+      if ('host_permissions' in manifest) delete manifest.host_permissions;
+    },
+  },
   manifest: {
     ...(process.env.CLIPCARD_EXTENSION_VERSION
       ? { version: process.env.CLIPCARD_EXTENSION_VERSION }

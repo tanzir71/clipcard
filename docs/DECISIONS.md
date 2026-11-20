@@ -2,6 +2,11 @@
 
 Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md).
 
+## 2026-11-20 · R2 host permissions
+
+- The published v0.2.0 manifest contained required HTTP and HTTPS host matches. WXT adds them for content scripts configured with runtime registration.
+- v0.2.1 removes those generated matches before packaging. The six documented permissions and optional all-sites access cover toolbar, context-menu and shortcut actions. The clean-browser test and release job check the generated manifest. [WXT runtime content scripts](https://wxt.dev/api/reference/wxt/interfaces/basecontentscriptentrypointoptions)
+
 ## R3 · Draft storage migration
 
 - Each card saved in R1 or R2 becomes a draft under its existing ID. The draft keeps the original card, including the headline edit, overrides, photo and thumbnail. Clipping again starts a new draft, so older cards stay individually restorable.

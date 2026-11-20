@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## v0.2.1 - 2026-11-20
+
+- Site access is opt-in. The extension uses temporary access to the current tab when you invoke a toolbar, menu or shortcut action.
+
 ## v0.2.0 - 2026-11-20
 
 - Install the Clipcard beta in Chrome, Edge or Brave.
