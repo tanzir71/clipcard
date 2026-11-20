@@ -31,7 +31,7 @@ jobs:
         id: pages
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
-      - run: pnpm build:landing
+      - run: pnpm prepare:assets && pnpm build:landing && pnpm --filter @clipcard/lite build
         env:
           CLIPCARD_SITE: ${{ steps.pages.outputs.origin }}
           CLIPCARD_BASE: ${{ steps.pages.outputs.base_path || '/' }}
