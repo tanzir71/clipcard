@@ -1,0 +1,368 @@
+.cc-card {
+  box-sizing: border-box;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  flex: none;
+  font-family: 'Geist', sans-serif;
+  font-synthesis: none;
+  text-align: start;
+}
+
+.cc-card *,
+.cc-card *::before,
+.cc-card *::after {
+  box-sizing: border-box;
+}
+
+.cc-photo,
+.cc-echo,
+.cc-grain,
+.cc-halftone,
+.cc-header-panel,
+.cc-split-panel,
+.cc-photo-area {
+  position: absolute;
+  inset: 0;
+}
+
+.cc-photo,
+.cc-echo {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  max-inline-size: none;
+  object-fit: cover;
+}
+
+.cc-echo {
+  filter: blur(100px);
+  transform: scale(1.16);
+  opacity: 0.3;
+}
+
+.cc-photo-area,
+.cc-header-panel,
+.cc-split-panel {
+  overflow: hidden;
+}
+
+.cc-photo-area,
+.cc-header-panel {
+  inset-block-end: auto;
+}
+
+.cc-header > .cc-photo-area {
+  inset-block-end: 0;
+}
+
+.cc-header-panel {
+  background: #0b0b0c;
+}
+.cc-header-panel .cc-echo {
+  inset: -100px -80px auto;
+  inline-size: calc(100% + 160px);
+  block-size: calc(100% + 222px);
+  opacity: 0.32;
+  transform: none;
+  filter: blur(45px);
+}
+.cc-header-panel::before,
+.cc-quote::before {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: rgba(11, 11, 12, 0.45);
+  content: '';
+  pointer-events: none;
+}
+.cc-quote::before {
+  background: rgba(11, 11, 12, 0.42);
+}
+.cc-quote > :not(.cc-echo),
+.cc-header-panel > :not(.cc-echo) {
+  z-index: 2;
+}
+.cc-quote > .cc-echo {
+  inset: -12.6% -14.8% auto;
+  inline-size: 129.6%;
+  block-size: 126%;
+  transform: none;
+  filter: blur(55px);
+}
+
+.cc-shade,
+.cc-foot-grain {
+  position: absolute;
+  inset-inline: 0;
+  pointer-events: none;
+}
+
+.cc-shade-top {
+  inset-block-start: 0;
+}
+
+.cc-shade-foot,
+.cc-foot-grain {
+  inset-block-end: 0;
+}
+
+.cc-foot-grain {
+  block-size: 35%;
+}
+
+.cc-grain {
+  background-repeat: repeat;
+  opacity: 0.07;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.cc-halftone {
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.cc-solid .cc-halftone {
+  background-position: top right;
+}
+
+.cc-solid:dir(rtl) .cc-halftone {
+  background-position: top left;
+  transform: scaleX(-1);
+}
+
+.cc-oversized {
+  position: absolute;
+  inset-inline-end: -18%;
+  inset-block-end: -20%;
+  color: #fff;
+  opacity: 0.035;
+  font:
+    800 560px/0.8 'Schibsted Grotesk',
+    sans-serif;
+  letter-spacing: -0.06em;
+  user-select: none;
+}
+
+.cc-header .cc-oversized {
+  inset-block: -150px auto;
+  inset-inline: 52% auto;
+  font-size: 520px;
+}
+.cc-header[data-format='9:16'] .cc-oversized {
+  inset-block-start: 50px;
+}
+.cc-quote .cc-oversized {
+  inset-block: 60.7% auto;
+  inset-inline: -8.3% auto;
+}
+.cc-solid .cc-oversized {
+  inset-block: 63.7% auto;
+  inset-inline: 35.2% auto;
+}
+
+.cc-mark,
+.cc-kicker,
+.cc-meta,
+.cc-qr {
+  position: absolute;
+}
+
+.cc-mark {
+  inset-inline-start: 56px;
+  inset-block-start: var(--cc-top);
+  max-inline-size: 120px;
+  color: #fff;
+  font:
+    800 30px/0.9 'Schibsted Grotesk',
+    sans-serif;
+  letter-spacing: -0.03em;
+  white-space: pre-line;
+}
+
+.cc-header > .cc-mark {
+  inset-block: auto var(--cc-bottom);
+}
+
+.cc-kicker {
+  max-inline-size: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  inset-inline-end: 56px;
+  inset-block-start: var(--cc-top);
+  font:
+    600 21px/28px 'Geist',
+    sans-serif;
+}
+
+.cc-kicker span {
+  padding-inline-start: 10px;
+  color: #aaa;
+  font-weight: 400;
+}
+
+.cc-chip {
+  padding: 7px 12px;
+  background: var(--cc-key);
+  color: #0b0b0c;
+  font:
+    500 17px/22px 'Geist Mono',
+    monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cc-year {
+  background: #e7a7b0;
+}
+
+.cc-meta {
+  inset-inline-start: 60px;
+  inset-block-end: var(--cc-bottom);
+  max-inline-size: calc(var(--cc-meta-width) - 48px);
+  overflow: hidden;
+  color: #b6b6bc;
+  font:
+    400 16px/22px 'Geist Mono',
+    monospace;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: pre;
+}
+
+.cc-qr {
+  inset-inline-end: 56px;
+  inset-block-end: var(--cc-bottom);
+  color: #0a0a0a;
+}
+
+.cc-headline {
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  font-family: var(--cc-family), serif;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  text-wrap: wrap;
+  -webkit-box-orient: vertical;
+}
+
+.cc-headline strong {
+  color: var(--cc-key);
+  font-weight: 700;
+}
+
+.cc-headline[data-emphasis='line'] strong {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-color: var(--cc-key);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+  text-decoration-skip-ink: none;
+}
+
+.cc-headline[data-emphasis='box'] strong {
+  padding-inline: 10px;
+  background: var(--cc-key);
+  color: #0b0b0c;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.cc-header-content {
+  position: absolute;
+  inset-block-start: var(--cc-top);
+  inset-inline: 60px;
+}
+
+.cc-header-content .cc-kicker,
+.cc-header-content .cc-meta {
+  position: static;
+  display: table;
+  max-inline-size: 100%;
+}
+
+.cc-header-content .cc-headline {
+  inline-size: 95%;
+  margin-block-start: 18px;
+  font-weight: 300;
+  letter-spacing: 0;
+}
+
+.cc-header-content .cc-headline strong {
+  font-weight: 600;
+}
+
+.cc-header-content .cc-meta {
+  margin-block-start: 20px;
+  font:
+    400 18px/24px 'Geist',
+    sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.cc-split-panel {
+  background: var(--cc-deep);
+}
+
+.cc-split-title,
+.cc-overlay-title,
+.cc-solid-title {
+  position: absolute;
+  inset-inline-start: 60px;
+}
+
+.cc-split-title {
+  inset-block-start: 44px;
+  inset-inline-end: 60px;
+  max-inline-size: 940px;
+}
+
+.cc-overlay-title {
+  inset-block-end: calc(var(--cc-bottom) + 48px);
+  max-inline-size: min(800px, var(--cc-meta-width));
+}
+
+.cc-overlay-title .cc-headline,
+.cc-overlay-title .cc-headline strong {
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.cc-solid-title,
+.cc-quote-content {
+  position: absolute;
+  inset-block-start: 47.8%;
+  inset-inline: 60px;
+  transform: translateY(-50%);
+}
+
+.cc-solid-title {
+  max-inline-size: 920px;
+  inset-block-start: calc(47.8% - 1px);
+}
+.cc-solid-title .cc-headline {
+  letter-spacing: -0.0025em;
+}
+.cc-solid-title .cc-headline strong {
+  letter-spacing: -0.011em;
+}
+
+.cc-quote-content {
+  inset-inline-end: 84px;
+  border-inline-start: 10px solid var(--cc-key);
+  padding: 46px 52px 46px 44px;
+  background: #fff;
+  color: #0b0b0c;
+}
+
+.cc-attribution {
+  margin-block-start: 22px;
+  color: #606065;
+  font:
+    400 21px/28px 'Geist',
+    sans-serif;
+}

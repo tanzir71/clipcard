@@ -1,0 +1,12 @@
+{
+  "ignoreFiles": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "packages/cards/src/tokens.css"
+  ],
+  "rules": {
+    "declaration-property-value-disallowed-list": {
+      "font-style": ["/^(italic|oblique)(\\s|$)/i"]
+    }
+  }
+}

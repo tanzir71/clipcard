@@ -2,6 +2,13 @@
 
 Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md).
 
+## 2026-11-20 · R1 page metadata
+
+- For long selections, text fragments use four leading words and up to four trailing words. The supplied fixture drops a leading “one” from the trailing phrase. The implementation follows that fixture and trims an initial determiner from the trailing phrase when present.
+- URL-slug headlines use title case and preserve the original script. Numeric IDs and date segments are removed, and a domain-derived outlet name covers a missing slug.
+- The card gallery uses the original photo fills exported from the referenced Figma nodes. Those files are sample content. User cards use photos from the source or local files.
+- Cards created from an image or copied text alone have no QR until a source link is available. A sourced card always uses its actual cleaned URL, including a text fragment for selected quotes.
+
 ## 2026-11-20 · R0 scaffold and site
 
 - The owner confirmed `tanzir71/clipcard` as the public repository. GitHub Pages serves the site under `/clipcard/`. The unpublished web app scaffold builds under `/clipcard/app/`; its nav link and hero paste bar stay behind `RELEASED.app`.

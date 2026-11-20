@@ -20,6 +20,19 @@ export default [
   ...tseslint.configs.recommended,
   ...astro.configs.recommended,
   {
+    files: ['**/*.{ts,tsx,js,jsx}'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            'Property[key.name="fontStyle"] > Literal[value=/^(italic|oblique)/i]',
+          message: 'Clipcard typography uses upright fonts.',
+        },
+      ],
+    },
+  },
+  {
     files: ['**/*.{js,mjs,ts,tsx,astro}'],
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },
