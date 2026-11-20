@@ -12,6 +12,19 @@
     "faq": "FAQ",
     "follow": "Follow on GitHub"
   },
+  "extension": {
+    "download": "Download for Chrome",
+    "store": "Add to Chrome",
+    "noInstall": "No install? Use the bookmark",
+    "heading": "Install the extension",
+    "beta": "Developer-mode beta for Chrome, Edge and Brave.",
+    "zip": "Download .zip",
+    "steps": [
+      "Download and unzip the file.",
+      "Open your browser’s Extensions page and turn on Developer mode.",
+      "Choose Load unpacked and select the folder you unzipped."
+    ]
+  },
   "hero": {
     "heading": "Share the news as cards, grids and video",
     "description": "Coming soon. Clips from any page, joined into one card or one video. Every one links back to the source.",
@@ -98,6 +111,7 @@
   "templates": {
     "heading": "Six looks. Every format.",
     "appHeading": "Five looks. Three formats.",
+    "extensionHeading": "Seven looks. Five formats.",
     "formats": "Example formats",
     "example": "Clipcard example: {name} template",
     "names": {

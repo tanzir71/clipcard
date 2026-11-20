@@ -4,6 +4,9 @@ export default defineConfig({
   manifestVersion: 3,
   modules: ['@wxt-dev/module-react'],
   manifest: {
+    ...(process.env.CLIPCARD_EXTENSION_VERSION
+      ? { version: process.env.CLIPCARD_EXTENSION_VERSION }
+      : {}),
     name: '__MSG_ext_name__',
     short_name: '__MSG_ext_shortName__',
     description: '__MSG_ext_description__',

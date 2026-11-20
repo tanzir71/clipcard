@@ -1,0 +1,26 @@
+---
+import strings from '@clipcard/i18n/landing/en';
+import { INSTALL_URL, REPO_URL, STORE_URL } from '../config';
+
+const copy = strings.extension;
+---
+
+<section class="section container" id="install" aria-labelledby="install-extension-heading">
+  <div class="install-extension">
+    <div>
+      <h2 id="install-extension-heading">{copy.heading}</h2>
+      {STORE_URL ? null : <p>{copy.beta}</p>}
+      <div class="install-extension-actions">
+        <a class="button button-light" href={INSTALL_URL}>
+          {STORE_URL ? copy.store : copy.zip}
+        </a>
+        <a href={REPO_URL}>{strings.footer.github}</a>
+      </div>
+    </div>
+    {STORE_URL ? null : (
+      <ol>
+        {copy.steps.map((step) => <li>{step}</li>)}
+      </ol>
+    )}
+  </div>
+</section>

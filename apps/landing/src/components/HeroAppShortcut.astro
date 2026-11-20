@@ -1,6 +1,7 @@
 ---
 import strings from '@clipcard/i18n/landing/en';
 import { landingBookmarklet } from '../bookmarklet';
+import { INSTALL_URL, RELEASED, STORE_URL } from '../config';
 import { sitePath } from '../site';
 import Icon from './Icon.astro';
 import InstallApp from './InstallApp.astro';
@@ -10,6 +11,14 @@ const appPath = sitePath('app/');
 const bookmark = await landingBookmarklet(new URL(appPath, Astro.site));
 ---
 
+{RELEASED.extension ? (
+  <div class="extension-hero-actions">
+    <a class="button button-light" href={INSTALL_URL}>
+      {STORE_URL ? strings.extension.store : strings.extension.download}
+    </a>
+    <a href="#bookmark">{strings.extension.noInstall}</a>
+  </div>
+) : null}
 <form
   class="app-shortcut"
   data-hero-shortcut
