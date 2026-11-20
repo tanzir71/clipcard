@@ -39,6 +39,17 @@ export interface CardDraft {
   photo: DraftPhoto | null;
   selection?: string;
   overrides: Overrides;
+  autoFormat?: Format;
+  destination?:
+    | 'facebook'
+    | 'instagram'
+    | 'whatsapp'
+    | 'x'
+    | 'linkedin'
+    | 'tiktok'
+    | 'youtube';
+  thumb?: Blob;
+  fallback?: boolean;
   version: 1;
 }
 
@@ -104,7 +115,7 @@ export function optionsForDraft(
 ): CardOptions {
   const { overrides } = draft;
   return {
-    format: overrides.format ?? '4:5',
+    format: overrides.format ?? draft.autoFormat ?? '4:5',
     template: overrides.template ?? chooseTemplate(model),
     theme: overrides.theme ?? THEMES.midnight,
     emphasis: overrides.emphasis,

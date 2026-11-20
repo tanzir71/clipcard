@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import strings from '@clipcard/i18n/en';
 import {
@@ -20,6 +20,7 @@ import type {
 import { limitHeadline } from '@clipcard/core';
 import { copyPng, downloadPng, renderPng, shareFile } from '../actions.ts';
 import type { CardDraft, Overrides } from '../draft.ts';
+import { shareIntents } from '../share-intents.ts';
 import { Icon } from './Icon.tsx';
 
 type DraftUpdate = (next: CardDraft) => void;
@@ -182,12 +183,14 @@ export function TextControls({
   model,
   update,
   onChange,
+  compact = false,
 }: {
   draft: CardDraft;
   options: CardOptions;
   model: CardModel;
   update: OverrideUpdate;
   onChange: DraftUpdate;
+  compact?: boolean;
 }) {
   const emphasis = options.emphasis ?? defaultEmphasis[options.template];
   const currentKey =
@@ -208,8 +211,8 @@ export function TextControls({
     }
   }
 
-  return (
-    <div className="clip-text-controls">
+  const headlineControls = (
+    <>
       <label className="clip-label">
         <span>{strings['card.title']}</span>
         <textarea
@@ -229,7 +232,7 @@ export function TextControls({
           {strings['state.edited']} · {strings['action.reset']}
         </button>
       ) : null}
-      <p className="clip-note">{strings['text.hint']}</p>
+      {compact ? null : <p className="clip-note">{strings['text.hint']}</p>}
       <div
         className="clip-words"
         role="group"
@@ -261,49 +264,77 @@ export function TextControls({
           );
         })}
       </div>
-      <UpdateGroup name={strings['card.emphasis']}>
-        {emphasisTypes.map((style: EmphasisStyle) => (
-          <button
-            type="button"
-            key={style}
-            className="clip-segment"
-            aria-pressed={emphasis === style}
-            onClick={() => update({ emphasis: style })}
-          >
-            {strings[('text.' + style) as keyof typeof strings]}
-          </button>
-        ))}
-      </UpdateGroup>
+    </>
+  );
+  const emphasisControls = (
+    <UpdateGroup name={strings['card.emphasis']}>
+      {emphasisTypes.map((style: EmphasisStyle) => (
+        <button
+          type="button"
+          key={style}
+          className="clip-segment"
+          aria-pressed={emphasis === style}
+          onClick={() => update({ emphasis: style })}
+        >
+          {strings[('text.' + style) as keyof typeof strings]}
+        </button>
+      ))}
+    </UpdateGroup>
+  );
+  const keyControls = (
+    <ColorOptions
+      label={strings['card.keyColor']}
+      value={currentKey}
+      select={(keyColor) => update({ keyColor })}
+      supports={(value) =>
+        guardText(model.photoLight ?? 0.12, currentText, value, emphasis, 0.86)
+          .key === toTextColor(value)
+      }
+    />
+  );
+  const textColorControls =
+    options.template === 'quote' ? null : (
       <ColorOptions
-        label={strings['card.keyColor']}
-        value={currentKey}
-        select={(keyColor) => update({ keyColor })}
+        label={strings['card.textColor']}
+        value={currentText}
+        select={(textColor) => update({ textColor })}
         supports={(value) =>
-          guardText(
-            model.photoLight ?? 0.12,
-            currentText,
-            value,
-            emphasis,
-            0.86,
-          ).key === toTextColor(value)
+          guardText(model.photoLight ?? 0.12, value, currentKey, emphasis, 0.86)
+            .text === toTextColor(value)
         }
       />
-      {options.template === 'quote' ? null : (
-        <ColorOptions
-          label={strings['card.textColor']}
-          value={currentText}
-          select={(textColor) => update({ textColor })}
-          supports={(value) =>
-            guardText(
-              model.photoLight ?? 0.12,
-              value,
-              currentKey,
-              emphasis,
-              0.86,
-            ).text === toTextColor(value)
-          }
-        />
-      )}
+    );
+  if (compact) {
+    return (
+      <>
+        <div className="clip-text-shortcuts">
+          {emphasisControls}
+          {keyControls}
+          {textColorControls ? (
+            <details className="clip-text-palette">
+              <summary
+                aria-label={strings['card.textColor']}
+                title={strings['card.textColor']}
+              >
+                Aa
+              </summary>
+              {textColorControls}
+            </details>
+          ) : null}
+        </div>
+        <details className="clip-text-word-menu">
+          <summary>{strings['text.hint']}</summary>
+          <div className="clip-text-controls">{headlineControls}</div>
+        </details>
+      </>
+    );
+  }
+  return (
+    <div className="clip-text-controls">
+      {headlineControls}
+      {emphasisControls}
+      {keyControls}
+      {textColorControls}
     </div>
   );
 }
@@ -354,12 +385,16 @@ export function CardActions({
   options,
   onSave,
   onOpen,
+  openExternal,
+  initialShareOpen = false,
   emphasis = 'copy',
 }: {
   model: CardModel;
   options: CardOptions;
   onSave?: () => Promise<void>;
   onOpen?: () => void;
+  openExternal?: (address: string) => Promise<unknown>;
+  initialShareOpen?: boolean;
   emphasis?: 'copy' | 'share';
 }) {
   const [status, setStatus] = useState('');
@@ -374,7 +409,7 @@ export function CardActions({
     options: CardOptions;
     png: Promise<Blob>;
   } | null>(null);
-  const [menu, setMenu] = useState(false);
+  const [menu, setMenu] = useState(initialShareOpen);
   const canShare =
     typeof navigator !== 'undefined' &&
     typeof navigator.canShare === 'function' &&
@@ -439,6 +474,10 @@ export function CardActions({
 
   async function share() {
     setStatus('');
+    if (openExternal) {
+      setMenu((open) => !open);
+      return;
+    }
     const file =
       ready?.model === model && ready.options === options ? ready.png : null;
     const shared = file ? shareFile(file, model.headline) : null;
@@ -463,6 +502,44 @@ export function CardActions({
     }
   }
 
+  const keyboardAction = useEffectEvent((event: KeyboardEvent) => {
+    if (
+      busy ||
+      !(event.ctrlKey || event.metaKey) ||
+      event.altKey ||
+      (event.target instanceof Element &&
+        event.target.closest('input, textarea, select, [contenteditable]'))
+    )
+      return;
+    const key = event.key.toLowerCase();
+    if (key !== 'c' && key !== 's') return;
+    event.preventDefault();
+    if (key === 'c') void copy();
+    else void download();
+  });
+  useEffect(() => {
+    if (!openExternal) return;
+    function onKey(event: KeyboardEvent) {
+      keyboardAction(event);
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [openExternal]);
+
+  async function shareTo(address: string) {
+    if (!openExternal) return;
+    setBusy(true);
+    try {
+      await copyPng(png());
+      await openExternal(address);
+      setStatus(strings['toast.copied']);
+    } catch {
+      setStatus(strings['card.copyFailed']);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const copyButton = (
     <button
       className={
@@ -473,7 +550,7 @@ export function CardActions({
       onClick={copy}
     >
       <Icon name="copy" />
-      {strings['card.copyImage']}
+      {strings[openExternal ? 'action.copy' : 'card.copyImage']}
     </button>
   );
 
@@ -493,16 +570,18 @@ export function CardActions({
             {strings['action.share']}
           </button>
         )}
-        <button
-          type="button"
-          className="clip-icon-button"
-          onClick={download}
-          disabled={busy}
-          aria-label={strings['share.download']}
-          title={strings['share.download']}
-        >
-          <Icon name="download" />
-        </button>
+        {!openExternal ? (
+          <button
+            type="button"
+            className="clip-icon-button"
+            onClick={download}
+            disabled={busy}
+            aria-label={strings['share.download']}
+            title={strings['share.download']}
+          >
+            <Icon name="download" />
+          </button>
+        ) : null}
         {emphasis === 'copy' && !onOpen ? (
           <button
             type="button"
@@ -535,6 +614,53 @@ export function CardActions({
       {menu ? (
         <div className="clip-share-options">
           {emphasis === 'share' ? copyButton : null}
+          {openExternal ? (
+            <>
+              <button
+                className="clip-button"
+                type="button"
+                onClick={() => void download()}
+                disabled={busy}
+              >
+                {strings['share.download']}
+              </button>
+              {shareIntents(model.headline, model.sourceUrl).map(
+                ({ label, address }) => (
+                  <button
+                    className="clip-button"
+                    key={label}
+                    type="button"
+                    onClick={() => void shareTo(address)}
+                    disabled={busy}
+                  >
+                    {label}
+                  </button>
+                ),
+              )}
+              {ready?.model === model &&
+              ready.options === options &&
+              navigator.canShare?.({
+                files: [
+                  new File([ready.png], 'clipcard.png', { type: 'image/png' }),
+                ],
+              }) ? (
+                <button
+                  className="clip-button"
+                  type="button"
+                  onClick={() => {
+                    const text = [model.headline, model.sourceUrl]
+                      .filter(Boolean)
+                      .join('\n');
+                    void shareFile(ready.png, model.headline, text)?.catch(
+                      () => undefined,
+                    );
+                  }}
+                >
+                  {strings['share.more']}
+                </button>
+              ) : null}
+            </>
+          ) : null}
           {model.sourceUrl ? (
             <button
               type="button"
