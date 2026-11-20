@@ -12,6 +12,9 @@ const sentence =
   'The river was always our oldest road. We just forgot how to use it.';
 const markedLength = headline.indexOf(',') + 1;
 const caption = headline.slice(0, markedLength - 1);
+const teaHeadline = 'Tea estates trial shade-grown leaves as heat rises';
+const capsPhrase = 'electric river buses';
+const capsHeadline = headline.slice(0, markedLength - 1);
 const source: CardModel = {
   headline,
   outlet: 'Delta Dispatch',
@@ -43,6 +46,36 @@ export const samples: {
     model: { ...source, image: boarding, emphasisRange: [0, markedLength - 1] },
   },
   {
+    id: 'split-16x9',
+    template: 'split',
+    format: '16:9',
+    model: { ...source, image: boarding, emphasisRange: [0, markedLength - 1] },
+  },
+  {
+    id: 'split-191x1',
+    template: 'split',
+    format: '1.91:1',
+    model: { ...source, image: boarding, emphasisRange: [0, markedLength - 1] },
+  },
+  {
+    id: 'caps-4x5',
+    template: 'caps',
+    format: '4:5',
+    model: {
+      ...source,
+      headline: capsHeadline,
+      emphasisRange: [
+        capsHeadline.indexOf(capsPhrase),
+        capsHeadline.indexOf(capsPhrase) + capsPhrase.length,
+      ],
+      extraEmphasisRange: [
+        capsHeadline.indexOf('in half'),
+        capsHeadline.length,
+      ],
+      dek: 'Two more routes open before the monsoon',
+    },
+  },
+  {
     id: 'overlay-4x5',
     template: 'overlay',
     format: '4:5',
@@ -59,6 +92,36 @@ export const samples: {
     template: 'solid',
     format: '4:5',
     model: { ...source, image: null, emphasisRange: [0, markedLength - 1] },
+  },
+  {
+    id: 'duotone-4x5',
+    template: 'duotone',
+    format: '4:5',
+    model: {
+      ...source,
+      image: tea,
+      section: 'Climate',
+      headline: teaHeadline,
+      emphasisRange: [
+        teaHeadline.indexOf('shade-grown'),
+        teaHeadline.indexOf(' as heat'),
+      ],
+    },
+  },
+  {
+    id: 'duotone-1x1',
+    template: 'duotone',
+    format: '1:1',
+    model: {
+      ...source,
+      image: tea,
+      section: 'Climate',
+      headline: teaHeadline,
+      emphasisRange: [
+        teaHeadline.indexOf('shade-grown'),
+        teaHeadline.indexOf(' as heat'),
+      ],
+    },
   },
   {
     id: 'quote-4x5',

@@ -9,16 +9,21 @@ const quoted =
   original +
   '#:~:text=The%20river%20was%20always%20our%20oldest%20road.%20We%20just%20forgot%20how%20to%20use%20it.';
 const cases = [
-  ['header-4x5', 'Geist', original, 1350],
-  ['split-4x5', 'Libre Caslon Text', original, 1350],
-  ['overlay-4x5', 'Schibsted Grotesk', original, 1350],
-  ['solid-4x5', 'Libre Caslon Text', original, 1350],
-  ['quote-4x5', 'Libre Caslon Text', quoted, 1350],
-  ['header-9x16-story', 'Geist', original, 1920],
-  ['header-1x1', 'Geist', original, 1080],
+  ['header-4x5', 'Geist', original, 1080, 1350, true],
+  ['split-4x5', 'Libre Caslon Text', original, 1080, 1350, true],
+  ['split-16x9', 'Libre Caslon Text', original, 1600, 900, true],
+  ['split-191x1', 'Libre Caslon Text', original, 1200, 628, false],
+  ['caps-4x5', 'Schibsted Grotesk', original, 1080, 1350, true],
+  ['overlay-4x5', 'Schibsted Grotesk', original, 1080, 1350, true],
+  ['duotone-4x5', 'Geist', original, 1080, 1350, true],
+  ['duotone-1x1', 'Geist', original, 1080, 1080, true],
+  ['solid-4x5', 'Libre Caslon Text', original, 1080, 1350, true],
+  ['quote-4x5', 'Libre Caslon Text', quoted, 1080, 1350, true],
+  ['header-9x16-story', 'Geist', original, 1080, 1920, true],
+  ['header-1x1', 'Geist', original, 1080, 1080, false],
 ] as const;
 
-for (const [id, font, url, height] of cases) {
+for (const [id, font, url, width, height, compare] of cases) {
   test(
     'exports ' + id + ' and decodes its source',
     async ({ page }, testInfo) => {
@@ -34,14 +39,14 @@ for (const [id, font, url, height] of cases) {
       const bytes = await readFile(exportedPath);
       const png = PNG.sync.read(bytes);
 
-      expect([png.width, png.height]).toEqual([1080, height]);
+      expect([png.width, png.height]).toEqual([width, height]);
       const pixels = new Uint8ClampedArray(png.data);
       expect(
         jsQR(pixels, png.width, png.height, { inversionAttempts: 'dontInvert' })
           ?.data,
       ).toBe(url);
 
-      if (id === 'header-1x1') return;
+      if (!compare) return;
       const reference = PNG.sync.read(
         await readFile(
           new URL('../../design/cards/' + id + '.png', import.meta.url),

@@ -1,4 +1,5 @@
 export { tokens } from './tokens.ts';
+export { capsPhrases } from './caps-phrases.ts';
 export {
   contrastWithLuminance,
   guardText,
