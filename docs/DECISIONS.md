@@ -2,6 +2,11 @@
 
 Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md).
 
+## 2026‑11‑20 · Web app route
+- The no‑install product is a **web app at `/app/`** (package `apps/lite`), linked from the landing hero (a working paste bar), the nav and "Open full app". The bookmark is the one‑click accelerator, not the only way in.
+- The **phone app** is the same web app installed as a PWA with an Android share target. It moved from R7 to **R1**. The mobile landing page leads with **Install the app**.
+- No server: without the bookmark or extension, a pasted URL gives a slug headline and needs a user photo. We say "made in your browser" and never promise auto‑fetch.
+
 ## 2026‑11‑20 · Release plan
 - Deliver incrementally: R0 landing live → R1 Lite (no install) → R2 extension beta (zip) → R3 clips, grids, drafts → R4 languages + store submission → R5 video clips → R6 one video + GIFs → R7 batch + mobile Lite → R8 1.0. Plan: `docs/ROADMAP.md`.
 - Lite ships first: it needs no store review or install, and it proves the renderer the extension reuses.
