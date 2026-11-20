@@ -306,6 +306,7 @@ export async function saveCollectionForLater(
   const renamed = {
     ...draft,
     title: title.trim() || draft.title,
+    savedForLater: true,
     updatedAt: Math.max(draft.updatedAt, now),
   };
   const active = await prefs.get('currentDraftId');

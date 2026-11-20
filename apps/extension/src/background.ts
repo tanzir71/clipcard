@@ -541,7 +541,12 @@ export function startExtension() {
     browser.permissions.onRemoved.addListener(updateEntryPoints);
     updateEntryPoints();
   }
-  browser.runtime.onInstalled.addListener(() => {
+  browser.runtime.onInstalled.addListener(({ reason }) => {
+    if (FLAGS.languages && reason === 'install') {
+      void browser.tabs
+        .create({ url: browser.runtime.getURL('/welcome.html') })
+        .catch(() => undefined);
+    }
     void installMenus().catch(() => undefined);
     void browser.action.setBadgeBackgroundColor({ color: '#187451' });
     void developerUpdate().catch(() => undefined);

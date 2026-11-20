@@ -26,5 +26,10 @@ jobs:
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm build
+      - run: pnpm --filter @clipcard/extension exec wxt build --mode r4-preview -b chrome
+        env:
+          VITE_CLIPCARD_LANGUAGES: '1'
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm e2e
+        env:
+          CLIPCARD_TEST_R4_PREVIEW: '1'

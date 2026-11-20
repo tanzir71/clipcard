@@ -1,0 +1,437 @@
+@import '@clipcard/cards/tokens.css';
+
+html:has(.settings-main, .welcome-main) {
+  min-block-size: 100%;
+  color-scheme: light dark;
+  background: var(--pc-ui-color-bg-canvas);
+  color: var(--pc-ui-color-text-primary);
+}
+
+body:has(.settings-main, .welcome-main) {
+  margin: 0;
+  background: transparent;
+  font:
+    400 13px / 1.45 Geist,
+    system-ui,
+    sans-serif;
+}
+
+:is(.settings-main, .welcome-main) *,
+:is(.settings-main, .welcome-main) *::before,
+:is(.settings-main, .welcome-main) *::after {
+  box-sizing: border-box;
+}
+
+:is(.settings-main, .welcome-main) :is(button, input, select) {
+  font: inherit;
+  color: inherit;
+}
+
+:is(.settings-main, .welcome-main) :is(button, select, input):focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 2px;
+}
+
+.settings-main {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 760px);
+  gap: 60px;
+  inline-size: min(1200px, 100% - 48px);
+  margin-inline: auto;
+  padding-block: 56px;
+}
+
+.settings-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.settings-brand img {
+  display: block;
+}
+
+.settings-side {
+  position: sticky;
+  inset-block-start: 30px;
+  align-self: start;
+}
+
+.settings-side nav {
+  display: grid;
+  gap: 2px;
+  margin-block-start: 20px;
+}
+
+.settings-side nav a {
+  display: block;
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: var(--pc-ui-color-text-secondary);
+  text-decoration: none;
+}
+
+.settings-side nav a:is(:hover, [aria-current]) {
+  color: var(--pc-ui-color-text-primary);
+  background: var(--pc-ui-color-bg-hover);
+}
+
+.settings-fields,
+.welcome-form fieldset {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.settings-body section {
+  scroll-margin-block-start: 20px;
+}
+
+.settings-body section + section {
+  margin-block-start: 28px;
+}
+
+.settings-body :is(h1, h2) {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.settings-panel,
+.welcome-form {
+  border: 1px solid var(--pc-ui-color-border-default);
+  border-radius: 6px;
+  background: var(--pc-ui-color-bg-surface);
+}
+
+.settings-row {
+  display: flex;
+  min-block-size: 56px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 16px;
+}
+
+.settings-row + .settings-row {
+  border-block-start: 1px solid var(--pc-ui-color-border-default);
+}
+
+.settings-control {
+  display: flex;
+  min-inline-size: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  text-align: end;
+}
+
+.settings-control :is(select, button),
+.settings-mark-upload,
+.welcome-form :is(button, input) {
+  min-block-size: 34px;
+  padding: 5px 12px;
+  border: 1px solid var(--pc-ui-color-border-default);
+  border-radius: 4px;
+  background: var(--pc-ui-color-bg-surface);
+}
+
+.settings-control select {
+  inline-size: 220px;
+  max-inline-size: 100%;
+}
+
+:is(.settings-main, .welcome-main)
+  :is(
+    button,
+    input[type='checkbox'],
+    input[type='color'],
+    select,
+    .settings-mark-upload
+  ) {
+  cursor: pointer;
+}
+
+.settings-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  border-radius: 4px;
+  padding: 3px;
+  background: var(--pc-ui-color-bg-hover);
+}
+
+.settings-choices button {
+  min-block-size: 28px;
+  border: 0;
+  background: transparent;
+  color: var(--pc-ui-color-text-secondary);
+  white-space: nowrap;
+}
+
+.settings-choices button[aria-pressed='true'] {
+  background: var(--pc-ui-color-bg-surface);
+  color: var(--pc-ui-color-text-primary);
+  box-shadow: 0 1px 3px #0001;
+}
+
+.settings-switch {
+  display: inline-grid;
+  inline-size: 34px;
+  block-size: 20px;
+  margin: 0;
+  padding: 2px;
+  align-items: center;
+  border: 1px solid var(--pc-ui-color-border-strong);
+  border-radius: 4px;
+  appearance: none;
+  background: var(--pc-ui-color-bg-hover);
+}
+
+.settings-switch::before {
+  inline-size: 14px;
+  block-size: 14px;
+  border: 1px solid var(--pc-ui-color-border-default);
+  border-radius: 2px;
+  background: var(--pc-ui-color-bg-surface);
+  content: '';
+}
+
+.settings-switch:checked {
+  justify-items: end;
+  background: var(--pc-ui-color-text-primary);
+}
+
+.settings-control .settings-shortcut {
+  display: flex;
+  min-block-size: 0;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.settings-shortcut kbd {
+  border: 1px solid var(--pc-ui-color-border-strong);
+  border-radius: 2px;
+  padding: 0 5px;
+  font: inherit;
+  color: var(--pc-ui-color-text-secondary);
+}
+
+.settings-palette {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings-control .settings-swatch,
+.settings-color {
+  inline-size: 28px;
+  min-block-size: 28px;
+  block-size: 28px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--pc-ui-color-border-strong);
+  border-radius: 0;
+}
+
+.settings-swatch[aria-pressed='true'] {
+  outline: 1px solid currentcolor;
+  outline-offset: 3px;
+}
+
+.settings-mark-preview {
+  display: block;
+  inline-size: 40px;
+  block-size: 32px;
+  object-fit: contain;
+}
+
+.settings-mark-upload {
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.settings-mark-upload:focus-within {
+  outline: 2px solid currentcolor;
+  outline-offset: 2px;
+}
+
+.settings-mark-upload input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.settings-confirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.settings-panel > .clip-draft-backup {
+  padding: 10px 16px;
+}
+
+.welcome-main {
+  display: grid;
+  box-sizing: border-box;
+  min-block-size: 100dvh;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 460px);
+  align-items: center;
+  gap: clamp(32px, 11.1vw, 160px);
+  inline-size: min(1200px, 100% - 48px);
+  margin-inline: auto;
+  padding-block: 40px 96px;
+}
+
+.welcome-story h1 {
+  margin: 21px 0 16px;
+  font-size: clamp(30px, 3.5vw, 50px);
+  font-weight: 620;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.welcome-story:dir(rtl) h1 {
+  letter-spacing: normal;
+}
+
+.welcome-story > p {
+  margin: 0 0 30px;
+  color: var(--pc-ui-color-text-secondary);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.welcome-fan {
+  display: flex;
+  max-inline-size: 560px;
+  direction: ltr;
+  overflow: hidden;
+  box-shadow: 0 3px 5px #0002;
+}
+
+.welcome-fan > .clip-preview {
+  flex: 0 0 37.1429%;
+  height: auto;
+}
+
+.welcome-fan > .clip-preview + .clip-preview {
+  margin-inline-start: -5.7143%;
+}
+
+.welcome-form {
+  display: grid;
+  gap: 24px;
+  margin-block-start: 58px;
+  padding: 27px 28px 28px;
+}
+
+.welcome-form :is(legend, .welcome-handle > span) {
+  display: block;
+  margin: 0 0 8px;
+  padding: 0;
+  color: var(--pc-ui-color-text-secondary);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.welcome-form:dir(rtl) :is(legend, .welcome-handle > span) {
+  letter-spacing: normal;
+}
+
+.welcome-language-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.welcome-language-chips button[aria-pressed='true'] {
+  border-color: currentcolor;
+  background: var(--pc-ui-color-bg-hover);
+}
+
+.welcome-handle input {
+  inline-size: 100%;
+  block-size: 38px;
+  background: var(--pc-ui-color-bg-subtle);
+}
+
+.welcome-permission {
+  display: grid;
+  align-items: center;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 4px;
+  background: var(--pc-ui-color-bg-subtle);
+}
+
+.welcome-permission small {
+  display: block;
+  margin-block-start: 2px;
+  color: var(--pc-ui-color-text-secondary);
+}
+
+.welcome-permission > span {
+  color: var(--pc-ui-color-status-success);
+}
+
+.welcome-form .settings-primary,
+.welcome-permission button {
+  min-block-size: 36px;
+  border-color: var(--pc-ui-color-text-primary);
+  background: var(--pc-ui-color-text-primary);
+  color: var(--pc-ui-color-bg-surface);
+}
+
+@media (width <= 800px) {
+  .settings-main {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    padding-block: 24px;
+  }
+
+  .settings-side {
+    position: static;
+  }
+
+  .settings-side nav {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .welcome-main {
+    grid-template-columns: minmax(0, 1fr);
+    max-inline-size: 560px;
+    padding-block: 28px;
+  }
+
+  .welcome-form {
+    margin-block-start: 0;
+  }
+}
+
+@media (width <= 470px) {
+  .settings-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .settings-control {
+    justify-content: flex-start;
+    text-align: start;
+  }
+}

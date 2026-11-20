@@ -1,5 +1,6 @@
 import { parseWebUrl, textFragment } from '@clipcard/core';
 import strings from '@clipcard/i18n/en';
+import type { UserSettings } from './user-settings.ts';
 import { browser } from 'wxt/browser';
 import type {
   BackgroundMessage,
@@ -91,6 +92,8 @@ export function mountClipping(readHints: () => Hints) {
   let candidate: Element | null = null;
   let anchor: { x: number; y: number } | undefined;
   let hoveredAddress: string | undefined;
+  let linkButtons: UserSettings['links'] = 'previews';
+  let selectionToolbar = true;
   let selected = '';
   const clipped = new WeakSet<Element>();
 
@@ -318,7 +321,7 @@ export function mountClipping(readHints: () => Hints) {
   );
 
   document.addEventListener('selectionchange', () => {
-    if (popupOpen || clipping || working) return;
+    if (!selectionToolbar || popupOpen || clipping || working) return;
     const selection = window.getSelection();
     selected = selection?.toString().trim() ?? '';
     const node = selection?.anchorNode?.parentElement;
@@ -370,7 +373,14 @@ export function mountClipping(readHints: () => Hints) {
   document.addEventListener(
     'pointerover',
     (event) => {
-      if (popupOpen || clipping || working || event.target === root) return;
+      if (
+        linkButtons === 'off' ||
+        popupOpen ||
+        clipping ||
+        working ||
+        event.target === root
+      )
+        return;
       const link =
         event.target instanceof Element
           ? event.target.closest<HTMLAnchorElement>('a[href]')
@@ -379,9 +389,10 @@ export function mountClipping(readHints: () => Hints) {
       hoveredAddress =
         link &&
         bounds &&
-        bounds.width >= 96 &&
-        bounds.height >= 48 &&
-        link.querySelector('img')
+        (linkButtons === 'all' ||
+          (bounds.width >= 96 &&
+            bounds.height >= 48 &&
+            link.querySelector('img')))
           ? parseWebUrl(link.href)?.href
           : undefined;
       previewTools.hidden = !hoveredAddress;
@@ -424,6 +435,15 @@ export function mountClipping(readHints: () => Hints) {
   return {
     start,
     showTray,
+    configure(settings: Pick<UserSettings, 'links' | 'selectionToolbar'>) {
+      if (linkButtons !== settings.links) {
+        linkButtons = settings.links;
+        hoveredAddress = undefined;
+        previewTools.hidden = true;
+      }
+      selectionToolbar = settings.selectionToolbar;
+      if (!selectionToolbar) selectionTools.hidden = true;
+    },
     popup(value: boolean) {
       popupOpen = value;
       sync();

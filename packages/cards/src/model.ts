@@ -38,6 +38,7 @@ export interface CardModel {
   publishedAt?: string | null;
   oldNewsYear?: number | null;
   mark?: string | null;
+  markImage?: string;
   focal?: { x: number; y: number };
   edited?: boolean;
   quote?: boolean;
@@ -61,6 +62,9 @@ export interface CardOptions {
   keyColor?: string;
   textColor?: string;
   numerals?: Numerals;
+  qr?: boolean;
+  markEdited?: boolean;
+  texture?: boolean;
 }
 
 export function chooseTemplate(model: CardModel): Template {

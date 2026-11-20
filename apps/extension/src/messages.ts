@@ -20,7 +20,9 @@ export interface Destination {
   format: Format;
 }
 
-export type SitePrefs = Pick<Overrides, 'format' | 'template' | 'theme'>;
+export type SitePrefs = Pick<Overrides, 'format' | 'template' | 'theme'> & {
+  defaults?: CardDraft['defaults'];
+};
 
 export interface SourceRequest {
   address: string;

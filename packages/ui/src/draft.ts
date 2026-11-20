@@ -11,8 +11,16 @@ import type {
   Format,
   Template,
 } from '@clipcard/cards';
-import { detectScript, detectLang, dirFor, keyphrase } from '@clipcard/core';
+import {
+  detectScript,
+  detectLang,
+  dirFor,
+  keyphrase,
+  langToScript,
+} from '@clipcard/core';
+import { FLAGS } from '@clipcard/core/flags';
 import type { CardSource, TextRange } from '@clipcard/core';
+import type { CardLanguage } from '@clipcard/i18n';
 
 export interface DraftPhoto {
   blob: Blob;
@@ -31,6 +39,18 @@ export interface Overrides {
   keyColor?: string;
   textColor?: string;
   phrase?: TextRange | null;
+  lang?: CardLanguage;
+}
+
+export interface CardDefaults extends Pick<
+  CardOptions,
+  'numerals' | 'qr' | 'markEdited' | 'texture' | 'theme'
+> {
+  format?: Format;
+  template?: Template;
+  lang?: CardLanguage;
+  handle?: string;
+  markImage?: string;
 }
 
 export interface CardDraft {
@@ -44,6 +64,7 @@ export interface CardDraft {
   photo: DraftPhoto | null;
   selection?: string;
   overrides: Overrides;
+  defaults?: CardDefaults;
   autoFormat?: Format;
   destination?:
     | 'facebook'
@@ -86,10 +107,25 @@ export function modelForDraft(
   image: string | null,
   now: number,
 ): CardModel {
-  const { source, selection, section, headline, original, photo, overrides } =
-    draft;
+  const {
+    source,
+    selection,
+    section,
+    headline,
+    original,
+    photo,
+    overrides,
+    defaults,
+  } = draft;
   const changed = headline !== original;
-  const lang = detectLang(headline, source?.lang);
+  const languageChoice = overrides.lang ?? defaults?.lang;
+  const script = detectScript(headline);
+  const detected = detectLang(headline, source?.lang);
+  const lang =
+    languageChoice ??
+    (FLAGS.languages && script !== 'latin' && langToScript(detected) !== script
+      ? detectLang(headline)
+      : detected);
   const originalModel = source
     ? modelFromSource(source, { image, selection, section, now })
     : null;
@@ -102,8 +138,11 @@ export function modelForDraft(
     ...originalModel,
     headline,
     lang,
-    dir: changed ? dirFor(lang) : (originalModel?.dir ?? dirFor(lang)),
-    script: detectScript(headline),
+    dir:
+      changed || languageChoice || lang !== originalModel?.lang
+        ? dirFor(lang)
+        : (originalModel?.dir ?? dirFor(lang)),
+    script,
     image,
     imageIsPortrait: photo?.portrait,
     photoLight: photo?.light,
@@ -112,6 +151,8 @@ export function modelForDraft(
     sourceUrl: originalModel?.sourceUrl ?? null,
     qrUrl: originalModel?.qrUrl ?? null,
     quote: Boolean(selection),
+    mark: defaults?.handle ? '@' + defaults.handle : undefined,
+    markImage: defaults?.markImage,
     edited: changed,
     emphasisRange: caps
       ? (caps[0] ?? null)
@@ -126,13 +167,17 @@ export function optionsForDraft(
   draft: CardDraft,
   model: CardModel,
 ): CardOptions {
-  const { overrides } = draft;
+  const { overrides, defaults } = draft;
   return {
-    format: overrides.format ?? draft.autoFormat ?? '4:5',
-    template: overrides.template ?? chooseTemplate(model),
-    theme: overrides.theme ?? THEMES.midnight,
+    format: overrides.format ?? defaults?.format ?? draft.autoFormat ?? '4:5',
+    template: overrides.template ?? defaults?.template ?? chooseTemplate(model),
+    theme: overrides.theme ?? defaults?.theme ?? THEMES.midnight,
     emphasis: overrides.emphasis,
     keyColor: overrides.keyColor,
     textColor: overrides.textColor,
+    numerals: defaults?.numerals,
+    qr: defaults?.qr,
+    markEdited: defaults?.markEdited,
+    texture: defaults?.texture,
   };
 }

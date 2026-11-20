@@ -117,11 +117,24 @@ function Grain({ assets }: { assets: CardAssets }) {
 
 function Brand({
   mark,
+  image,
   echo = false,
 }: {
   mark?: string | null;
+  image?: string;
   echo?: boolean;
 }) {
+  if (image) {
+    return (
+      <div
+        className={
+          echo ? 'cc-oversized cc-mark-image' : 'cc-mark cc-mark-image'
+        }
+        style={{ backgroundImage: 'url(' + JSON.stringify(image) + ')' }}
+        aria-hidden="true"
+      />
+    );
+  }
   if (!mark) return null;
   return echo ? (
     <div className="cc-oversized" aria-hidden="true">
@@ -263,8 +276,12 @@ function Meta({
   ) : null;
 }
 
-export function Card({ model, options, assets }: CardProps) {
+export function Card({ model: draft, options, assets }: CardProps) {
   const { format, template, numerals } = options;
+  const model =
+    options.markEdited === false ? { ...draft, edited: false } : draft;
+  const mark = <Brand mark={model.mark} image={model.markImage} />;
+  const markEcho = <Brand mark={model.mark} image={model.markImage} echo />;
   const typeface = typefaceFor(model.headline, model.lang, model.script);
   const headline = assets.converted.get(model.headline) ?? model.headline;
   const headlineChanged = headline !== model.headline;
@@ -417,6 +434,7 @@ export function Card({ model, options, assets }: CardProps) {
     <article
       className={'cc-card cc-' + template}
       data-format={format}
+      data-texture={options.texture === false ? 'off' : undefined}
       data-wide={wide ? '' : undefined}
       data-script-face={typeface ? model.script : undefined}
       lang={model.lang}
@@ -442,7 +460,7 @@ export function Card({ model, options, assets }: CardProps) {
           </div>
           <div className="cc-header-panel" style={{ height: headerHeight }}>
             <Photo model={model} echo />
-            <Brand mark={model.mark} echo />
+            {markEcho}
             <Grain assets={assets} />
             <div className="cc-header-content">
               <Kicker model={model} variant="panel" numerals={numerals} />
@@ -450,7 +468,7 @@ export function Card({ model, options, assets }: CardProps) {
               <Meta model={model} variant="panel" numerals={numerals} />
             </div>
           </div>
-          <Brand mark={model.mark} />
+          {mark}
         </>
       ) : template === 'split' ? (
         <>
@@ -473,11 +491,15 @@ export function Card({ model, options, assets }: CardProps) {
               wideSplit ? { insetInlineStart: splitX } : { top: splitHeight }
             }
           >
-            <div className="cc-halftone" style={halftoneStyle} />
+            {model.markImage ? (
+              markEcho
+            ) : (
+              <div className="cc-halftone" style={halftoneStyle} />
+            )}
             <Grain assets={assets} />
             <div className="cc-split-title">{title}</div>
           </div>
-          <Brand mark={model.mark} />
+          {mark}
           <Kicker model={model} variant="chip" numerals={numerals} />
           <Meta
             model={model}
@@ -503,12 +525,16 @@ export function Card({ model, options, assets }: CardProps) {
               edge="bottom"
             />
           </div>
-          <div
-            className="cc-hairlines"
-            style={{ maskImage: fade('#000', 1, 'to bottom') }}
-          />
+          {model.markImage ? (
+            markEcho
+          ) : (
+            <div
+              className="cc-hairlines"
+              style={{ maskImage: fade('#000', 1, 'to bottom') }}
+            />
+          )}
           <Grain assets={assets} />
-          <Brand mark={model.mark} />
+          {mark}
           <Kicker model={model} variant="via" numerals={numerals} />
           <div className="cc-caps-title">
             {title}
@@ -524,12 +550,16 @@ export function Card({ model, options, assets }: CardProps) {
             alpha={0.9}
             edge="bottom"
           />
-          <div
-            className="cc-hairlines"
-            style={{ maskImage: fade('#000', 1, 'to top') }}
-          />
+          {model.markImage ? (
+            markEcho
+          ) : (
+            <div
+              className="cc-hairlines"
+              style={{ maskImage: fade('#000', 1, 'to top') }}
+            />
+          )}
           <Grain assets={assets} />
-          <Brand mark={model.mark} />
+          {mark}
           <Kicker model={model} variant="chip" numerals={numerals} />
           <div className="cc-duotone-title">{title}</div>
           <Meta model={model} numerals={numerals} />
@@ -551,7 +581,8 @@ export function Card({ model, options, assets }: CardProps) {
           <div className="cc-foot-grain" style={{ height: overlayShade * 0.7 }}>
             <Grain assets={assets} />
           </div>
-          <Brand mark={model.mark} />
+          {model.markImage ? markEcho : null}
+          {mark}
           {model.oldNewsYear ? (
             <Kicker model={model} variant="chip" numerals={numerals} />
           ) : null}
@@ -561,9 +592,9 @@ export function Card({ model, options, assets }: CardProps) {
       ) : template === 'quote' ? (
         <>
           <Photo model={model} echo />
-          <Brand mark={model.mark} echo />
+          {markEcho}
           <Grain assets={assets} />
-          <Brand mark={model.mark} />
+          {mark}
           <Kicker model={model} variant="quote" numerals={numerals} />
           <div className="cc-quote-content">
             {title}
@@ -575,16 +606,18 @@ export function Card({ model, options, assets }: CardProps) {
         </>
       ) : (
         <>
-          <div className="cc-halftone" style={halftoneStyle} />
-          <Brand mark={model.mark} echo />
+          {model.markImage ? null : (
+            <div className="cc-halftone" style={halftoneStyle} />
+          )}
+          {markEcho}
           <Grain assets={assets} />
-          <Brand mark={model.mark} />
+          {mark}
           <Kicker model={model} variant="chip" numerals={numerals} />
           <div className="cc-solid-title">{title}</div>
           <Meta model={model} numerals={numerals} />
         </>
       )}
-      {model.qrUrl ? (
+      {model.qrUrl && options.qr !== false ? (
         <Qr
           url={model.qrUrl}
           size={qrBaseSize}
