@@ -62,7 +62,7 @@
 - [x] Mobile "Send to my computer". Lighthouse ≥ 95.
 
 ## M9 · Release
-- [ ] GitHub Release workflow: tag `v*` → build → attach `clipcard-chrome.zip` (manifest at the root). Test the developer‑mode install from that zip on Chrome, Edge and Brave.
+- [x] GitHub Release workflow: tag `v*` → build → attach `clipcard-chrome.zip` (manifest at the root). Test the developer‑mode install from that zip on Chrome, Edge and Brave.
 - [x] Update‑available check against GitHub Releases (once a day, settings dot) for developer‑mode installs.
 - [ ] Store assets: icons 16/32/48/128, 1280×800 screenshots made from `design/screens` (real UI captures preferred), localized store names/summaries (`I18N.md` §6).
 - [ ] Privacy policy page; permission justifications for the store review.
