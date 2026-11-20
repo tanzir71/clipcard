@@ -19,6 +19,13 @@ test('makes and edits a sourced card, copies a PNG and restores it from history'
 }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('./');
+  const icon = page.locator('link[rel="icon"]');
+  await expect(icon).toHaveAttribute('href', /^\/clipcard\/app\//);
+  const iconUrl = await icon.evaluate((link: HTMLLinkElement) => link.href);
+  const iconResponse = await page.request.get(iconUrl);
+  expect(iconResponse.ok()).toBe(true);
+  expect(iconResponse.headers()['content-type']).toContain('image/svg+xml');
+
   await page
     .getByRole('textbox', { name: field })
     .fill(source + '?utm_campaign=test');
