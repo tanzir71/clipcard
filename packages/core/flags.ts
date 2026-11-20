@@ -1,6 +1,7 @@
 const env = import.meta.env;
 const clipPreview = env?.DEV === true || env?.MODE === 'r3-preview';
-const languagePreview = env?.DEV === true || env?.MODE === 'r4-preview';
+const languagePreview =
+  env?.DEV === true || env?.MODE === 'r4-preview' || env?.MODE === 'store';
 export const CLIP_DRAFTS_RELEASED = true;
 export const CARD_LANGUAGES_RELEASED = false;
 
