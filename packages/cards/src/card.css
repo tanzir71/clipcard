@@ -286,7 +286,7 @@
 
 .cc-header-content .cc-headline {
   inline-size: 95%;
-  margin-block-start: 18px;
+  margin-block-start: 16px;
   font-weight: 300;
   letter-spacing: 0;
 }
@@ -296,7 +296,7 @@
 }
 
 .cc-header-content .cc-meta {
-  margin-block-start: 20px;
+  margin-block-start: 22px;
   font:
     400 18px/24px 'Geist',
     sans-serif;
