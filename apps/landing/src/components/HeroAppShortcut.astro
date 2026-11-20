@@ -3,7 +3,11 @@ import { landingCopy, appPath } from '../languages';
 import type { InterfaceLanguage } from '@clipcard/i18n';
 import { landingBookmarklet } from '../bookmarklet';
 import { INSTALL_URL, RELEASED, STORE_URL } from '../config';
-import Icon from './Icon.astro';
+import pasteLink from '../media/hero/paste-link.svg?url';
+import mobilePasteLink from '../media/hero/mobile-paste-link.svg?url';
+import download from '../media/hero/download.svg?url';
+import scissors from '../media/hero/bookmark-scissors.svg?url';
+import arrow from '../media/hero/open-arrow.svg?url';
 import InstallApp from './InstallApp.astro';
 interface Props {
   locale: InterfaceLanguage;
@@ -16,21 +20,27 @@ const app = appPath(locale);
 const bookmark = await landingBookmarklet(new URL(app, Astro.site));
 ---
 
-{RELEASED.extension ? (
-  <div class="extension-hero-actions">
-    <a class="button button-light" href={INSTALL_URL}>
-      {STORE_URL ? strings.extension.store : strings.extension.download}
-    </a>
-    <a href="#bookmark">{strings.extension.noInstall}</a>
-  </div>
-) : null}
 <form
   class="app-shortcut"
   data-hero-shortcut
   data-app-path={app}
+  data-mobile-placeholder={copy.placeholderMobile}
   data-failed={copy.failed}
 >
-  <Icon name="link" />
+  <img
+    class="app-shortcut-desktop"
+    src={pasteLink}
+    width="18"
+    height="18"
+    alt=""
+  />
+  <img
+    class="app-shortcut-mobile"
+    src={mobilePasteLink}
+    width="18"
+    height="18"
+    alt=""
+  />
   <input
     type="text"
     aria-label={copy.placeholder}
@@ -41,17 +51,30 @@ const bookmark = await landingBookmarklet(new URL(app, Astro.site));
   </button>
 </form>
 <div class="app-shortcut-note">
-  <p>{copy.local}</p>
+  <p>
+    <span class="app-shortcut-desktop">{copy.local}</span>
+    <span class="app-shortcut-mobile">{copy.localMobile}</span>
+  </p>
   <p role="status" data-hero-shortcut-status></p>
 </div>
 <div class="app-shortcut-paths">
+  {RELEASED.extension ? (
+    <a class="app-shortcut-download" href={INSTALL_URL}>
+      <img src={download} width="16" height="16" alt="" />
+      {STORE_URL ? strings.extension.store : strings.extension.download}
+    </a>
+  ) : null}
   <a class="app-shortcut-bookmark" href={bookmark} draggable="true">
-    ✂ {copy.bookmark} <span>{copy.drag}</span>
+    <img src={scissors} width="16" height="16" alt="" />
+    {copy.bookmark} <span>{copy.drag}</span>
   </a>
-  <a href={app}>
-    {copy.open} <span aria-hidden="true">→</span>
+  <a class="app-shortcut-open" href={app}>
+    {copy.open} <img src={arrow} width="14" height="14" alt="" />
   </a>
 </div>
+{RELEASED.extension && !STORE_URL ? (
+  <p class="hero-beta hero-beta-desktop">{strings.extension.heroBeta}</p>
+) : null}
 <InstallApp locale={locale} />
 
 <script>
@@ -63,6 +86,18 @@ const bookmark = await landingBookmarklet(new URL(app, Astro.site));
   const submit = form?.querySelector<HTMLButtonElement>('button');
   const input = form?.querySelector<HTMLInputElement>('input');
   if (form && host && status && submit && input) {
+    const desktopPlaceholder = input.placeholder;
+    const mobile = matchMedia('(max-width: 767px)');
+    const updatePlaceholder = () => {
+      const placeholder = mobile.matches
+        ? (form.dataset.mobilePlaceholder ?? desktopPlaceholder)
+        : desktopPlaceholder;
+      input.placeholder = placeholder;
+      input.setAttribute('aria-label', placeholder);
+    };
+    mobile.addEventListener('change', updatePlaceholder);
+    updatePlaceholder();
+
     const build = async (details: CardInput) => {
       if (submit.disabled) return;
       submit.disabled = true;

@@ -16,7 +16,7 @@
   "extension": {
     "download": "Download for Chrome",
     "store": "Add to Chrome",
-    "noInstall": "No install? Use the bookmark",
+    "heroBeta": "Beta · Right-click a link to make a card. Install in Developer mode.",
     "heading": "Install the extension",
     "beta": "Developer-mode beta for Chrome, Edge and Brave.",
     "zip": "Download .zip",
@@ -37,24 +37,28 @@
   "hero": {
     "heading": "Share the news as cards, grids and video",
     "description": "Coming soon. Clips from any page, joined into one card or one video. Every one links back to the source.",
-    "appHeading": "Share the news as cards",
-    "appDescription": "Turn a link, copied article or photo into a shareable card that links back to the source.",
+    "appHeading": "Share the news as\ncards and grids",
+    "appDescription": "Clip quotes, images and charts into a card or grid. Every one links back to the source.",
     "gallery": "Example cards"
   },
   "shortcut": {
     "placeholder": "Paste any link, copied text or an image",
+    "placeholderMobile": "Paste a link or text",
     "submit": "Make card",
     "failed": "Paste a link, text or a supported photo.",
-    "local": "Made in your browser. Nothing is uploaded.",
+    "local": "Card · Grid, made in your browser. Nothing is uploaded.",
+    "localMobile": "Card · Grid, made in your browser",
     "open": "Open full app",
     "bookmark": "Clipcard",
-    "drag": "Drag to bookmarks"
+    "drag": "drag to bookmarks"
   },
   "installApp": {
     "action": "Install the app",
     "heading": "Install Clipcard",
     "offline": "Open recent cards offline. On Android, send links to Clipcard from the share menu.",
     "ios": "On iPhone, tap Share, then Add to Home Screen.",
+    "iosHint": "iPhone: Share → Add to Home Screen",
+    "heroBeta": "Beta · Installs like an app. Open recent cards offline.",
     "later": "Not now",
     "install": "Install",
     "open": "Open the app"

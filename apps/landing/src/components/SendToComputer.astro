@@ -1,7 +1,7 @@
 ---
 import { landingCopy } from '../languages';
 import type { InterfaceLanguage } from '@clipcard/i18n';
-import Icon from './Icon.astro';
+import shareIcon from '../media/hero/send.svg?url';
 interface Props {
   locale: InterfaceLanguage;
   icon?: boolean;
@@ -20,7 +20,7 @@ const { icon = true } = Astro.props;
     data-copied={strings.share.copied}
     data-failed={strings.share.failed}
   >
-    {icon && <Icon name="share" />}
+    {icon && <img src={shareIcon} width="18" height="18" alt="" />}
     {strings.share.label}
   </button>
   <span class="share-status" role="status"></span>

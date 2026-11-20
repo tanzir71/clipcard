@@ -32,22 +32,16 @@ const sampleLanguage =
   locale === 'bn' || locale === 'hi' || locale === 'ur' ? locale : undefined;
 const heroCards = [
   {
-    name: sampleLanguage
-      ? localeCard[sampleLanguage]
-      : RELEASED.cards
-        ? 'header-4x5'
-        : 'header-4x5-bn',
+    name: sampleLanguage ? localeCard[sampleLanguage] : 'header-4x5-bn',
     alt: sampleLanguage
       ? templates.localizedExamples[sampleLanguage]
-      : RELEASED.cards
-        ? templates.example.replace('{name}', templates.names.header)
-        : templates.localizedExamples.bn,
+      : templates.localizedExamples.bn,
     order: 2,
   },
   {
     name: 'overlay-4x5',
     alt: templates.example.replace('{name}', templates.names.overlay),
-    order: 3,
+    order: 4,
   },
   {
     name: 'split-4x5',
@@ -55,12 +49,9 @@ const heroCards = [
     order: 1,
   },
   {
-    name: RELEASED.cards ? 'solid-4x5' : 'caps-4x5',
-    alt: templates.example.replace(
-      '{name}',
-      RELEASED.cards ? templates.names.solid : templates.names.caps,
-    ),
-    order: 4,
+    name: 'caps-4x5',
+    alt: templates.example.replace('{name}', templates.names.caps),
+    order: 3,
   },
   {
     name: 'quote-4x5',
@@ -130,6 +121,9 @@ const schema = [
         </a>
       )}
       <SendToComputer locale={locale} />
+      {RELEASED.app ? (
+        <p class="hero-beta hero-beta-mobile">{strings.installApp.heroBeta}</p>
+      ) : null}
     </div>
     <ul class="hero-cards" aria-label={hero.gallery} tabindex="0">
       {heroCards.map((card) => (
