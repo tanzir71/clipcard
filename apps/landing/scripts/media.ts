@@ -13,6 +13,7 @@ const cardNames = [
   'header-4x5',
   'quote-4x5',
   'caps-4x5',
+  'solid-4x5',
   'header-4x5-bn',
   'header-4x5-hi',
   'split-4x5-ur-rtl',

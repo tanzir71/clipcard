@@ -1,9 +1,11 @@
 ---
 import strings from '@clipcard/i18n/landing/en';
+import BookmarkBlock from '../components/BookmarkBlock.astro';
 import CardImage from '../components/CardImage.astro';
 import HeroAppShortcut from '../components/HeroAppShortcut.astro';
 import Icon from '../components/Icon.astro';
 import Languages from '../components/Languages.astro';
+import LiveCardDemo from '../components/LiveCardDemo.astro';
 import SendToComputer from '../components/SendToComputer.astro';
 import { RELEASED, REPO_URL } from '../config';
 import Site from '../layouts/Site.astro';
@@ -39,7 +41,12 @@ const sourceIcons = ['qr', 'shield', 'edited'] as const;
 const featureKeys = Object.keys(
   features.items,
 ) as (keyof typeof features.items)[];
-const examples = Object.entries(templates.names);
+const examples = Object.entries(templates.names).filter(([name]) =>
+  RELEASED.cards ? !['duotone', 'caps'].includes(name) : name !== 'solid',
+);
+const formats = RELEASED.cards
+  ? ['4:5', '1:1', '9:16']
+  : ['4:5', '1:1', '9:16', '16:9', '1.91:1'];
 const url = new URL(sitePath(), Astro.site).href;
 const schema = [
   {
@@ -74,8 +81,8 @@ const schema = [
 <Site schema={schema}>
   <section class="hero dark" aria-labelledby="page-heading">
     <div class="container hero-copy">
-      <h1 id="page-heading">{hero.heading}</h1>
-      <p>{hero.description}</p>
+      <h1 id="page-heading">{RELEASED.app ? hero.appHeading : hero.heading}</h1>
+      <p>{RELEASED.app ? hero.appDescription : hero.description}</p>
       {RELEASED.app ? (
         <HeroAppShortcut />
       ) : (
@@ -87,7 +94,10 @@ const schema = [
     </div>
     <ul class="hero-cards" aria-label={hero.gallery} tabindex="0">
       {heroCards.map((card) => (
-        <li style={{ '--mobile-order': card.order }}>
+        <li
+          style={{ '--mobile-order': card.order }}
+          data-hero-output={RELEASED.app && card.order === 1 ? '' : undefined}
+        >
           <CardImage
             name={card.name}
             alt={card.alt}
@@ -139,12 +149,18 @@ const schema = [
             {features.items[key].title}{' '}
             {!RELEASED[key] && <span>{features.soon}</span>}
           </h3>
-          <p>{features.items[key].description}</p>
+          <p>
+            {key === 'cards' && RELEASED.cards && !RELEASED.extension
+              ? features.appCards
+              : features.items[key].description}
+          </p>
         </li>
       ))}
     </ul>
     <p class="features-also">{features.also}</p>
   </section>
+
+  {RELEASED.lite ? <BookmarkBlock /> : null}
 
   <section class="section verifiable" aria-labelledby="sources-heading">
     <div class="container">
@@ -175,28 +191,46 @@ const schema = [
   <section
     class="section container template-section"
     id="templates"
+    data-clipcard-demo={RELEASED.cards ? '' : undefined}
     aria-labelledby="templates-heading"
   >
     <div class="template-heading">
-      <h2 id="templates-heading">{templates.heading}</h2>
+      <h2 id="templates-heading">
+        {RELEASED.cards ? templates.appHeading : templates.heading}
+      </h2>
       <ul class="formats" aria-label={templates.formats}>
-        {['4:5', '1:1', '9:16', '16:9', '1.91:1'].map((format) => (
-          <li>{format}</li>
+        {formats.map((format) => (
+          <li>
+            {RELEASED.cards ? (
+              <button
+                type="button"
+                data-format={format}
+                aria-pressed={format === '4:5'}
+              >
+                {format}
+              </button>
+            ) : (
+              format
+            )}
+          </li>
         ))}
       </ul>
     </div>
     <div class="templates-grid">
       {examples.map(([name, label]) => (
         <figure>
-          <CardImage
-            name={`${name}-4x5`}
-            alt={templates.example.replace('{name}', label)}
-            sizes="(max-width: 767px) 45vw, (max-width: 1279px) 16vw, 188px"
-          />
+          <div data-demo-card={RELEASED.cards ? name : undefined}>
+            <CardImage
+              name={`${name}-4x5`}
+              alt={templates.example.replace('{name}', label)}
+              sizes="(max-width: 767px) 45vw, (max-width: 1279px) 16vw, 188px"
+            />
+          </div>
           <figcaption>{label}</figcaption>
         </figure>
       ))}
     </div>
+    {RELEASED.cards ? <LiveCardDemo /> : null}
   </section>
 
   <Languages />
@@ -215,11 +249,14 @@ const schema = [
 
   <section class="cta-band" aria-labelledby="cta-heading">
     <div class="container">
-      <h2 id="cta-heading">{strings.band}</h2>
-      <a class="button button-light desktop-cta" href={REPO_URL}>
-        {nav.follow}
+      <h2 id="cta-heading">{RELEASED.app ? strings.appBand : strings.band}</h2>
+      <a
+        class:list={['button button-light', RELEASED.app ? '' : 'desktop-cta']}
+        href={RELEASED.app ? sitePath('app/') : REPO_URL}
+      >
+        {RELEASED.app ? strings.shortcut.open : nav.follow}
       </a>
-      <SendToComputer icon={false} />
+      {RELEASED.app ? null : <SendToComputer icon={false} />}
     </div>
   </section>
 </Site>

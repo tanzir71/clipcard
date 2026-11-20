@@ -1,0 +1,83 @@
+---
+import strings from '@clipcard/i18n/landing/en';
+import { sitePath } from '../site';
+import Icon from './Icon.astro';
+const { installApp: copy } = strings;
+const app = sitePath('app/');
+---
+
+<div class="app-install">
+  <button class="button button-light" type="button" data-app-install>
+    <Icon name="share" />
+    {copy.action}
+  </button>
+  <p>{copy.ios}</p>
+  <dialog data-install-dialog aria-labelledby="install-title">
+    <h2 id="install-title">{copy.heading}</h2>
+    <p>{copy.offline}</p>
+    <p data-install-ios>{copy.ios}</p>
+    <div>
+      <form method="dialog">
+        <button class="button" value="cancel">
+          {copy.later}
+        </button>
+      </form>
+      <a
+        class="button button-light"
+        href={app}
+        data-install-confirm
+        data-install={copy.install}
+        data-open={copy.open}
+      >
+        {copy.open}
+      </a>
+    </div>
+  </dialog>
+</div>
+
+<script>
+  interface InstallPrompt extends Event {
+    prompt: () => Promise<void>;
+    userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+  }
+  let pending: InstallPrompt | null = null;
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    pending = event as InstallPrompt;
+  });
+  const button =
+    document.querySelector<HTMLButtonElement>('[data-app-install]');
+  const dialog = document.querySelector<HTMLDialogElement>(
+    '[data-install-dialog]',
+  );
+  const confirm = document.querySelector<HTMLAnchorElement>(
+    '[data-install-confirm]',
+  );
+  const ios = document.querySelector<HTMLElement>('[data-install-ios]');
+  if (button && dialog && confirm && ios) {
+    button.addEventListener('click', () => {
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        location.assign(confirm.href);
+        return;
+      }
+      confirm.textContent = pending
+        ? (confirm.dataset.install ?? '')
+        : (confirm.dataset.open ?? '');
+      ios.hidden = Boolean(pending);
+      dialog.showModal();
+    });
+    confirm.addEventListener('click', async (event) => {
+      if (!pending) return;
+      event.preventDefault();
+      const prompt = pending;
+      pending = null;
+      try {
+        await prompt.prompt();
+        await prompt.userChoice;
+        dialog.close();
+      } catch {
+        location.assign(confirm.href);
+      }
+    });
+  }
+</script>

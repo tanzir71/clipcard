@@ -1,16 +1,98 @@
 ---
 import strings from '@clipcard/i18n/landing/en';
+import { landingBookmarklet } from '../bookmarklet';
+import { sitePath } from '../site';
 import Icon from './Icon.astro';
+import InstallApp from './InstallApp.astro';
+
+const copy = strings.shortcut;
+const appPath = sitePath('app/');
+const bookmark = await landingBookmarklet(new URL(appPath, Astro.site));
 ---
 
-<div class="app-shortcut">
+<form
+  class="app-shortcut"
+  data-hero-shortcut
+  data-app-path={appPath}
+  data-failed={copy.failed}
+>
   <Icon name="link" />
   <input
     type="text"
-    aria-label={strings.shortcut.placeholder}
-    placeholder={strings.shortcut.placeholder}
+    aria-label={copy.placeholder}
+    placeholder={copy.placeholder}
   />
-  <button class="button" type="button">
-    {strings.shortcut.submit}
+  <button class="button" type="submit">
+    {copy.submit}
   </button>
+</form>
+<div class="app-shortcut-note">
+  <p>{copy.local}</p>
+  <p role="status" data-hero-shortcut-status></p>
 </div>
+<div class="app-shortcut-paths">
+  <a class="app-shortcut-bookmark" href={bookmark} draggable="true">
+    ✂ {copy.bookmark} <span>{copy.drag}</span>
+  </a>
+  <a href={appPath}>
+    {copy.open} <span aria-hidden="true">→</span>
+  </a>
+</div>
+<InstallApp />
+
+<script>
+  import type { CardInput } from '@clipcard/ui/input';
+
+  const form = document.querySelector<HTMLFormElement>('[data-hero-shortcut]');
+  const host = document.querySelector<HTMLElement>('[data-hero-output]');
+  const status = document.querySelector('[data-hero-shortcut-status]');
+  const submit = form?.querySelector<HTMLButtonElement>('button');
+  const input = form?.querySelector<HTMLInputElement>('input');
+  if (form && host && status && submit && input) {
+    const build = async (details: CardInput) => {
+      if (submit.disabled) return;
+      submit.disabled = true;
+      status.textContent = '';
+      try {
+        const { showHeroCard } = await import('@clipcard/ui/hero');
+        const made = await showHeroCard(
+          host,
+          details,
+          form.dataset.appPath ?? './app/',
+        );
+        if (!made) status.textContent = form.dataset.failed ?? '';
+      } catch {
+        status.textContent = form.dataset.failed ?? '';
+      } finally {
+        submit.disabled = false;
+      }
+    };
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (input.value.trim()) void build({ text: input.value });
+    });
+    const transfer = (data: DataTransfer) => {
+      const file = [...data.files].find((item) =>
+        item.type.startsWith('image/'),
+      );
+      const text = data.getData('text/plain');
+      const html = data.getData('text/html');
+      const uri = data
+        .getData('text/uri-list')
+        .split(/\r?\n/)
+        .find((line) => line.trim() && !line.startsWith('#'));
+      if (text) input.value = text;
+      void build({ text, html, file, uri });
+    };
+    form.addEventListener('paste', (event) => {
+      if (!event.clipboardData) return;
+      event.preventDefault();
+      transfer(event.clipboardData);
+    });
+    form.addEventListener('dragover', (event) => event.preventDefault());
+    form.addEventListener('drop', (event) => {
+      event.preventDefault();
+      if (event.dataTransfer) transfer(event.dataTransfer);
+    });
+  }
+</script>

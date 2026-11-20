@@ -1,0 +1,35 @@
+---
+---
+
+<script>
+  import type { Format } from '@clipcard/cards';
+  const demo = document.querySelector<HTMLElement>('[data-clipcard-demo]');
+  if (demo) {
+    let format: Format = '4:5';
+    const paint = async () => {
+      const { renderDemo } = await import('../demo.tsx');
+      renderDemo(demo, format);
+    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        observer.disconnect();
+        void paint();
+      },
+      { rootMargin: '300px' },
+    );
+    observer.observe(demo);
+    demo.addEventListener('click', (event) => {
+      if (!(event.target instanceof HTMLElement)) return;
+      const selected = event.target.closest<HTMLButtonElement>(
+        'button[data-format]',
+      );
+      if (!selected?.dataset.format) return;
+      format = selected.dataset.format as Format;
+      demo.querySelectorAll('button[data-format]').forEach((button) => {
+        button.setAttribute('aria-pressed', String(button === selected));
+      });
+      void paint();
+    });
+  }
+</script>

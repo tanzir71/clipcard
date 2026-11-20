@@ -1,8 +1,11 @@
 import { sitePath } from '../site';
+import { RELEASED } from '../config';
 import type { APIRoute } from 'astro';
 
 export const GET: APIRoute = ({ site }) => {
-  const urls = ['', 'privacy/', 'changelog/'].map((path) => {
+  const paths = ['', 'privacy/', 'changelog/'];
+  if (RELEASED.app) paths.push('app/');
+  const urls = paths.map((path) => {
     const url = new URL(sitePath(path), site);
     return `  <url><loc>${url}</loc><xhtml:link rel="alternate" hreflang="en" href="${url}" /><xhtml:link rel="alternate" hreflang="x-default" href="${url}" /></url>`;
   });
