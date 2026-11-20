@@ -111,7 +111,7 @@ export function CardEditor({
   const [tabShown, setTabShown] = useState(false);
   const [autoOpen, setAutoOpen] = useState(false);
   const [inspectorOpen, setInspectorOpen] = useState(false);
-  const [textBarTop, setTextBarTop] = useState(40);
+  const [textLayout, setTextLayout] = useState({ top: 8, bottom: 32, bar: 40 });
   const previewWrap = useRef<HTMLDivElement>(null);
   const narrow = useSyncExternalStore(
     observeViewport,
@@ -159,10 +159,18 @@ export function CardEditor({
       const headline = wrap.querySelector('.cc-headline');
       if (!headline) return;
       const box = wrap.getBoundingClientRect();
-      const bottom = headline.getBoundingClientRect().bottom;
-      setTextBarTop(
-        Math.max(34, Math.min(bottom - box.top + 26, box.height - 50)),
-      );
+      const text = headline.getBoundingClientRect();
+      const meta =
+        options.template === 'header'
+          ? wrap.querySelector('.cc-meta')?.getBoundingClientRect()
+          : undefined;
+      const top = Math.max(4, text.top - box.top - 4);
+      const bottom = Math.max(text.bottom, meta?.bottom ?? 0) - box.top - 2;
+      setTextLayout({
+        top,
+        bottom,
+        bar: Math.max(34, Math.min(bottom + 12, box.height - 50)),
+      });
     };
     const observer = new ResizeObserver(align);
     observer.observe(wrap);
@@ -272,11 +280,7 @@ export function CardEditor({
         {beforePreview ? (
           <div className="clip-canvas-input">{beforePreview}</div>
         ) : null}
-        <div
-          className="clip-preview-wrap"
-          ref={previewWrap}
-          data-text-open={openExternal && tabShown ? '' : undefined}
-        >
+        <div className="clip-preview-wrap" ref={previewWrap}>
           <CardPreview model={model} options={options} onHeadline={openText} />
           <button
             type="button"
@@ -308,19 +312,29 @@ export function CardEditor({
             </button>
           ) : null}
           {openExternal && tabShown ? (
-            <div
-              className="clip-text-bar"
-              style={{ insetBlockStart: textBarTop }}
-            >
-              <TextControls
-                draft={draft}
-                model={model}
-                options={options}
-                update={update}
-                onChange={onChange}
-                compact
+            <>
+              <div
+                aria-hidden="true"
+                className="clip-text-outline"
+                style={{
+                  insetBlockStart: textLayout.top,
+                  blockSize: textLayout.bottom - textLayout.top,
+                }}
               />
-            </div>
+              <div
+                className="clip-text-bar"
+                style={{ insetBlockStart: textLayout.bar }}
+              >
+                <TextControls
+                  draft={draft}
+                  model={model}
+                  options={options}
+                  update={update}
+                  onChange={onChange}
+                  compact
+                />
+              </div>
+            </>
           ) : null}
         </div>
         {view === 'workspace' ? (
