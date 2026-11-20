@@ -53,9 +53,9 @@ const cases = [
     'clips-excerpts-4x5',
     [
       original +
-        '#:~:text=The%20first%20boats%20left,every%20seat%20was%20taken.' +
-        '&text=Fares%20start%20at%20Tk,open%20before%20the%20monsoon.' +
-        '&text=%E2%80%9CThe%20river%20was%20always,how%20to%20use%20it.%E2%80%9D',
+        '#:~:text=The%20first%20boats,seat%20was%20taken.' +
+        '&text=Fares%20start%20at,before%20the%20monsoon.' +
+        '&text=%E2%80%9CThe%20river%20was,to%20use%20it.%E2%80%9D',
     ],
   ],
   [

@@ -114,17 +114,15 @@ export function gridModel(
     const excerpts = clips.flatMap((clip) =>
       clip.kind === 'text' && clip.text ? [clip.text] : [],
     );
-    const compactAfter =
+    const compact =
       excerpts.reduce((size, text) => size + text.length, 0) > 160
-        ? 48
+        ? { compactAfter: 48, edgeWords: 3 }
         : undefined;
     const directives = canonicalUrl
       ? excerpts.flatMap((text) => {
-          const directive = textFragment(
-            canonicalUrl,
-            text,
-            compactAfter,
-          ).split('#:~:')[1];
+          const directive = textFragment(canonicalUrl, text, compact).split(
+            '#:~:',
+          )[1];
           return directive ? [directive] : [];
         })
       : [];
