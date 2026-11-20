@@ -1,7 +1,7 @@
 ---
 import { landingCopy, appPath } from '../languages';
 import type { InterfaceLanguage } from '@clipcard/i18n';
-import Icon from './Icon.astro';
+import installIcon from '../media/hero/install.svg?url';
 interface Props {
   locale: InterfaceLanguage;
 }
@@ -14,10 +14,10 @@ const app = appPath(locale);
 
 <div class="app-install">
   <button class="button button-light" type="button" data-app-install>
-    <Icon name="share" />
+    <img src={installIcon} width="18" height="18" alt="" />
     {copy.action}
   </button>
-  <p>{copy.ios}</p>
+  <p>{copy.iosHint}</p>
   <dialog data-install-dialog aria-labelledby="install-title">
     <h2 id="install-title">{copy.heading}</h2>
     <p>{copy.offline}</p>

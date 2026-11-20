@@ -208,52 +208,96 @@ body {
 .app-shortcut {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   max-inline-size: 680px;
   margin-inline: auto;
-  padding: 6px 6px 6px 16px;
+  padding: 6px;
+  padding-inline-start: 16px;
   background: #fff;
   color: var(--pc-card-ink);
 }
 .app-shortcut input {
   flex: 1;
   min-inline-size: 0;
+  padding: 0;
   border: 0;
   font: inherit;
+  font-size: 17px;
+  line-height: 24px;
 }
-.app-shortcut button {
+.app-shortcut input::placeholder {
+  color: #71717a;
+  opacity: 1;
+}
+.app-shortcut .button {
+  min-inline-size: 112px;
+  padding-inline: 14px;
+  border-radius: 0;
   background: var(--pc-card-ink);
   color: #fff;
+  font-size: 14px;
+  font-weight: 600;
 }
-.app-shortcut-note p,
 .hero .app-shortcut-note p {
-  margin: 9px auto 0;
-  color: #a3a3a3;
+  margin: 16px auto 0;
+  color: #858585;
   font-size: 13px;
+  line-height: 18px;
+  text-align: center;
 }
-.app-shortcut-note p:empty {
+.app-shortcut-note p:empty,
+.app-shortcut-mobile,
+.hero-beta-mobile {
   display: none;
 }
 .app-shortcut-paths {
   display: flex;
+  align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-block-start: 12px;
+  gap: 12px;
+  margin-block-start: 16px;
   font-size: 14px;
+  line-height: 20px;
 }
 .app-shortcut-paths a {
-  padding: 7px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-block-size: 40px;
+  padding-block: 6px;
+  text-decoration: none;
+}
+.app-shortcut-paths a:hover {
+  text-decoration: underline;
+}
+.app-shortcut-download {
+  padding-inline: 13px;
+  border: 1px solid #545454;
+  font-weight: 500;
 }
 .app-shortcut-bookmark {
-  border: 1px dashed #777;
-  text-decoration: none;
+  padding-inline: 15px;
+  border: 1px dashed #6c6c6c;
   cursor: grab;
 }
 .app-shortcut-bookmark span {
-  margin-inline-start: 5px;
   color: #a3a3a3;
+  font-family: 'Geist Mono Variable', monospace;
   font-size: 12px;
+}
+.app-shortcut-open {
+  padding-inline: 6px;
+  font-weight: 500;
+}
+[dir='rtl'] .app-shortcut-open img {
+  transform: scaleX(-1);
+}
+.hero .hero-beta {
+  margin: 24px auto 0;
+  color: #858585;
+  font-size: 14px;
+  line-height: 19px;
 }
 .bookmark-block {
   display: flex;
@@ -304,7 +348,7 @@ body {
 }
 
 .hero-copy {
-  padding-block: 96px 96px;
+  padding-block: 96px 64px;
   text-align: center;
 }
 .hero h1 {
@@ -312,8 +356,9 @@ body {
   margin-inline: auto;
   font-size: clamp(58px, 5.85vw, 84px);
   font-weight: 600;
-  letter-spacing: -0.065em;
-  line-height: 1.04;
+  letter-spacing: -0.045em;
+  line-height: calc(1em + 4px);
+  white-space: pre-line;
   text-wrap: balance;
 }
 .hero p {
@@ -696,17 +741,50 @@ body {
     text-decoration: underline;
   }
   .hero-copy {
-    padding-block: 39px 40px;
+    padding-block: 40px 32px;
     text-align: start;
   }
   .hero h1 {
-    font-size: clamp(34px, 10.75vw, 50px);
-    letter-spacing: -0.056em;
+    font-size: clamp(34px, 10.77vw, 50px);
+    letter-spacing: -0.04em;
+    line-height: calc(1em + 2px);
     text-wrap: initial;
   }
   .hero p {
-    margin-block: 20px 16px;
+    margin-block: 18px;
     font-size: 16px;
+    line-height: 22px;
+  }
+  .app-shortcut {
+    padding-inline-start: 12px;
+  }
+  .app-shortcut input {
+    font-size: 15px;
+    line-height: 21px;
+  }
+  .app-shortcut .button {
+    min-block-size: 40px;
+    min-inline-size: 99px;
+    padding: 6px 10px;
+  }
+  .hero .app-shortcut-note p {
+    margin-block-start: 12px;
+    font-size: 12px;
+    line-height: 17px;
+  }
+  .app-shortcut-desktop,
+  .app-shortcut-paths,
+  .hero-beta-desktop {
+    display: none;
+  }
+  .app-shortcut-mobile {
+    display: inline;
+  }
+  .hero .hero-beta-mobile {
+    display: block;
+    margin-block-start: 18px;
+    font-size: 13px;
+    line-height: 18px;
   }
   .mobile-cta {
     position: relative;
@@ -723,17 +801,23 @@ body {
     color: #fff;
     border-color: #727272;
   }
+  .hero .mobile-cta img {
+    filter: invert(1);
+  }
   .app-install {
     display: block;
-    margin-block: 12px;
+    margin-block: 18px;
   }
   .app-install > button {
-    width: 100%;
+    inline-size: 100%;
+    border-radius: 2px;
   }
   .hero .app-install > p {
-    margin: 7px 0 0;
-    font-size: 12px;
+    margin: 18px 0 0;
     color: #bbb;
+    font-family: 'Geist Mono Variable', monospace;
+    font-size: 11px;
+    line-height: 16px;
   }
   .app-install dialog {
     position: fixed;
@@ -894,7 +978,6 @@ body {
     font-size: 12px;
   }
 }
-.extension-hero-actions,
 .install-extension-actions {
   display: flex;
   flex-wrap: wrap;
@@ -902,12 +985,6 @@ body {
   gap: 16px;
 }
 
-.extension-hero-actions {
-  justify-content: center;
-  margin-block-end: 16px;
-}
-
-.extension-hero-actions a:not(.button),
 .install-extension-actions a:not(.button) {
   color: inherit;
   font-size: 13px;
@@ -982,10 +1059,6 @@ body {
 }
 
 @media (max-width: 767px) {
-  .extension-hero-actions {
-    display: none;
-  }
-
   .install-extension-desktop {
     display: none;
   }
