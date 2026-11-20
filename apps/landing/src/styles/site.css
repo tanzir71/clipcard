@@ -903,6 +903,7 @@ body {
 }
 
 .extension-hero-actions {
+  justify-content: center;
   margin-block-end: 16px;
 }
 

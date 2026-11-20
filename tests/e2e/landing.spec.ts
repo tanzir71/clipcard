@@ -17,6 +17,16 @@ test('shows the web app, upcoming features and keyboard-accessible FAQ', async (
   await expect(
     page.getByRole('link', { name: 'Download for Chrome' }),
   ).toBeVisible();
+  const centerOffset = await page.locator('.hero-copy').evaluate((hero) => {
+    const actions = [...hero.querySelectorAll('.extension-hero-actions a')].map(
+      (link) => link.getBoundingClientRect(),
+    );
+    const left = Math.min(...actions.map((box) => box.left));
+    const right = Math.max(...actions.map((box) => box.right));
+    const paste = hero.querySelector('.app-shortcut')!.getBoundingClientRect();
+    return Math.abs((left + right - paste.left - paste.right) / 2);
+  });
+  expect(centerOffset).toBeLessThanOrEqual(1);
   await expect(
     page.getByRole('link', { name: 'Web app', exact: true }),
   ).toHaveAttribute('href', '/clipcard/app/');
