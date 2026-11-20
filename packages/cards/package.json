@@ -5,6 +5,9 @@
   "exports": {
     ".": "./src/index.ts",
     "./view": "./src/components/Card.tsx",
+    "./grid-model": "./src/grid-model.ts",
+    "./grid-view": "./src/components/GridCard.tsx",
+    "./grid-export": "./src/grid-export.tsx",
     "./assets": "./src/assets.ts",
     "./export": "./src/export.tsx",
     "./card.css": "./src/card.css",

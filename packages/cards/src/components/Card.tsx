@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { useMemo } from 'react';
 import type { CSSProperties } from 'react';
 import strings from '@clipcard/i18n/en';
 import type { CardAssets } from '../assets.ts';
@@ -9,10 +9,10 @@ import type {
   EmphasisStyle,
   Template,
 } from '../model.ts';
-import { qrGeometry } from '../qr.ts';
 import { fade, halftone } from '../texture.ts';
 import { tokens } from '../tokens.ts';
 import { Headline } from './Headline.tsx';
+import { Qr } from './Qr.tsx';
 import '../card.css';
 
 export interface CardProps {
@@ -201,25 +201,6 @@ function Meta({
     <div className={panel ? 'cc-meta cc-meta-panel' : 'cc-meta'}>{text}</div>
   ) : null;
 }
-
-const Qr = memo(function Qr({ url, size }: { url: string; size: number }) {
-  const geometry = qrGeometry(url, size);
-  return (
-    <svg
-      className="cc-qr"
-      role="img"
-      aria-label={strings['card.qr']}
-      width={geometry.size}
-      height={geometry.size}
-      viewBox={'0 0 ' + geometry.size + ' ' + geometry.size}
-      shapeRendering="crispEdges"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <rect width="100%" height="100%" fill="#fff" />
-      <path fill={tokens.card.qr.dark} d={geometry.path} />
-    </svg>
-  );
-});
 
 export function Card({ model, options, assets }: CardProps) {
   const { format, template } = options;

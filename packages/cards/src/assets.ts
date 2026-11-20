@@ -22,6 +22,7 @@ const fontsFor = {
   duotone: ['geist', 'caps', 'mono'],
   solid: ['serif', 'serifBold', 'mono', 'caps'],
   quote: ['serif', 'serifBold', 'mono', 'geist', 'caps'],
+  grid: ['serif', 'serifBold', 'mono', 'geist'],
 } as const;
 type Font = keyof typeof FONT_FILES;
 const loaded = new Map<Font, Promise<string>>();
@@ -73,7 +74,7 @@ export interface CardAssets {
 }
 
 export async function prepareCardAssets(
-  template: Template,
+  template: Template | 'grid',
 ): Promise<CardAssets> {
   const [grain, fonts] = await Promise.all([
     prepareGrain(),
