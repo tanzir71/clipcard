@@ -1,5 +1,5 @@
 import { isTracker } from './trackers.ts';
-import { wrappedTarget } from './wrappers.ts';
+import { needsRedirect, wrappedTarget } from './wrappers.ts';
 
 export function parseWebUrl(input: string, base?: string): URL | null {
   try {
@@ -70,6 +70,39 @@ export function cleanUrl(input: string): { url: string; removed: string[] } {
   url.search = parts.join('&');
   if (!url.hash.startsWith('#:~:text=')) url.hash = '';
   return { url: url.href, removed };
+}
+
+export async function resolveUrl(
+  input: string,
+  {
+    fetch: request = globalThis.fetch,
+    timeoutMs = 5000,
+  }: {
+    fetch?: typeof fetch;
+    timeoutMs?: number;
+  } = {},
+): Promise<{ url: string; removed: string[]; unwrapped: boolean }> {
+  const original = webUrl(input).href;
+  let target = webUrl(unwrapUrl(original));
+  if (needsRedirect(target)) {
+    try {
+      const response = await request(target.href, {
+        credentials: 'omit',
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+      void response.body?.cancel().catch(() => undefined);
+      const redirected = parseWebUrl(response.url);
+      if (redirected) target = redirected;
+    } catch {
+      // The visible link remains a usable source when resolution fails.
+    }
+  }
+  return {
+    ...cleanUrl(target.href),
+    unwrapped: target.href !== original,
+  };
 }
 
 const encodeText = (text: string) =>

@@ -6,4 +6,10 @@ export { detectLang, detectScript, dirFor, langToScript } from './script.ts';
 export type { Direction, Script } from './script.ts';
 export { slugHeadline } from './slug.ts';
 export { cleanTitle, limitHeadline, outletFromHost } from './title.ts';
-export { cleanUrl, parseWebUrl, textFragment, unwrapUrl } from './url.ts';
+export {
+  cleanUrl,
+  parseWebUrl,
+  resolveUrl,
+  textFragment,
+  unwrapUrl,
+} from './url.ts';

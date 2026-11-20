@@ -1,6 +1,12 @@
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
-import { cleanUrl, parseWebUrl, textFragment, unwrapUrl } from './url.ts';
+import { describe, expect, it, vi } from 'vitest';
+import {
+  cleanUrl,
+  parseWebUrl,
+  resolveUrl,
+  textFragment,
+  unwrapUrl,
+} from './url.ts';
 
 type ResolveFixture = {
   name: string;
@@ -8,6 +14,7 @@ type ResolveFixture = {
   out?: string;
   error?: string;
   network?: boolean;
+  redirectsTo?: string;
 };
 type FragmentFixture = {
   name: string;
@@ -22,17 +29,81 @@ const fixtures = JSON.parse(
   textFragment: FragmentFixture[];
 };
 
+function redirectedResponse(url: string, body?: BodyInit) {
+  const response = new Response(body);
+  Object.defineProperty(response, 'url', { value: url });
+  return response;
+}
+
+describe('resolveUrl', () => {
+  it.each(fixtures.resolve)('$name', async (row) => {
+    const request = vi.fn<typeof fetch>(async () =>
+      redirectedResponse(row.redirectsTo ?? ''),
+    );
+    const result = resolveUrl(row.in, { fetch: request });
+    if (row.error) await expect(result).rejects.toThrow(row.error);
+    else await expect(result).resolves.toMatchObject({ url: row.out });
+    expect(request).toHaveBeenCalledTimes(row.network ? 1 : 0);
+  });
+
+  it('strips tracking after resolving and discards the response body', async () => {
+    const response = redirectedResponse(
+      'https://example.net/article?utm_source=shortener&id=7',
+      'body',
+    );
+    const request = vi.fn<typeof fetch>().mockResolvedValue(response);
+    const result = await resolveUrl('https://news.google.com/rss/articles/1', {
+      fetch: request,
+      timeoutMs: 60,
+    });
+    expect(result).toEqual({
+      url: 'https://example.net/article?id=7',
+      removed: ['utm_source'],
+      unwrapped: true,
+    });
+    expect(request).toHaveBeenCalledWith(
+      'https://news.google.com/rss/articles/1',
+      {
+        credentials: 'omit',
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        signal: expect.any(AbortSignal) as AbortSignal,
+      },
+    );
+    expect(response.bodyUsed).toBe(true);
+  });
+
+  it('keeps ordinary pages local and distinguishes cleaning from unwrapping', async () => {
+    await expect(
+      resolveUrl('https://news.google.com/home?utm_id=7'),
+    ).resolves.toEqual({
+      url: 'https://news.google.com/home',
+      removed: ['utm_id'],
+      unwrapped: false,
+    });
+  });
+
+  it('falls back to a cleaned visible link if a shortener cannot be resolved', async () => {
+    const request = vi
+      .fn<typeof fetch>()
+      .mockRejectedValueOnce(new DOMException('Timed out', 'TimeoutError'))
+      .mockResolvedValueOnce(redirectedResponse('mailto:editor@example.net'));
+    const input = 'https://t.co/example?utm_source=feed';
+    const fallback = {
+      url: 'https://t.co/example',
+      removed: ['utm_source'],
+      unwrapped: false,
+    };
+    await expect(resolveUrl(input, { fetch: request })).resolves.toEqual(
+      fallback,
+    );
+    await expect(resolveUrl(input, { fetch: request })).resolves.toEqual(
+      fallback,
+    );
+  });
+});
+
 describe('page-side URL helpers', () => {
-  it.each(fixtures.resolve.filter(({ network }) => !network))(
-    '$name',
-    (row) => {
-      if (row.error) {
-        expect(() => unwrapUrl(row.in)).toThrow(row.error);
-      } else {
-        expect(cleanUrl(unwrapUrl(row.in)).url).toBe(row.out);
-      }
-    },
-  );
   it.each(fixtures.textFragment)('$name', ({ url, selection, out }) => {
     expect(textFragment(url, selection)).toBe(out);
   });

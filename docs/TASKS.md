@@ -9,7 +9,7 @@
 **Done when** `pnpm build` produces a loadable extension zip and a static landing build.
 
 ## M1 · Core (`packages/core`)
-- [ ] `unwrapUrl`, `cleanUrl`, `resolveUrl` (with an injectable `fetch`) + `textFragment(url, selection)`. **All cases in `fixtures/urls.json` pass.**
+- [x] `unwrapUrl`, `cleanUrl`, `resolveUrl` (with an injectable `fetch`) + `textFragment(url, selection)`. **All cases in `fixtures/urls.json` pass.**
 - [x] `extract(doc, finalUrl): CardSource` per `ARCHITECTURE.md` §5. **All `fixtures/pages/*.html` match `fixtures/expected/*.json`.**
 - [x] `detectScript(text)`, `langToScript`, `dirFor(lang)`; unit tests with bn/hi/ur/ar/ta/ne strings.
 - [x] `cleanTitle(title, siteName, host)` with suffix/prefix stripping tests.
