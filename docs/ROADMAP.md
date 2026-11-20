@@ -8,11 +8,17 @@ Every release ends with **something people can use today** and a **landing page 
 | **R1 · Web app + phone app** | v0.1 | **No install:** open `/app` (or paste in the landing hero) → paste a link, copied article or image → copy a sourced card (Header, Split, Overlay, Solid, Quote). One‑click with the ✂ bookmark. **Install it on a phone**; share links from Facebook/YouTube into it (Android). | Hero becomes the **app shortcut** (paste bar + Make card working in place) with paths: bookmark · Open full app. Nav "Web app". Mobile: **Install the app**. Live CardDemo. "One‑click cards" tile live. | `R1-lite.md` |
 | **R2 · Extension beta** | v0.2 | Install from the zip (developer mode): right‑click any link → card copied; top‑right popup with Auto chip and text bar; toolbar and shortcut; all templates and formats (Latin). | Install section live (Download .zip + steps). Hero CTA "Download for Chrome" + "No install? Use the bookmark". | `R2-extension-beta.md` |
 | **R3 · Clips, grids, drafts** | v0.3 | Clip quotes, images and charts → grid card; everything auto‑saves to drafts; **Save for later**; hover button and selection toolbar. Lite gets drafts and excerpt grids. | "Clips and grids" and "Drafts" tiles live. | `R3-clips-drafts.md` |
-| **R4 · Your language + store** | v0.4 | Cards in 30 languages, UI in wave‑1 languages, RTL; welcome and settings (Your mark). **Submitted to the Chrome Web Store.** | Wave‑1 language routes live. When the listing is approved, set `STORE_URL`: CTAs switch to "Add to Chrome". | `R4-languages-store.md` |
+| **R4 · Your language + settings** | v0.4 | Cards in 30 languages, UI in wave‑1 languages, RTL; welcome and settings (Your mark). Available in the unsigned developer ZIP after native review. | Wave‑1 language routes live. The hero links to the developer ZIP. | `R4-languages-store.md` |
 | **R5 · Video clips** | v0.5 | Clip a range on YouTube or any page video → moment card or recorded clip (extension); moment cards in Lite. | "Video clips" tile live; FAQ "Does it download videos? No, it records what's playing, with a link to the moment." | `R5-video-clips.md` |
 | **R6 · One video + GIFs** | v0.6 | Join clips, excerpts and reactions into one video with captions and a sources card; Library and GIF search (GIPHY, KLIPY); "Add a reaction?". Lite exports video too. | "One video, many sources" and "Library and GIFs" tiles live; privacy page lists GIF search. | `R6-video-gifs.md` |
 | **R7 · Batch** | v0.7 | Many links → Roundup, Carousel or Digest video; optional tab recording in the web app. | Roundup in templates. | `R7-batch-mobile.md` |
 | **R8 · 1.0** | v1.0 | Everything, hardened: full QA matrix, performance budgets, localized store listing, Firefox build (cards + moment cards). | No **Soon** chips left; changelog page complete. | `R8-v1.md` |
+
+## Distribution
+
+Developer-mode installs are the first public extension channel. R4 through R8 publish an unsigned Chromium ZIP on GitHub and the web app on GitHub Pages. Extract the ZIP and select its folder with **Load unpacked** in Developer mode.
+
+R4 ships as a full language release after native speakers sign off on the wave-one translations. The first Chrome Web Store submission follows the feature-complete 1.0 developer release. The landing page switches to **Add to Chrome** when the owner sets the approved `STORE_URL`. These distribution rules supersede the early store submission steps in the release handovers.
 
 ## Rules for every release
 
@@ -33,12 +39,13 @@ Run the listed prompts in parallel where the release prompt says so. Typical lan
 | Before R0 | Create the GitHub repo (confirm the owner; `tanziro/share-card` is a placeholder). Pick the landing host and domain (default GitHub Pages). |
 | R2 | Install the zip on a clean profile and try it on 5 news sites and Facebook. |
 | R3 | **Apply for a GIPHY production key and a KLIPY key** (approval takes time; beta keys allow only 100 calls/hour). |
-| R4 | Chrome Web Store developer account; paste the listing from `store/`; answer the review. Ask native speakers to review wave‑1 strings. |
+| R4 | Ask native speakers to review and sign off on wave‑1 strings. |
 | R5 | Decide on `tabCapture` with Codex's finding (below). |
+| After the 1.0 developer release | Submit the feature-complete package and listing through the Chrome Web Store developer account. Set `STORE_URL` after approval. |
 
 ## Risks to plan around
 
-- **`tabCapture` after store launch (R5):** if it adds an install warning and can't be optional, adding it in an update disables the extension for existing users until they accept. Codex checks this during R2 (a throwaway build) and records the answer in `docs/DECISIONS.md`. If it would disable users, choose one of two paths before R4's store submission: (a) ship video recording through `getDisplayMedia` (the user picks the tab each time, no manifest permission), or (b) include `tabCapture` from the first store version, with recording behind a flag until R5.
-- **Store review** can take days to weeks; R5–R8 keep shipping via the zip and Lite while a review is pending.
+- **Tab recording (R5):** the R2 experiment found that optional `tabCapture` preserves the previous install warnings. Request it when the user starts recording and verify Chrome’s native prompt. See `docs/DECISIONS.md`.
+- **Store review** affects the Store listing and its CTA. The GitHub ZIP and web app use their own release workflow.
 - **The web app can't read other sites** without the bookmark or extension (no server, by design). Paste flows fall back to the URL slug and a user photo; the hero and app say "made in your browser" rather than promising auto‑fetch.
 - **GIF keys:** without a production key, R6 ships with "paste your own key" in Settings and KLIPY as the default.

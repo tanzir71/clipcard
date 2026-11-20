@@ -1,10 +1,10 @@
 # Clipcard on the Chrome Web Store
 
-The repository owner submits the release using the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole). The release pull request records the package version, checksum and verification.
+The repository owner submits the feature-complete release after the 1.0 developer ZIP ships. Use the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole). The submission pull request records the package version, checksum and verification.
 
 ## Package
 
-Run `pnpm build:store 0.4.0 --r4-preview` from the repository root for the R4 candidate. The command prints the SHA-256 for `apps/extension/.output/clipcard-store-0.4.0.zip`. Upload that archive with `manifest.json` at its root. The store build uses Chrome’s update mechanism. [Chrome package requirements](https://developer.chrome.com/docs/webstore/prepare)
+Once the 1.0 developer build is released, update the listing, screenshots and manifest permission checks for that version. From the repository root, run `pnpm build:store 1.0.0`. The command prints the SHA-256 for `apps/extension/.output/clipcard-store-1.0.0.zip`. Upload the verified archive with `manifest.json` at its root. The store build uses Chrome’s update mechanism. [Chrome package requirements](https://developer.chrome.com/docs/webstore/prepare)
 
 ## Store listing
 
