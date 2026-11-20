@@ -16,6 +16,8 @@
     "./hero": "./src/hero.tsx",
     "./input": "./src/input.ts",
     "./storage": "./src/storage.ts",
+    "./video-editor": "./src/components/VideoEditor.tsx",
+    "./video-encoding": "./src/video-encoding.ts",
     "./style.css": "./src/ui.css"
   },
   "dependencies": {
@@ -24,6 +26,7 @@
     "@clipcard/i18n": "workspace:*",
     "fflate": "0.8.3",
     "idb": "8.0.4",
+    "mediabunny": "1.66.2",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "zod": "4.6.7"

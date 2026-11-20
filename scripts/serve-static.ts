@@ -8,6 +8,8 @@ const [, , port, directory = '.', prefix = '/'] = process.argv;
 const root = resolve(directory);
 const fixturePages = root === resolve('fixtures/pages');
 const mime = new Map([
+  ['.mp4', 'video/mp4'],
+  ['.vtt', 'text/vtt'],
   ['.css', 'text/css'],
   ['.html', 'text/html; charset=utf-8'],
   ['.jpg', 'image/jpeg'],

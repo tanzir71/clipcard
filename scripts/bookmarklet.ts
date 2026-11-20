@@ -1,7 +1,12 @@
 import { readFile } from 'node:fs/promises';
 import { transform } from 'esbuild';
+import { VIDEO_CLIPS_RELEASED } from '../packages/core/flags.ts';
 
-export async function buildBookmarklet(appUrl: string, source?: string) {
+export async function buildBookmarklet(
+  appUrl: string,
+  source?: string,
+  video = VIDEO_CLIPS_RELEASED,
+) {
   const code =
     source ??
     (await readFile(
@@ -13,7 +18,10 @@ export async function buildBookmarklet(appUrl: string, source?: string) {
     format: 'iife',
     target: 'es2022',
     minify: true,
-    define: { __CLIPCARD_BOOKMARK_APP__: JSON.stringify(new URL(appUrl).href) },
+    define: {
+      __CLIPCARD_BOOKMARK_APP__: JSON.stringify(new URL(appUrl).href),
+      __CLIPCARD_BOOKMARK_VIDEO__: String(video),
+    },
   });
   // Keep URI delimiters escaped. Editors and browsers preserve these escapes
   // when dragging a bookmark link to a bookmarks bar.

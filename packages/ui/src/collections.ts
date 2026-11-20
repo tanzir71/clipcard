@@ -1,4 +1,4 @@
-import { textFragment } from '@clipcard/core';
+import { maxClipSeconds, maxSourceSeconds, textFragment } from '@clipcard/core';
 import {
   readStoredMedia,
   removeMedia,
@@ -17,6 +17,7 @@ import type {
 export type {
   ClipDraft,
   ClipInput,
+  ClipVideo,
   DraftClip,
   DraftCollection,
   Retention,
@@ -41,6 +42,13 @@ export async function appendDraftClip(
   const db = await collectionDatabase();
   const id = crypto.randomUUID();
   const sourceUrl = canonicalSource(input.sourceUrl);
+  const video = input.kind === 'video' ? input.video : undefined;
+  const length = video ? video.end - video.start : 0;
+  if (
+    video &&
+    (!Number.isFinite(length) || length <= 0 || length > maxClipSeconds)
+  )
+    throw new RangeError('video-clip-length');
   const storedMedia = media ? await storeMedia(id, media) : {};
   try {
     const tx = db.transaction(['prefs', 'drafts', 'clips'], 'readwrite');
@@ -48,24 +56,47 @@ export async function appendDraftClip(
     const drafts = tx.objectStore('drafts');
     const clips = tx.objectStore('clips');
     const currentId = await prefs.get('currentDraftId');
-    const current = currentId ? await drafts.get(currentId) : undefined;
-    const draft: ClipDraft =
-      current && now - current.updatedAt < draftTimeout
-        ? {
-            ...current,
-            updatedAt: Math.max(current.updatedAt, now),
-            mode: preferGrid || current.order.length > 0 ? 'grid' : 'card',
-            order: [...current.order, id],
-          }
-        : {
-            id: crypto.randomUUID(),
-            title: input.title,
-            createdAt: now,
-            updatedAt: now,
-            mode: preferGrid ? 'grid' : 'card',
-            overrides: {},
-            order: [id],
-          };
+    const previous = currentId ? await drafts.get(currentId) : undefined;
+    const current =
+      previous && now - previous.updatedAt < draftTimeout
+        ? previous
+        : undefined;
+    if (current && video) {
+      const saved = await clips.index('draftId').getAll(current.id);
+      const used = saved.reduce(
+        (total, clip) =>
+          clip.video?.source === video.source
+            ? total + clip.video.end - clip.video.start
+            : total,
+        0,
+      );
+      if (used + length > maxSourceSeconds) {
+        await tx.done;
+        throw new RangeError('video-source-length');
+      }
+    }
+    const mode =
+      video || current?.mode === 'video'
+        ? 'video'
+        : preferGrid || current?.order.length
+          ? 'grid'
+          : 'card';
+    const draft: ClipDraft = current
+      ? {
+          ...current,
+          updatedAt: Math.max(current.updatedAt, now),
+          mode,
+          order: [...current.order, id],
+        }
+      : {
+          id: crypto.randomUUID(),
+          title: input.title,
+          createdAt: now,
+          updatedAt: now,
+          mode,
+          overrides: {},
+          order: [id],
+        };
     const clip: DraftClip = {
       ...input,
       id,

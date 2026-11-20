@@ -11,7 +11,9 @@ import {
   outletFromHost,
   parseWebUrl,
   unwrapUrl,
+  videoMomentUrl,
 } from '@clipcard/core';
+import { FLAGS } from '@clipcard/core/flags';
 import { fetchPhoto, inspectPhoto } from './input.ts';
 import { newCardDraft } from './draft.ts';
 import type { CardDraft } from './draft.ts';
@@ -31,6 +33,13 @@ const envelope = z
     image: z.string().max(2200),
     selection: z.string().max(500),
     frame: z.string().max(1_600_000),
+    moment: z
+      .object({
+        time: z.number().finite().min(0).max(1e9),
+        caption: z.string().max(500),
+      })
+      .strict()
+      .optional(),
   })
   .strict();
 
@@ -53,25 +62,33 @@ export async function draftFromBookmark(
 ) {
   const address = new URL(data.address);
   const canonical = data.canonical && parseWebUrl(data.canonical, address.href);
-  const canonicalUrl = cleanUrl(
+  const cleaned = cleanUrl(
     unwrapUrl(canonical ? canonical.href : address.href),
   ).url;
+  const moment = FLAGS.videoClips ? data.moment : undefined;
+  const canonicalUrl =
+    (moment && videoMomentUrl(cleaned, moment.time)) || cleaned;
   if (canonicalUrl.length > 1500) return null;
   const outlet = data.outlet || outletFromHost(address.hostname);
   const title = cleanTitle(data.title, outlet, address.hostname) || outlet;
   const selection =
-    (clips ? excerptText(data.selection) : limitHeadline(data.selection)) ||
-    undefined;
-  const headline = selection ?? title;
+    !moment &&
+    ((clips ? excerptText(data.selection) : limitHeadline(data.selection)) ||
+      undefined);
+  const caption =
+    moment && limitHeadline(moment.caption.replace(/<[^>]*>/g, ''));
+  const headline = selection || caption || title;
   const lang = detectLang(headline, data.lang);
-  let photo = await fetchPhoto(imageUrl(data.image, address.href));
-  if (
-    !photo &&
-    /^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(data.frame)
-  ) {
+  const sourceImage = imageUrl(data.image, address.href);
+  const localFrame = async () => {
+    if (!/^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(data.frame))
+      return null;
     const blob = await fetch(data.frame).then((result) => result.blob());
-    photo = await inspectPhoto(blob, 600);
-  }
+    return inspectPhoto(blob, 600);
+  };
+  const photo = moment
+    ? ((await localFrame()) ?? (await fetchPhoto(sourceImage)))
+    : ((await fetchPhoto(sourceImage)) ?? (await localFrame()));
   return newCardDraft({
     source: {
       canonicalUrl,
@@ -87,7 +104,7 @@ export async function draftFromBookmark(
       isArticle: true,
       publishedAt: data.published || null,
     },
-    selection,
+    selection: selection || undefined,
     headline,
     photo,
     section: data.section || undefined,

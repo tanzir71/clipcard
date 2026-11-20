@@ -1,4 +1,4 @@
-import type { TextRange } from '@clipcard/core';
+import type { CaptionCue, TextRange, VideoRange } from '@clipcard/core';
 import type { GridLayout } from '@clipcard/cards/grid-model';
 import type { CardDraft, Overrides } from './draft.ts';
 
@@ -15,6 +15,12 @@ export interface ClipDraft {
   legacyCard?: CardDraft;
 }
 
+export interface ClipVideo extends VideoRange {
+  source: string;
+  cues: CaptionCue[];
+  poster?: string;
+}
+
 export interface ClipInput {
   kind: 'link' | 'text' | 'image' | 'section' | 'video' | 'library' | 'gif';
   sourceUrl: string | null;
@@ -24,6 +30,7 @@ export interface ClipInput {
   publishedAt?: string;
   text?: string;
   range?: TextRange;
+  video?: ClipVideo;
   rect?: { x: number; y: number; width: number; height: number };
 }
 

@@ -95,6 +95,7 @@ export function CardEditor({
   onSave,
   onSaveForLater,
   onGrid,
+  onVideo,
   openExternal,
   initialShareOpen,
   beforePreview,
@@ -107,6 +108,7 @@ export function CardEditor({
   onSave?: () => Promise<void>;
   onSaveForLater?: (title: string) => Promise<unknown>;
   onGrid?: () => void;
+  onVideo?: () => void;
   openExternal?: (address: string) => Promise<unknown>;
   initialShareOpen?: boolean;
   beforePreview?: ReactNode;
@@ -265,6 +267,17 @@ export function CardEditor({
             onClick={onGrid}
           >
             <Icon name="grid" size={16} />
+          </button>
+        ) : null}
+        {onVideo ? (
+          <button
+            type="button"
+            className="clip-icon-button"
+            aria-label={strings['mode.video']}
+            title={strings['mode.video']}
+            onClick={onVideo}
+          >
+            <Icon name="video" size={16} />
           </button>
         ) : null}
         {view === 'workspace' ? (

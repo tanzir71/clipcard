@@ -176,6 +176,10 @@
     "ms": "Bahasa Melayu",
     "or": "ଓଡ଼ିଆ"
   },
+  "videoFaq": {
+    "question": "How do video clips work?",
+    "answer": "Choose a range in the extension and share the active tab with Clipcard. It records that part of the playing video in your browser and adds a QR to the original timestamp. Protected video can only be linked as a moment card."
+  },
   "faq": [
     { "question": "Is it free?", "answer": "Yes. No account, no watermark." },
     {

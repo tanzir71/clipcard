@@ -1,4 +1,4 @@
-import type { CardSource } from '@clipcard/core';
+import type { CaptionCue, CardSource } from '@clipcard/core';
 import type { Format, Template } from '@clipcard/cards';
 import type { CardDraft, Overrides } from '@clipcard/ui';
 
@@ -57,6 +57,21 @@ export interface ClipCapture {
   };
 }
 
+export interface MomentCapture {
+  time: number;
+  caption?: string;
+  poster?: string;
+  rect: NonNullable<ClipCapture['rect']>;
+}
+
+export interface RecordedCapture {
+  start: number;
+  end: number;
+  media: string;
+  cues: CaptionCue[];
+  poster?: string;
+}
+
 export interface ClipTray {
   id: string;
   count: number;
@@ -82,6 +97,7 @@ export type BridgeMessage =
       drafts?: boolean;
     }
   | { to: 'bridge'; kind: 'startClipping' }
+  | { to: 'bridge'; kind: 'openVideo'; address?: string }
   | { to: 'bridge'; kind: 'contextImage'; address?: string }
   | { to: 'bridge'; kind: 'tray'; tray: ClipTray };
 
@@ -99,6 +115,8 @@ export type BackgroundMessage =
   | { to: 'background'; kind: 'sitePrefs'; address: string }
   | { to: 'background'; kind: 'releaseUpdate' }
   | { to: 'background'; kind: 'captureClip'; capture: ClipCapture }
+  | { to: 'background'; kind: 'videoMoment'; capture: MomentCapture }
+  | { to: 'background'; kind: 'videoRecording'; capture: RecordedCapture }
   | { to: 'background'; kind: 'openCollection'; id: string }
   | { to: 'background'; kind: 'pageCard' }
   | { to: 'background'; kind: 'addPage' }

@@ -56,6 +56,41 @@ function mockMediaDirectory({ failsToClose = false } = {}) {
 }
 
 describe('persistent clip drafts', () => {
+  it('keeps timestamped video clips and caps each source in the current draft', async () => {
+    const { appendDraftClip, getCurrentDraftCollection, readClipMedia } =
+      await import('./collections.ts');
+    const frames = new Blob(['local video'], { type: 'video/mp4' });
+    const record: ClipInput = {
+      ...input,
+      kind: 'video',
+      sourceUrl: 'https://youtu.be/Abc123_XyZ0?t=9',
+      video: {
+        source: 'https://youtu.be/Abc123_XyZ0',
+        start: 9,
+        end: 69,
+        cues: [{ start: 2, end: 4, text: 'A locally recorded caption.' }],
+      },
+    };
+    for (let index = 0; index < 3; index++)
+      await appendDraftClip(record, { media: frames, now: start + index });
+    await expect(appendDraftClip(record, { now: start + 3 })).rejects.toThrow(
+      'video-source-length',
+    );
+    await expect(
+      appendDraftClip(
+        { ...record, video: { ...record.video!, end: 70 } },
+        { now: start + 4 },
+      ),
+    ).rejects.toThrow('video-clip-length');
+    const collection = await getCurrentDraftCollection();
+    expect(collection?.draft.mode).toBe('video');
+    expect(collection?.clips).toHaveLength(3);
+    const clip = collection!.clips[0]!;
+    expect(clip.video).toEqual(record.video);
+    expect(clip.sourceUrl).toBe(record.sourceUrl);
+    expect(await (await readClipMedia(clip))?.text()).toBe('local video');
+  });
+
   it('migrates the v1 card and its edit state without disrupting existing card reads', async () => {
     const db = await openDB('clipcard', 1, {
       upgrade(database) {

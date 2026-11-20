@@ -22,6 +22,7 @@ import type {
 import { destinationFor, rememberPrefs, sitePrefs } from './preferences.ts';
 import { developerUpdate } from './update-check.ts';
 import { persistCapture } from './clip-capture.ts';
+import { persistMoment, persistRecording } from './video-persist.ts';
 import { getUserSettings, watchUserSettings } from './user-settings.ts';
 
 const clipping = FLAGS.clips && FLAGS.drafts;
@@ -281,6 +282,14 @@ async function fromMenu(
   const address = info.linkUrl ?? info.frameUrl ?? info.pageUrl ?? tab.url;
   if (!address || !parseWebUrl(address)) return;
   const id = info.menuItemId;
+  if (FLAGS.videoClips && id === 'clipVideo') {
+    await bridge(tab.id, info.frameId ?? 0, {
+      to: 'bridge',
+      kind: 'openVideo',
+      address: info.srcUrl,
+    });
+    return;
+  }
   if (clipping && id === 'startClipping') {
     await bridge(tab.id, 0, { to: 'bridge', kind: 'startClipping' });
     return;
@@ -402,7 +411,12 @@ async function installMenus(force: boolean) {
     id: 'clipcard',
     title: localized('menu_parent'),
     contexts: clipping
-      ? [...linksAndPages, ...selection, 'image']
+      ? [
+          ...linksAndPages,
+          ...selection,
+          'image',
+          ...(FLAGS.videoClips ? ['video' as const] : []),
+        ]
       : [...linksAndPages, ...selection],
   });
   const items = [
@@ -441,6 +455,14 @@ async function installMenus(force: boolean) {
       parentId: 'clipcard',
     });
   }
+  if (FLAGS.videoClips) {
+    browser.contextMenus.create({
+      id: 'clipVideo',
+      title: localized('menu_clipVideo'),
+      contexts: ['video'],
+      parentId: 'clipcard',
+    });
+  }
   installedMenuLanguage = language;
 }
 
@@ -453,6 +475,33 @@ async function handleRequest(
       return clipping && sender.tab
         ? findClip(sender.tab, sender.frameId ?? 0, message.capture)
         : null;
+    case 'videoMoment':
+    case 'videoRecording': {
+      const tab = sender.tab;
+      if (!FLAGS.videoClips || tab?.id === undefined) return null;
+      const frame = sender.frameId ?? 0;
+      const hints = await readHints(tab.id, frame);
+      if (message.kind === 'videoMoment') {
+        const image = hints?.source?.image ?? hints?.image;
+        const id = await persistMoment(
+          tab,
+          hints,
+          message.capture,
+          frame === 0,
+          Boolean(image && (await mayRead(image))),
+        );
+        if (id) await open(tab, id, undefined, id);
+        return Boolean(id);
+      }
+      try {
+        const tray = await persistRecording(tab, hints, message.capture);
+        if (tray) await open(tab, undefined, undefined, tray.id);
+        return tray;
+      } catch (error) {
+        if (error instanceof RangeError) return { limit: true };
+        throw error;
+      }
+    }
     case 'openCollection':
       if (clipping) await open(sender.tab, undefined, undefined, message.id);
       return clipping;
