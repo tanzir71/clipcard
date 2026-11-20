@@ -12,10 +12,9 @@ import river from '../../../design/photos/river-bus.jpg?url';
 import { SettingsBrand } from './settings-brand.tsx';
 import { useUserSettings } from './use-user-settings.ts';
 import './settings.css';
+import './welcome-art.css';
 
-const title = 'New electric river buses cut city commutes in half';
-const demo: CardModel = {
-  headline: title,
+const demo: Omit<CardModel, 'headline'> = {
   outlet: 'Delta Dispatch',
   image: river,
   sourceUrl: 'https://deltadispatch.news/city/electric-river-buses',
@@ -23,8 +22,15 @@ const demo: CardModel = {
   lang: 'en',
   script: 'latin',
   dir: 'ltr',
-  emphasisRange: [4, 24],
-  mark: 'river\ndesk.',
+  focal: { x: 0.48, y: 0 },
+  mark: 'Delta Dispatch',
+};
+
+const sampleHeadlines = {
+  split: "Dhaka's new electric\nriver buses cut cross-\ncity commutes in half",
+  overlay:
+    "Dhaka's new\nelectric river\nbuses cut cross-\ncity commutes in\nhalf",
+  caps: "Dhaka's new\nelectric river\nbuses cut\ncommutes\nin half",
 };
 
 function Welcome() {
@@ -78,13 +84,27 @@ function Welcome() {
         <h1 id="welcome-title">{strings['welcome.title']}</h1>
         <p>{strings['welcome.subtitle']}</p>
         <div className="welcome-fan" aria-hidden="true">
-          {(['split', 'overlay', 'caps'] as const).map((template) => (
-            <CardPreview
-              key={template}
-              model={demo}
-              options={{ template, format: '4:5' }}
-            />
-          ))}
+          {(['split', 'overlay', 'caps'] as const).map((template) => {
+            const headline = sampleHeadlines[template];
+            const caps = template === 'caps';
+            return (
+              <CardPreview
+                key={template}
+                model={{
+                  ...demo,
+                  headline,
+                  emphasisRange: caps
+                    ? [headline.length - 7, headline.length]
+                    : undefined,
+                }}
+                options={{
+                  template,
+                  format: '4:5',
+                  emphasis: caps ? 'box' : undefined,
+                }}
+              />
+            );
+          })}
         </div>
       </section>
       <form

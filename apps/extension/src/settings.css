@@ -300,6 +300,11 @@ body:has(.settings-main, .welcome-main) {
   font-weight: 620;
   line-height: 1.1;
   letter-spacing: -0.04em;
+  transform: translateY(-4px);
+}
+
+.welcome-story .settings-brand {
+  transform: translateY(-4px);
 }
 
 .welcome-story:dir(rtl) h1 {
@@ -311,6 +316,7 @@ body:has(.settings-main, .welcome-main) {
   color: var(--pc-ui-color-text-secondary);
   font-size: 15px;
   font-weight: 600;
+  transform: translate(-1px, 1px);
 }
 
 .welcome-fan {
@@ -321,20 +327,11 @@ body:has(.settings-main, .welcome-main) {
   box-shadow: 0 3px 5px #0002;
 }
 
-.welcome-fan > .clip-preview {
-  flex: 0 0 37.1429%;
-  height: auto;
-}
-
-.welcome-fan > .clip-preview + .clip-preview {
-  margin-inline-start: -5.7143%;
-}
-
 .welcome-form {
   display: grid;
   gap: 24px;
-  margin-block-start: 58px;
-  padding: 27px 28px 28px;
+  margin-block-start: 56px;
+  padding: 31px 28px 28px;
 }
 
 .welcome-form :is(legend, .welcome-handle > span) {
@@ -354,7 +351,13 @@ body:has(.settings-main, .welcome-main) {
 .welcome-language-chips {
   display: flex;
   flex-wrap: wrap;
+  max-inline-size: 340px;
   gap: 6px;
+}
+
+.welcome-language-chips button[lang='ur'] {
+  font-size: 18px;
+  line-height: 1;
 }
 
 .welcome-language-chips button[aria-pressed='true'] {

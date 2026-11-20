@@ -4,7 +4,7 @@ Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md)
 
 ## R4 · Welcome and settings
 
-- Welcome displays live cards made by the extension renderer. The three samples differ from the older sample artwork in O1. The comparison excludes the browser chrome in the supplied PNGs. O1 differs by 9.62%. O2 differs by 1.87%.
+- Welcome uses live cards arranged to match O1, with the original river photo, overlapping panels and the reference headline treatments. The comparison excludes the browser chrome in the PNGs. O1 differs by 2.19%. O2 differs by 1.87%.
 - The welcome permission is optional. The fresh-profile test verifies the initial state and absence of persistent site grants. A person must accept the native Chrome prompt to verify that interaction.
 - The history switch filters the extension’s draft list to the active draft and drafts explicitly saved for later. Clear history removes drafts after an inline confirmation. This preserves auto-save while the history display is off.
 - Uploaded marks are decoded as images, rasterized to PNG and stored locally. The card language override sits in Auto with the other manual controls.

@@ -1,6 +1,10 @@
 import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { chromium, expect, test } from '@playwright/test';
+import type { Page, TestInfo } from '@playwright/test';
+import pixelmatch from 'pixelmatch';
+import { PNG } from 'pngjs';
 
 type ExtensionApi = {
   runtime: {
@@ -16,15 +20,55 @@ const build = resolve(
       : 'chrome-mv3'),
 );
 
-test('opens Welcome and persists card settings in a fresh install', async () => {
+async function compareScreen(page: Page, id: string, info: TestInfo) {
+  const result = await page.screenshot({
+    animations: 'disabled',
+    caret: 'hide',
+  });
+  const actual = PNG.sync.read(result);
+  const reference = PNG.sync.read(
+    await readFile(
+      new URL('../../design/screens/' + id + '.png', import.meta.url),
+    ),
+  );
+  // The reference includes the native browser frame. Capture the web viewport.
+  const expected = new PNG({ width: actual.width, height: actual.height });
+  PNG.bitblt(
+    reference,
+    expected,
+    0,
+    reference.height - actual.height,
+    actual.width,
+    actual.height,
+    0,
+    0,
+  );
+  const difference =
+    pixelmatch(actual.data, expected.data, null, actual.width, actual.height, {
+      threshold: 0.1,
+    }) /
+    (actual.width * actual.height);
+  info.annotations.push({
+    type: id,
+    description: (difference * 100).toFixed(2) + '%',
+  });
+  await info.attach(id, { body: result, contentType: 'image/png' });
+  expect(difference, id).toBeLessThanOrEqual(0.03);
+}
+
+test('opens Welcome and persists card settings in a fresh install', async ({
+  browserName,
+}, testInfo) => {
   test.skip(
-    process.env.CLIPCARD_TEST_R4_PREVIEW !== '1',
+    browserName !== 'chromium' || process.env.CLIPCARD_TEST_R4_PREVIEW !== '1',
     'Run with the R4 preview build before release.',
   );
   expect(existsSync(build)).toBe(true);
   const context = await chromium.launchPersistentContext('', {
     channel: 'chromium',
     locale: 'en-US',
+    viewport: { width: 1440, height: 816 },
+    colorScheme: 'light',
     args: ['--disable-extensions-except=' + build, '--load-extension=' + build],
   });
   try {
@@ -41,6 +85,7 @@ test('opens Welcome and persists card settings in a fresh install', async () => 
     await expect(
       welcome.getByRole('button', { name: 'Allow', exact: true }),
     ).toBeVisible();
+    await compareScreen(welcome, 'O1-welcome', testInfo);
     await welcome.locator('button[lang="bn"]').click();
     await expect(
       welcome.getByRole('heading', { name: 'যেকোনো লিংক → ফটোকার্ড।' }),
@@ -56,6 +101,10 @@ test('opens Welcome and persists card settings in a fresh install', async () => 
     });
     await expect(languages).toHaveValue('bn');
     await languages.selectOption('en');
+    await expect(
+      options.getByRole('heading', { name: 'General' }),
+    ).toBeVisible();
+    await compareScreen(options, 'O2-settings', testInfo);
     await options.getByRole('button', { name: 'Forest', exact: true }).click();
     await options.getByRole('button', { name: '1:1', exact: true }).click();
     await options.getByRole('switch', { name: 'Texture' }).uncheck();
