@@ -14,7 +14,6 @@ import type {
 import { destinationFor, rememberPrefs, sitePrefs } from './preferences.ts';
 import { developerUpdate } from './update-check.ts';
 
-const allSites = { origins: ['<all_urls>'] };
 const offscreenPath = '/offscreen.html';
 const destinationKey = 'lastShareDestination';
 let opening: Promise<void> | undefined;
@@ -22,15 +21,17 @@ let closing: Promise<void> | undefined;
 let offscreenRequests = 0;
 let lastDestination: Destination | undefined;
 
-async function mayRead(address: string) {
-  const url = parseWebUrl(address);
-  if (!url) return false;
-  const target = new URL(unwrapUrl(url.href));
+function hasHostPermission(url: URL) {
   return browser.permissions
     .contains({
-      origins: [target.protocol + '//' + target.hostname + '/*'],
+      origins: [url.protocol + '//' + url.hostname + '/*'],
     })
     .catch(() => false);
+}
+
+async function mayRead(address: string) {
+  const url = parseWebUrl(address);
+  return url ? hasHostPermission(new URL(unwrapUrl(url.href))) : false;
 }
 
 async function createOffscreen() {
@@ -108,6 +109,17 @@ async function setBadge(tabId: number, isArticle: boolean) {
   await browser.action.setBadgeText({ tabId, text: isArticle ? '•' : '' });
 }
 
+async function refreshArticleBadge(tabId: number, address?: string) {
+  const page = parseWebUrl(address ?? '');
+  if (!page || !(await hasHostPermission(page))) return;
+  const hints = await readHints(tabId);
+  if (hints?.address !== page.href) return;
+  const current = await browser.tabs.get(tabId);
+  if (current.url === page.href) {
+    await setBadge(tabId, hints.source?.isArticle === true);
+  }
+}
+
 async function fallback(
   tab?: Browser.tabs.Tab,
   id?: string,
@@ -122,18 +134,28 @@ async function fallback(
     ? await browser.windows.get(tab.windowId).catch(() => null)
     : null;
   const width = 416;
-  const height = Math.min(650, (parent?.height ?? 680) - 24);
-  await browser.windows.create({
-    url: url.href,
-    type: 'popup',
-    width,
-    height,
-    focused: true,
-    top: (parent?.top ?? 0) + 44,
-    left:
-      (parent?.left ?? 0) +
-      Math.max(0, (parent?.width ?? width + 12) - width - 12),
-  });
+  const height = Math.max(200, Math.min(650, (parent?.height ?? 680) - 44));
+  try {
+    await browser.windows.create({
+      url: url.href,
+      type: 'popup',
+      width,
+      height,
+      focused: true,
+      top: (parent?.top ?? 0) + 44,
+      left:
+        (parent?.left ?? 0) +
+        Math.max(0, (parent?.width ?? width + 12) - width - 12),
+    });
+  } catch {
+    // The parent window may extend beyond a display's usable bounds.
+    url.searchParams.set('fit', '1');
+    await browser.windows.create({
+      url: url.href,
+      type: 'popup',
+      focused: true,
+    });
+  }
 }
 
 async function open(tab?: Browser.tabs.Tab, id?: string, share?: boolean) {
@@ -342,6 +364,7 @@ export function startExtension() {
     void browser.tabs
       .get(tabId)
       .then(async (tab) => {
+        void refreshArticleBadge(tabId, tab.url).catch(() => undefined);
         const destination = destinationFor(tab.url ?? '');
         if (destination) {
           lastDestination = destination;
@@ -353,16 +376,8 @@ export function startExtension() {
   browser.tabs.onUpdated.addListener((tabId, change, tab) => {
     if (change.status === 'loading') {
       void setBadge(tabId, false).catch(() => undefined);
-    }
-    if (change.status === 'complete' && tab.active) {
-      void browser.permissions
-        .contains(allSites)
-        .then(async (granted) => {
-          if (!granted) return;
-          const hints = await readHints(tabId);
-          await setBadge(tabId, Boolean(hints?.source?.isArticle));
-        })
-        .catch(() => undefined);
+    } else if (change.status === 'complete' && tab.active) {
+      void refreshArticleBadge(tabId, tab.url).catch(() => undefined);
     }
   });
   browser.runtime.onMessage.addListener((message: unknown, sender, respond) => {

@@ -47,42 +47,77 @@ test('loads the localized scaffold and starts the service worker', async ({
 const fixturePort = Number(process.env.CLIPCARD_TEST_PORT_BASE ?? 4321) + 1;
 const origin = 'http://127.0.0.1:' + fixturePort;
 
-async function runMenu(
+type FixtureAction =
+  | { kind: 'menu'; item: string; linkUrl?: string; selectionText?: string }
+  | { kind: 'toolbar' | 'shortcut' | 'badge' };
+
+async function runBrowserAction(
+  worker: Worker,
+  address: string,
+  action: FixtureAction,
+) {
+  return worker.evaluate(
+    async ({ address, action }) => {
+      const harness = globalThis as typeof globalThis & {
+        chrome: {
+          tabs: {
+            query(query: {
+              active: boolean;
+              lastFocusedWindow: boolean;
+            }): Promise<{ id: number; url?: string }[]>;
+          };
+          action: { getBadgeText(details: { tabId: number }): Promise<string> };
+        };
+        clipcardTestEvents: {
+          menu(info: unknown, tab: unknown): void;
+          action(tab: unknown): void;
+          command(command: string, tab: unknown): void;
+        };
+      };
+      const [tab] = await harness.chrome.tabs.query({
+        active: true,
+        lastFocusedWindow: true,
+      });
+      if (!tab || (tab.url && tab.url !== address)) {
+        throw new Error('Active fixture tab missing');
+      }
+      switch (action.kind) {
+        case 'badge':
+          return harness.chrome.action.getBadgeText({ tabId: tab.id });
+        case 'toolbar':
+          return harness.clipcardTestEvents.action(tab);
+        case 'shortcut':
+          return harness.clipcardTestEvents.command('copy-clipcard', tab);
+        case 'menu':
+          return harness.clipcardTestEvents.menu(
+            {
+              menuItemId: action.item,
+              pageUrl: address,
+              frameId: 0,
+              linkUrl: action.linkUrl,
+              selectionText: action.selectionText,
+            },
+            tab,
+          );
+      }
+    },
+    { address, action },
+  );
+}
+
+function runMenu(
   worker: Worker,
   address: string,
   item: string,
   linkUrl?: string,
   selectionText?: string,
 ) {
-  await worker.evaluate(
-    ({ address, item, linkUrl, selectionText }) => {
-      const harness = globalThis as typeof globalThis & {
-        chrome: {
-          tabs: {
-            query(query: {
-              active: boolean;
-            }): Promise<{ id: number; url: string }[]>;
-          };
-        };
-        clipcardTestEvents: { menu(info: unknown, tab: unknown): void };
-      };
-      return harness.chrome.tabs.query({ active: true }).then((tabs) => {
-        const tab = tabs.find(({ url }) => url === address);
-        if (!tab) throw new Error('Active fixture tab missing');
-        harness.clipcardTestEvents.menu(
-          {
-            menuItemId: item,
-            pageUrl: address,
-            frameId: 0,
-            linkUrl,
-            selectionText,
-          },
-          tab,
-        );
-      });
-    },
-    { address, item, linkUrl, selectionText },
-  );
+  return runBrowserAction(worker, address, {
+    kind: 'menu',
+    item,
+    linkUrl,
+    selectionText,
+  });
 }
 
 async function clipboardPng(page: Page) {
@@ -226,6 +261,96 @@ test('keeps the card actions visible in a short dark popup', async ({
 
 test.describe('registered browser actions', () => {
   test.use({ instrumentEvents: true });
+
+  test('opens the current article from the toolbar and falls back on a restricted page', async ({
+    extension,
+    worker,
+  }) => {
+    const page = await extension.newPage();
+    await page.goto(origin + '/feed-story.html');
+    await expect
+      .poll(() => runBrowserAction(worker, page.url(), { kind: 'badge' }))
+      .toBe('•');
+
+    const sheetUrl = new URL('sheet.html', worker.url()).href;
+    const [frame] = await Promise.all([
+      page.waitForEvent('framenavigated', (event) =>
+        event.url().startsWith(sheetUrl),
+      ),
+      runBrowserAction(worker, page.url(), { kind: 'toolbar' }),
+    ]);
+    const headline = await page.locator('h1').innerText();
+    await expect(
+      frame
+        .locator('.clip-preview-wrap')
+        .getByRole('article', { name: headline, exact: true }),
+    ).toBeVisible();
+
+    await page.goto(origin + '/feed.html');
+    await expect
+      .poll(() => runBrowserAction(worker, page.url(), { kind: 'badge' }))
+      .toBe('');
+
+    await page.goto('chrome://version/');
+    const [fallback] = await Promise.all([
+      extension.waitForEvent('page'),
+      runBrowserAction(worker, page.url(), { kind: 'toolbar' }),
+    ]);
+    const expected = new URL('popup-fallback.html', worker.url()).href;
+    await expect(fallback).toHaveURL(
+      (url) => url.href.split('?')[0] === expected,
+    );
+    await expect(
+      fallback.getByRole('textbox', { name: 'Paste any link…' }),
+    ).toBeFocused();
+  });
+
+  test('copies the hovered link, selection or current page from the shortcut', async ({
+    extension,
+    worker,
+  }) => {
+    test.setTimeout(60_000);
+    await extension.grantPermissions(['clipboard-read', 'clipboard-write'], {
+      origin,
+    });
+    const page = await extension.newPage();
+    const canonical = 'https://deltadispatch.news/city/electric-river-buses';
+    await page.goto(origin + '/feed.html');
+    await page.locator('#preview').hover();
+    await page.evaluate(() => navigator.clipboard.writeText(''));
+    await runBrowserAction(worker, page.url(), { kind: 'shortcut' });
+    await expect
+      .poll(() => clipboardSource(page), { timeout: 12_000 })
+      .toBe(canonical);
+
+    await page.goto(origin + '/feed-story.html');
+    await page.mouse.move(0, 0);
+    await page.locator('article p').evaluate((paragraph) => {
+      const text = paragraph.firstChild;
+      const selection = window.getSelection();
+      if (!text || !selection)
+        throw new Error('Article selection is unavailable');
+      const range = document.createRange();
+      range.setStart(text, 0);
+      range.setEnd(text, 'The first boats'.length);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    });
+    await page.evaluate(() => navigator.clipboard.writeText(''));
+    await runBrowserAction(worker, page.url(), { kind: 'shortcut' });
+    await expect
+      .poll(() => clipboardSource(page), { timeout: 12_000 })
+      .toBe(canonical + '#:~:text=The%20first%20boats');
+
+    await page.evaluate(async () => {
+      window.getSelection()?.removeAllRanges();
+      await navigator.clipboard.writeText('');
+    });
+    await runBrowserAction(worker, page.url(), { kind: 'shortcut' });
+    await expect
+      .poll(() => clipboardSource(page), { timeout: 12_000 })
+      .toBe(canonical);
+  });
 
   test('copies the linked article with its canonical QR and opens the edit popup', async ({
     extension,

@@ -7,6 +7,7 @@ Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md)
 - P1 and P2 show Grid, Video and Save for later. R2 hides those controls as specified in its handover. Copy fills the available space in the action row.
 - The R2 visual comparison masks the surrounding page and includes the full popup. The measured differences were 3.67% for P1 and 5.01% for P2.
 - At short viewport heights, the popup centers a smaller, proportionate card above the action rows. The Close control stays pinned to the popup viewport when the editor scrolls. Popup and Settings colors follow the system preference using the design tokens.
+- When the browser rejects the fallback window's coordinates, Clipcard opens the popup with browser-managed bounds and fits it to the display's top-right before rendering the editor.
 
 ## 2026-11-20 · R2 extension export
 

@@ -1,4 +1,4 @@
-import { chromium, test as base } from '@playwright/test';
+import { chromium, expect, test as base } from '@playwright/test';
 import type { BrowserContext, Worker } from '@playwright/test';
 import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -84,12 +84,24 @@ export const test = base.extend<Fixtures>({
       if (isolated) await rm(isolated, { recursive: true, force: true });
     }
   },
-  worker: async ({ extension }, use) => {
+  worker: async ({ extension, instrumentEvents }, use) => {
     const worker =
       extension.serviceWorkers()[0] ??
       (await extension.waitForEvent('serviceworker'));
+    if (instrumentEvents) {
+      await expect
+        .poll(() =>
+          worker.evaluate(() => {
+            const scope = globalThis as typeof globalThis & {
+              clipcardTestEvents?: { command?: unknown };
+            };
+            return typeof scope.clipcardTestEvents?.command;
+          }),
+        )
+        .toBe('function');
+    }
     await use(worker);
   },
 });
 
-export { expect } from '@playwright/test';
+export { expect };

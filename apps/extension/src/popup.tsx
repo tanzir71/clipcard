@@ -17,6 +17,27 @@ const permissionView = params.get('permission') === '1';
 const initialShareOpen = params.get('share') === '1';
 const draftId = params.get('draft');
 
+async function fitPopupWindow() {
+  const current = await browser.windows.getCurrent();
+  if (current.type !== 'popup' || current.id === undefined) return;
+  const screen = window.screen as Screen & {
+    availLeft?: number;
+    availTop?: number;
+  };
+  const width = Math.min(416, screen.availWidth);
+  const height = Math.min(650, screen.availHeight);
+  await browser.windows.update(current.id, {
+    left: (screen.availLeft ?? 0) + Math.max(0, screen.availWidth - width - 12),
+    top: (screen.availTop ?? 0) + Math.min(44, screen.availHeight - height),
+    width,
+    height,
+  });
+}
+
+if (location.pathname === '/popup-fallback.html' && params.get('fit') === '1') {
+  await fitPopupWindow().catch(() => undefined);
+}
+
 function closeWindow() {
   if (window.parent === window) window.close();
   else window.parent.postMessage({ clipcard: 'close' }, '*');
