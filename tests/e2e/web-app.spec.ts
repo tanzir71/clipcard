@@ -178,8 +178,23 @@ test('bookmark uses the playing video frame and timestamp', async ({
   await expect(app.locator('.cc-headline').first()).toContainText(
     'The second fixture caption',
   );
-  await expect(app.locator('.clip-source')).toHaveAttribute(
-    'href',
+  const qr = await app
+    .locator('.cc-qr')
+    .first()
+    .evaluate(async (element) => {
+      const xml = new XMLSerializer().serializeToString(element);
+      const image = new Image();
+      image.src = 'data:image/svg+xml,' + encodeURIComponent(xml);
+      await image.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 264;
+      const context = canvas.getContext('2d')!;
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      return Array.from(
+        context.getImageData(0, 0, canvas.width, canvas.height).data,
+      );
+    });
+  expect(jsQR(new Uint8ClampedArray(qr), 264, 264)?.data).toBe(
     origin + '/video.html#t=1',
   );
   await expect(
