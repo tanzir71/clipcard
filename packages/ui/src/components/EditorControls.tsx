@@ -1,6 +1,9 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import strings from '@clipcard/i18n/en';
+import { cardLanguages, languageName } from '@clipcard/i18n';
+import type { CardLanguage } from '@clipcard/i18n';
+import { FLAGS } from '@clipcard/core/flags';
 import {
   CARD_FORMATS,
   CARD_TEMPLATES,
@@ -133,6 +136,27 @@ export function LookControls({
           ))}
         </select>
       </UpdateGroup>
+      {FLAGS.languages ? (
+        <UpdateGroup name={strings['settings.cardLanguage']}>
+          <select
+            aria-label={strings['settings.cardLanguage']}
+            value={overrides.lang ?? 'auto'}
+            onChange={(event) => {
+              const value = event.currentTarget.value;
+              update({
+                lang: value === 'auto' ? undefined : (value as CardLanguage),
+              });
+            }}
+          >
+            <option value="auto">{strings['card.auto']}</option>
+            {cardLanguages.map((lang) => (
+              <option key={lang} value={lang} lang={lang}>
+                {languageName(lang)}
+              </option>
+            ))}
+          </select>
+        </UpdateGroup>
+      ) : null}
     </div>
   );
 }

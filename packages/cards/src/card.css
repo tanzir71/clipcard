@@ -533,3 +533,25 @@
 .cc-header[data-script-face='devanagari'][data-format='4:5'] .cc-meta {
   margin-block-start: 28px;
 }
+
+.cc-mark-image {
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+.cc-mark.cc-mark-image {
+  inline-size: 120px;
+  block-size: 56px;
+}
+
+.cc-oversized.cc-mark-image {
+  inset: 8% -4% auto auto;
+  inline-size: 48%;
+  block-size: 84%;
+}
+
+.cc-card[data-texture='off']
+  :is(.cc-grain, .cc-echo, .cc-hairlines, .cc-halftone, .cc-oversized) {
+  display: none;
+}

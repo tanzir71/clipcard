@@ -116,6 +116,13 @@ export async function makeCard(
   const headline = selection ? limitHeadline(selection) : source.title;
   const draft = newCardDraft({ source, headline, photo, selection });
   const prefs = await preferenceWork;
+  draft.defaults = prefs.defaults && {
+    ...prefs.defaults,
+    template:
+      photo && !selection && prefs.defaults.template !== 'quote'
+        ? prefs.defaults.template
+        : undefined,
+  };
   draft.overrides = {
     format: prefs.format,
     theme: prefs.theme,

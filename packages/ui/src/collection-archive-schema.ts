@@ -1,6 +1,7 @@
 import { CARD_FORMATS, CARD_TEMPLATES } from '@clipcard/cards';
 import { GRID_LAYOUTS } from '@clipcard/cards/grid-model';
 import { parseWebUrl, BASIC_SCRIPTS } from '@clipcard/core';
+import { cardLanguages } from '@clipcard/i18n';
 import { z } from 'zod';
 
 const text = z.string();
@@ -21,7 +22,22 @@ const overrides = z.object({
   keyColor: hex.optional(),
   textColor: hex.optional(),
   phrase: range.nullable().optional(),
+  lang: z.enum(cardLanguages).optional(),
 });
+const defaults = overrides
+  .pick({ format: true, template: true, theme: true, lang: true })
+  .extend({
+    numerals: z.enum(['native', 'western']).optional(),
+    qr: z.boolean().optional(),
+    markEdited: z.boolean().optional(),
+    texture: z.boolean().optional(),
+    handle: z.string().max(50).optional(),
+    markImage: z
+      .string()
+      .max(400_000)
+      .regex(/^(?:data:image\/png;base64,[\w+/]+={0,2})?$/)
+      .optional(),
+  });
 
 const source = z.object({
   canonicalUrl: url,
@@ -58,6 +74,7 @@ const legacyCard = z.object({
     .nullable(),
   selection: text.optional(),
   overrides,
+  defaults: defaults.optional(),
   autoFormat: z.enum(CARD_FORMATS).optional(),
   destination: z
     .enum([
@@ -97,6 +114,7 @@ export const archiveSchema = z.object({
       gridLayout: z.enum(GRID_LAYOUTS).optional(),
       overrides,
       order: z.array(key),
+      savedForLater: z.boolean().optional(),
       legacyCard: legacyCard.optional(),
     }),
   ),

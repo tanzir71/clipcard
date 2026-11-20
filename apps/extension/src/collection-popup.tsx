@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import strings from '@clipcard/i18n/en';
+import { FLAGS } from '@clipcard/core/flags';
 import { Icon } from '@clipcard/ui';
 import type { CardDraft } from '@clipcard/ui';
 import { CardEditor } from '@clipcard/ui/card-editor';
@@ -7,6 +8,7 @@ import { CollectionThumbnail } from '@clipcard/ui/collection-thumbnail';
 import { cardFromCollection } from '@clipcard/ui/collection-card';
 import {
   getDraftCollection,
+  getCurrentDraftCollection,
   listDraftCollections,
   resumeDraftCollection,
   saveCollectionForLater,
@@ -17,6 +19,16 @@ import { GridEditor } from '@clipcard/ui/grid-editor';
 import { getDraft, saveDraft } from '@clipcard/ui/storage';
 import { browser } from 'wxt/browser';
 import type { BackgroundMessage } from './messages.ts';
+import { getUserSettings } from './user-settings.ts';
+
+async function visibleDrafts() {
+  const list = await listDraftCollections();
+  if (!FLAGS.languages || (await getUserSettings()).keepHistory) return list;
+  const current = await getCurrentDraftCollection();
+  return list.filter(
+    (item) => item.savedForLater || item.id === current?.draft.id,
+  );
+}
 
 export function CollectionPopup({
   initialId,
@@ -48,7 +60,7 @@ export function CollectionPopup({
             if (active) setCard(restored);
           }
         })
-      : listDraftCollections().then((drafts) => {
+      : visibleDrafts().then((drafts) => {
           if (active) setItems(drafts);
         });
     void operation.catch(() => {

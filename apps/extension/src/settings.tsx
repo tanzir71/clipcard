@@ -8,6 +8,7 @@ import { clearDrafts } from '@clipcard/ui/storage';
 import { browser } from 'wxt/browser';
 import { webApp } from './site.ts';
 import type { BackgroundMessage } from './messages.ts';
+import { SettingsPage } from './settings-page.tsx';
 import './popup.css';
 import '@clipcard/ui/style.css';
 
@@ -39,6 +40,7 @@ function Settings() {
       setStatus(strings['card.savedFailed']);
     }
   }
+  if (FLAGS.languages) return <SettingsPage update={update} />;
   return (
     <main className="popup-empty">
       <h1>{strings['ext.shortName']}</h1>

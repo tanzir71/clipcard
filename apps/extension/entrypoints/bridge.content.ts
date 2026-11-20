@@ -5,6 +5,7 @@ import { defineContentScript } from 'wxt/utils/define-content-script';
 import { forTarget } from '../src/messages.ts';
 import { mountClipping } from '../src/clipping.ts';
 import { trackPage } from '../src/page-hints.ts';
+import { getUserSettings, watchUserSettings } from '../src/user-settings.ts';
 import {
   dismissToast,
   showCardToast,
@@ -24,6 +25,15 @@ export default defineContentScript({
     const hints = trackPage();
     const clips =
       FLAGS.clips && FLAGS.drafts ? mountClipping(hints) : undefined;
+    if (FLAGS.languages && clips) {
+      const load = () => {
+        void getUserSettings()
+          .then(clips.configure)
+          .catch(() => undefined);
+      };
+      load();
+      watchUserSettings(load);
+    }
     let closeFrame: (() => void) | undefined;
 
     function showFrame(
