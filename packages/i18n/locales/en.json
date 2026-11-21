@@ -91,6 +91,7 @@
   "settings.updateAvailable": "Update available",
   "settings.cardStorage": "The extension and web app save cards separately.",
   "settings.title": "Settings",
+  "settings.automaticLanguage": "Automatic",
   "settings.auto": "Auto",
   "settings.yourMark": "Your mark",
   "settings.chooseMark": "Choose PNG or SVG",

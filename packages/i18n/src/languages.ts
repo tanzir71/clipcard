@@ -60,17 +60,19 @@ export function setInterfaceLanguage(lang: InterfaceLanguage) {
   interfaceStrings = interfaceCopy(lang);
 }
 
-export function interfaceLanguage(value: string) {
+export function supportedInterfaceLanguage(value: string) {
   const locale = value.replaceAll('_', '-').toLowerCase();
   if (locale === 'tl' || locale.startsWith('tl-')) return 'fil';
   const base = locale.split('-')[0];
-  return (
-    interfaceLanguages.find(
-      (lang) =>
-        lang.toLowerCase() === locale ||
-        lang.toLowerCase().split('-')[0] === base,
-    ) ?? 'en'
+  return interfaceLanguages.find(
+    (lang) =>
+      lang.toLowerCase() === locale ||
+      lang.toLowerCase().split('-')[0] === base,
   );
+}
+
+export function interfaceLanguage(value: string) {
+  return supportedInterfaceLanguage(value) ?? 'en';
 }
 
 export function languageName(lang: CardLanguage) {

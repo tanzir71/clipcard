@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './site-fixture';
 
 test('installs a scoped service worker and opens a shared link while offline', async ({
   page,

@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 import { readFile } from 'node:fs/promises';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './site-fixture';
 import jsQR from 'jsqr';
 import {
   GIFS_RELEASED,

@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './site-fixture';
 import {
   BATCH_RELEASED,
   CARD_LANGUAGES_RELEASED,
@@ -155,7 +155,7 @@ test('wave-one routes switch locale, mirror RTL and link to the same-language ap
   await page.goto('./');
   const languageMenu = page.locator('.language-menu');
   await languageMenu.locator('summary').press('Enter');
-  await expect(languageMenu.locator('a')).toHaveCount(12);
+  await expect(languageMenu.locator('a[hreflang]')).toHaveCount(12);
   await languageMenu.getByRole('link', { name: 'العربية' }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
@@ -194,4 +194,98 @@ test('wave-one routes switch locale, mirror RTL and link to the same-language ap
   const xml = await (await request.get('sitemap.xml')).text();
   expect(xml).toContain('<loc>' + home + 'ur/privacy/</loc>');
   expect(xml.match(/hreflang="x-default"/g)).toHaveLength(26);
+});
+
+for (const [country, locale] of [
+  ['PK', 'ur'],
+  ['SA', 'ar'],
+] as const) {
+  test(
+    'chooses ' + locale + ' for ' + country + ' and keeps the RTL hero in view',
+    async ({ page }) => {
+      await page.route('https://api.country.is/', (route) =>
+        route.fulfill({ json: { country } }),
+      );
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.goto('./');
+      await expect(page).toHaveURL(new RegExp('/' + locale + '/$'));
+      await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+
+      const gallery = page.locator('.hero-cards');
+      const track = (await gallery.boundingBox())!;
+      expect(track.x + track.width / 2).toBeCloseTo(720, 0);
+      await expect(gallery.locator('li').nth(2)).toBeInViewport();
+      await expect(page.locator('.app-shortcut-download')).not.toHaveText(
+        'Download for Chrome',
+      );
+
+      await page.setViewportSize({ width: 390, height: 844 });
+      await gallery.scrollIntoViewIfNeeded();
+      const phone = await gallery.evaluate((element) => {
+        const bounds = element.getBoundingClientRect();
+        const sample = element.querySelector('li[data-hero-output]');
+        const first = sample?.getBoundingClientRect();
+        return {
+          inView:
+            first && first.left < bounds.right && first.right > bounds.left,
+          viewport: document.documentElement.scrollWidth,
+        };
+      });
+      expect(phone.viewport).toBe(390);
+      expect(phone.inView).toBe(true);
+    },
+  );
+}
+
+test('keeps an explicit language across landing and app and resumes detection in Automatic mode', async ({
+  page,
+}) => {
+  let lookupCount = 0;
+  await page.route('https://api.country.is/', (route) => {
+    lookupCount++;
+    return route.fulfill({ json: { country: 'PK' } });
+  });
+  await page.goto('./');
+  await expect(page).toHaveURL(/\/ur\/$/);
+  expect(lookupCount).toBe(1);
+
+  await page.locator('.language-menu summary').click();
+  await page.locator('.language-menu [data-language-preference="en"]').click();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  expect(lookupCount).toBe(1);
+
+  await page.getByRole('link', { name: 'Web app', exact: true }).click();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  const preference = page.locator('.app-language-setting select');
+  await expect(preference).toHaveValue('en');
+  await preference.selectOption('ar');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
+
+  const nextTab = await page.context().newPage();
+  await nextTab.goto(new URL('../', page.url()).href);
+  await expect(nextTab).toHaveURL(/\/ar\/$/);
+  await nextTab.close();
+
+  await page.locator('.app-section-nav button').last().click();
+  await preference.selectOption('auto');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ur');
+  await expect(preference).toHaveValue('auto');
+  expect(lookupCount).toBe(1);
+});
+
+test('uses a supported browser language when country lookup is unavailable', async ({
+  page,
+}) => {
+  await page.route('https://api.country.is/', (route) => route.abort());
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'languages', {
+      value: ['de-DE', 'es-MX'],
+    });
+  });
+  await page.goto('./');
+  await expect(page).toHaveURL(/\/es\/$/);
 });
