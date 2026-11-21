@@ -144,6 +144,30 @@ test('serves valid HTML, discovery metadata and legal and changelog pages', asyn
   );
 });
 
+test('loads bundled Noto Sans Bengali on the landing and in the web app', async ({
+  page,
+}) => {
+  async function expectBanglaFont(selector: string) {
+    const heading = page.locator(selector);
+    await expect(heading).toHaveCSS('font-family', /Noto Sans Bengali/);
+    expect(
+      await heading.evaluate(async () => {
+        await document.fonts.ready;
+        return Array.from(document.fonts).some(
+          (face) =>
+            face.family === 'Noto Sans Bengali' && face.status === 'loaded',
+        );
+      }),
+    ).toBe(true);
+  }
+
+  await page.goto('bn/');
+  await expectBanglaFont('.hero h1');
+  await page.locator('.app-shortcut-open').click();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'bn');
+  await expectBanglaFont('.app-welcome .app-work-header h1');
+});
+
 test('wave-one routes switch locale, mirror RTL and link to the same-language app', async ({
   page,
   request,

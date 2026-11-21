@@ -1,7 +1,7 @@
 .clip-grid-editor {
   color: var(--clip-fg, #0b0b0c);
   background: var(--clip-surface, #fff);
-  font-family: 'Geist', sans-serif;
+  font-family: 'Geist', 'Noto Sans Bengali', sans-serif;
 }
 
 .clip-grid-header {

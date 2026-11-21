@@ -1,9 +1,11 @@
 @import '@clipcard/cards/tokens.css';
+@import '@clipcard/cards/bengali.css';
 
 :root {
   color-scheme: light dark;
   font:
     14px/1.4 'Geist',
+    'Noto Sans Bengali',
     system-ui,
     sans-serif;
   color: #0a0a0a;

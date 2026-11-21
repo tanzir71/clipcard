@@ -1,3 +1,5 @@
+@import '@clipcard/cards/bengali.css';
+
 @font-face {
   font-family: 'Geist Variable';
   src: url('@fontsource-variable/geist/files/geist-latin-wght-normal.woff2')
@@ -13,6 +15,7 @@
   font:
     400 14px/1.4 'Geist Variable',
     'Geist',
+    'Noto Sans Bengali',
     system-ui,
     sans-serif;
   font-synthesis: none;

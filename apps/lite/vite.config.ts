@@ -32,7 +32,7 @@ export default defineConfig(async ({ command, mode }) => {
         injectManifest: {
           globPatterns: [
             '**/*.{js,css,html,png,svg,webmanifest}',
-            '**/{geist*,libre-caslon-text*,schibsted-grotesk*}.woff2',
+            '**/{geist*,libre-caslon-text*,schibsted-grotesk*,noto-sans-bengali*}.woff2',
           ],
         },
         includeAssets: ['icon/*.png'],

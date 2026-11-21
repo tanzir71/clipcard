@@ -1,3 +1,5 @@
+@import '@clipcard/cards/bengali.css';
+
 @font-face {
   font-family: 'Geist Variable';
   font-style: normal;
@@ -17,7 +19,7 @@
 }
 
 :root {
-  font-family: 'Geist Variable', system-ui, sans-serif;
+  font-family: 'Geist Variable', 'Noto Sans Bengali', system-ui, sans-serif;
   font-synthesis: none;
   color: var(--pc-ui-color-text-primary);
   background: var(--pc-ui-color-bg-surface);
@@ -283,7 +285,7 @@ body {
 }
 .app-shortcut-bookmark span {
   color: #a3a3a3;
-  font-family: 'Geist Mono Variable', monospace;
+  font-family: 'Geist Mono Variable', 'Noto Sans Bengali', monospace;
   font-size: 12px;
 }
 .app-shortcut-open {
@@ -361,7 +363,7 @@ body {
   white-space: pre-line;
   text-wrap: balance;
 }
-:root:dir(rtl) .hero {
+:root:is(:dir(rtl), :lang(bn)) .hero {
   --hero-title-leading: 1.27;
   --hero-title-tracking: normal;
 }
@@ -823,7 +825,7 @@ body {
   .hero .app-install > p {
     margin: 18px 0 0;
     color: #bbb;
-    font-family: 'Geist Mono Variable', monospace;
+    font-family: 'Geist Mono Variable', 'Noto Sans Bengali', monospace;
     font-size: 11px;
     line-height: 16px;
   }

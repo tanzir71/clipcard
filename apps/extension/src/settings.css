@@ -1,4 +1,5 @@
 @import '@clipcard/cards/tokens.css';
+@import '@clipcard/cards/bengali.css';
 
 html:has(.settings-main, .welcome-main) {
   min-block-size: 100%;
@@ -12,6 +13,7 @@ body:has(.settings-main, .welcome-main) {
   background: transparent;
   font:
     400 13px / 1.45 Geist,
+    'Noto Sans Bengali',
     system-ui,
     sans-serif;
 }

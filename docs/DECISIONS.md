@@ -2,6 +2,10 @@
 
 Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md).
 
+## Bangla typography — 2026-11-21
+
+- The requested Noto Sans Bengali family replaces Anek Bangla where DESIGN and I18N specify it for Bangla. The landing and app interfaces use its Bengali subset with Geist for Latin text. Card rendering keeps the existing light and semibold hierarchy, and the landing sample uses the current renderer.
+
 ## Web language selection — 2026-11-21
 
 - The default landing route and the web app can select a language from the visitor's country. GitHub Pages serves static files, so the browser uses Country.is for the country code. It sends no Clipcard data, credentials, or referrer. Clipcard saves the country code for the tab session and falls back to the browser's preferred supported language if lookup is unavailable.

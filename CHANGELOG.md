@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## v1.0.1 - 2026-11-21
+
+- Use Noto Sans Bengali for Bangla text and card exports.
+- Fix the Arabic and Urdu hero layout and preserve language choices between the landing page and web app.
+
 ## v1.0.0 - 2026-11-21
 
 - Install the complete Clipcard extension through Chromium Developer mode.

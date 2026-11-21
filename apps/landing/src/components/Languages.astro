@@ -2,7 +2,6 @@
 import { landingCopy } from '../languages';
 import type { InterfaceLanguage } from '@clipcard/i18n';
 import CardImage from './CardImage.astro';
-import '@fontsource/anek-bangla/bengali-500.css';
 import '@fontsource/mukta/devanagari-500.css';
 import '@fontsource/lateef/arabic-500.css';
 import '@fontsource/anek-tamil/tamil-500.css';
@@ -37,7 +36,7 @@ type Language = {
 };
 
 const languages: Language[] = [
-  { code: 'bn', font: 'Anek Bangla' },
+  { code: 'bn', font: 'Noto Sans Bengali' },
   { code: 'hi', font: 'Mukta' },
   { code: 'ur', font: 'Lateef', size: 1.3, dir: 'rtl' },
   { code: 'ne', font: 'Mukta' },

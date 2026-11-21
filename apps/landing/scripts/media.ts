@@ -29,6 +29,15 @@ const landingMock = fileURLToPath(
 );
 const imagePath = (name: string) => fileURLToPath(new URL(name, output));
 
+function cardPreviews(name: string, original: string | Buffer) {
+  return widths.map((width) =>
+    sharp(original)
+      .resize({ width })
+      .webp({ quality: 86 })
+      .toFile(imagePath(`${name}-${width}.webp`)),
+  );
+}
+
 // The landing design has six standalone 384×280 illustrations.
 const features = [
   'cards',
@@ -40,15 +49,11 @@ const features = [
 ];
 
 await Promise.all([
-  ...cardNames.flatMap((name) => {
-    const original = fileURLToPath(new URL(`cards/${name}.png`, design));
-    return widths.map((width) =>
-      sharp(original)
-        .resize({ width })
-        .webp({ quality: 86 })
-        .toFile(imagePath(`${name}-${width}.webp`)),
-    );
-  }),
+  ...cardNames
+    .filter((name) => !localized || name !== 'header-4x5-bn')
+    .flatMap((name) =>
+      cardPreviews(name, fileURLToPath(new URL(`cards/${name}.png`, design))),
+    ),
   ...features.map((name, i) =>
     sharp(landingMock)
       .extract({
@@ -71,6 +76,7 @@ await Promise.all([
 ]);
 
 if (localized) {
-  const { renderSocialImages } = await import('./social.ts');
-  await renderSocialImages(output);
+  const { renderLocalizedImages } = await import('./social.ts');
+  const banglaExample = await renderLocalizedImages(output);
+  await Promise.all(cardPreviews('header-4x5-bn', banglaExample));
 }

@@ -9,7 +9,7 @@ import headlines from '../../fixtures/headlines.json' with { type: 'json' };
 const faces: Readonly<Record<string, string>> = {
   am: 'Menbere',
   ar: 'Cairo',
-  bn: 'Anek Bangla',
+  bn: 'Noto Sans Bengali',
   fa: 'Vazirmatn',
   gu: 'Anek Gujarati',
   ha: 'Noto Sans',
@@ -130,7 +130,7 @@ test('uses the bundled faces for extended Latin glyphs', async ({ page }) => {
 });
 
 for (const [id, family] of [
-  ['header-4x5-bn', 'Anek Bangla'],
+  ['header-4x5-bn', 'Noto Sans Bengali'],
   ['header-4x5-hi', 'Mukta'],
   ['split-4x5-ur-rtl', 'Lateef'],
 ] as const) {
