@@ -165,7 +165,7 @@ test('loads bundled Noto Sans Bengali on the landing and in the web app', async 
   await expectBanglaFont('.hero h1');
   await page.locator('.app-shortcut-open').click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'bn');
-  await expectBanglaFont('main h1');
+  await expectBanglaFont('.app-welcome .app-work-header h1');
 });
 
 test('wave-one routes switch locale, mirror RTL and link to the same-language app', async ({
