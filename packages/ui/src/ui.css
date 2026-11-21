@@ -601,3 +601,10 @@
 .clip-collection-thumbnail > div:first-child:not(.clip-preview-scale) {
   width: 100%;
 }
+
+.clip-backup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}

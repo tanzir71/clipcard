@@ -89,6 +89,7 @@
   "drafts.export": "एक्सपोर्ट करें",
   "drafts.import": "इंपोर्ट करें",
   "drafts.imported": "ड्राफ़्ट इंपोर्ट हो गए",
+  "card.sourceHintShort": "लिंक, टेक्स्ट या फ़ोटो पेस्ट करें",
   "card.sourceHint": "स्रोत जोड़ने के लिए लिंक, टेक्स्ट या तस्वीर पेस्ट करें",
   "card.photo": "तस्वीर",
   "card.addPhoto": "तस्वीर जोड़ें",

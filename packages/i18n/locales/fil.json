@@ -89,6 +89,7 @@
   "drafts.export": "I-export",
   "drafts.import": "I-import",
   "drafts.imported": "Na-import ang mga draft",
+  "card.sourceHintShort": "Mag-paste ng link, teksto o larawan",
   "card.sourceHint": "Mag-paste ng link, teksto, o larawan para magdagdag ng pinagmulan",
   "card.photo": "Larawan",
   "card.addPhoto": "Magdagdag ng larawan",

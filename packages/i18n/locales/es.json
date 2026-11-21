@@ -89,6 +89,7 @@
   "drafts.export": "Exportar",
   "drafts.import": "Importar",
   "drafts.imported": "Borradores importados",
+  "card.sourceHintShort": "Pega un enlace, texto o foto",
   "card.sourceHint": "Pega un enlace, texto o una imagen para añadir una fuente",
   "card.photo": "Foto",
   "card.addPhoto": "Añadir una foto",

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { interfaceStrings as strings } from '@clipcard/i18n';
 import { readGifSettings, setGifKey, setGifProvider } from '../gifs.ts';
 import type { GifPreference } from '../gifs.ts';
@@ -8,6 +8,7 @@ export function GifSettings({ changed }: { changed?: () => void }) {
   const [prefs, setPrefs] =
     useState<Awaited<ReturnType<typeof readGifSettings>>>();
   const [status, setStatus] = useState('');
+  const keyId = useId();
   useEffect(() => {
     let active = true;
     void readGifSettings()
@@ -66,9 +67,10 @@ export function GifSettings({ changed }: { changed?: () => void }) {
             void save();
           }}
         >
-          <label>
-            {strings['gifs.key']}
+          <label htmlFor={keyId}>{strings['gifs.key']}</label>
+          <div className="clip-gif-key-actions">
             <input
+              id={keyId}
               type="password"
               autoComplete="off"
               value={prefs[provider]}
@@ -76,10 +78,10 @@ export function GifSettings({ changed }: { changed?: () => void }) {
                 setPrefs({ ...prefs, [provider]: event.currentTarget.value })
               }
             />
-          </label>
-          <button type="submit" className="clip-button">
-            {strings['gifs.saveKey']}
-          </button>
+            <button type="submit" className="clip-button">
+              {strings['gifs.saveKey']}
+            </button>
+          </div>
         </form>
       ) : null}
       {status ? <p role="status">{status}</p> : null}

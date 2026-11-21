@@ -46,6 +46,8 @@ a {
 }
 
 .app {
+  --app-content-gutter: 24px;
+
   display: grid;
   grid-template-columns: 232px minmax(0, 1fr);
   min-block-size: 100dvh;
@@ -141,7 +143,7 @@ a {
   justify-content: space-between;
   gap: 12px;
   border-block-end: 1px solid #dedee2;
-  padding-inline: 24px;
+  padding-inline: var(--app-content-gutter);
   background: #fff;
 }
 .app-work-header h1 {
@@ -151,8 +153,8 @@ a {
   color: #686871;
 }
 .app-welcome-body {
-  max-inline-size: 900px;
-  padding: 18px 24px;
+  max-inline-size: calc(820px + 2 * var(--app-content-gutter));
+  padding: 18px var(--app-content-gutter);
 }
 .app-phone-brand {
   display: none;
@@ -178,7 +180,7 @@ a {
   font-size: 13px;
 }
 .app-drafts {
-  padding: 24px;
+  padding: 24px var(--app-content-gutter);
 }
 .app-draft-list {
   display: grid;
@@ -258,6 +260,120 @@ a {
   min-block-size: 100dvh;
 }
 
+.app-source-group {
+  display: grid;
+  gap: 8px;
+  min-inline-size: 0;
+}
+
+.app-find-actions,
+.app-recording-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.app-find-actions button[aria-expanded='true'] {
+  border-color: #0a0a0a;
+  background: #ededf0;
+}
+
+.app-source-group .clip-batch-start {
+  border: 1px solid #dedee2;
+}
+
+.app-recording-bar,
+.app-batch-tools {
+  padding: 16px var(--app-content-gutter);
+}
+
+.app .clip-grid-workspace .clip-grid-stage {
+  padding-inline: var(--app-content-gutter);
+}
+
+.clip-project-workspace .clip-project-main > .app-source-group {
+  margin: 16px var(--app-content-gutter);
+}
+
+.app-settings-body {
+  display: grid;
+  gap: 28px;
+  max-inline-size: calc(760px + 2 * var(--app-content-gutter));
+  padding: 24px var(--app-content-gutter);
+}
+
+.app-settings-body h2 {
+  margin-block-end: 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.app-settings :is(.clip-gif-settings, .clip-backup-controls) {
+  display: grid;
+  gap: 0;
+  padding: 0;
+  border: 1px solid #dedee2;
+  background: #fff;
+}
+
+.app-settings
+  :is(
+    .clip-gif-settings > label,
+    .clip-gif-settings > form,
+    .clip-backup-controls > label
+  ) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+  align-items: center;
+  gap: 12px;
+  min-block-size: 56px;
+  padding: 10px 16px;
+  font-size: 13px;
+}
+
+.app-settings .clip-gif-key-actions {
+  align-items: stretch;
+  gap: 8px;
+}
+
+.app-settings
+  :is(
+    .clip-gif-settings select,
+    .clip-gif-key-actions input,
+    .clip-backup-controls select
+  ) {
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: 36px;
+}
+
+.app-settings select {
+  border-color: #d1d1d6;
+  border-radius: 0;
+  padding: 5px 8px;
+}
+
+.app-settings .clip-gif-key-actions input {
+  flex-basis: 120px;
+}
+
+.app-settings :is(.clip-gif-settings > form, .clip-backup-actions) {
+  border-block-start: 1px solid #dedee2;
+}
+
+.app-settings .clip-backup-actions {
+  justify-content: end;
+  padding: 10px 16px;
+}
+
+.app-settings [role='status'] {
+  padding: 0 16px 10px;
+  color: #52525b;
+  font-size: 13px;
+}
+
 @media (min-width: 768px) and (max-width: 1023px) {
   .app {
     grid-template-columns: 64px minmax(0, 1fr);
@@ -292,6 +408,8 @@ a {
     background: #fff;
   }
   .app {
+    --app-content-gutter: 20px;
+
     display: block;
   }
   .app:not(.app-editing) .app-main {
@@ -330,7 +448,7 @@ a {
   }
   .app-work-header {
     border: 0;
-    padding-inline: 20px;
+    padding-inline: var(--app-content-gutter);
   }
   .app-work-header h1 {
     font-size: 25px;
@@ -344,31 +462,88 @@ a {
     font-size: 25px;
   }
   .app-welcome-body {
-    padding: 28px 20px;
+    padding: 28px var(--app-content-gutter);
+  }
+  .app-welcome .app-source-group {
+    gap: 12px;
+    padding: 16px;
+    background: #0a0a0a;
   }
   .app-welcome .clip-input-row {
-    gap: 7px;
+    position: relative;
+    gap: 8px;
     border: 0;
-    padding: 14px;
-    background: #0a0a0a;
+    padding: 0;
+    background: transparent;
     color: #caccd2;
   }
-  .app-welcome .clip-input-row input:not([type='file']) {
-    min-block-size: 44px;
-    padding-inline: 8px;
-    background: #fff;
+  .app-welcome .clip-input-row > svg {
+    position: absolute;
+    inset-block-start: 13px;
+    inset-inline-start: 12px;
+    color: #676771;
+    pointer-events: none;
   }
-  .app-welcome .clip-input-row button {
+  .app-welcome .clip-input-row input:not([type='file']) {
+    flex-basis: 100%;
+    min-block-size: 44px;
+    padding-inline: 36px 10px;
+    background: #fff;
+    color: #0a0a0a;
+  }
+  .app-welcome :is(.clip-input-row, .app-find-actions) .clip-button {
     border-color: transparent;
     background: #2a2a2a;
     color: #fff;
+  }
+  .app-welcome .app-find-actions button[aria-expanded='true'] {
+    border-color: #fff;
+  }
+  .app-welcome .app-find-actions [role='status'] {
+    color: #fff;
+  }
+  .app-editing .clip-editor-workspace .clip-canvas-input {
+    display: block;
+    margin-block-end: 12px;
+    padding-inline: calc(var(--app-content-gutter) - 10px);
+  }
+  .app-editing .clip-editor-workspace .app-source-group .clip-input-shell {
+    display: none;
+  }
+  .app :is(.app-find-actions, .app-settings) .clip-button {
+    min-block-size: 44px;
+  }
+  .app-settings-body {
+    gap: 20px;
+    padding-block: 8px 20px;
+  }
+  .app-settings
+    :is(
+      .clip-gif-settings > label,
+      .clip-gif-settings > form,
+      .clip-backup-controls > label
+    ) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding-block: 12px;
+  }
+  .app-settings
+    :is(
+      .clip-gif-settings select,
+      .clip-gif-key-actions input,
+      .clip-backup-controls select
+    ) {
+    min-block-size: 44px;
+  }
+  .app-settings .clip-backup-actions {
+    justify-content: start;
   }
   .app-share-hint {
     padding: 9px;
     background: #eef1f6;
   }
   .app-drafts {
-    padding: 8px 20px 20px;
+    padding: 8px var(--app-content-gutter) 20px;
   }
   .app-draft-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -279,6 +279,7 @@
   "card.saved": "Saved",
   "card.justNow": "Just now",
   "card.addSource": "Add source",
+  "card.sourceHintShort": "Paste a link, text or photo",
   "card.sourceHint": "Paste a link, text or an image to add a source",
   "card.photo": "Photo",
   "card.addPhoto": "Add a photo",

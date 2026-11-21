@@ -2,6 +2,11 @@
 
 Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md).
 
+## Web app workspace spacing — 2026-11-21
+
+- W1 aligns source actions under the work header with a 24 px workspace inset. A2 uses a paste card inside 20 px phone gutters. Batch paste and Record tab now sit with the source input using those same insets. The batch form opens below its button.
+- The web app borrows O2’s grouped, divided settings rows. GIF credentials and draft storage have their own groups. Their fields align across desktop sections and stack on phones.
+
 ## R8 developer release — 2026-11-21
 
 - Chromium releases ship as an unsigned Developer mode ZIP. Firefox has a DOM-capable MV3 background page for rendering sourced cards. Its temporary add-on also exposes page clipping and moment cards. Firefox removes temporary add-ons on restart. The Chromium extension and web app provide the other workflows.

@@ -89,6 +89,7 @@
   "drafts.export": "تصدير",
   "drafts.import": "استيراد",
   "drafts.imported": "تم استيراد المسودات",
+  "card.sourceHintShort": "ألصق رابطًا أو نصًا أو صورة",
   "card.sourceHint": "الصق رابطًا أو نصًا أو صورة لإضافة مصدر",
   "card.photo": "صورة",
   "card.addPhoto": "إضافة صورة",

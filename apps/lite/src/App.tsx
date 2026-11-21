@@ -627,17 +627,62 @@ export function App() {
       .catch(failed);
   }
 
-  const input = (
-    <InputRow
-      onInput={add}
-      onPhoto={
-        active
-          ? (file) => {
-              void photo(file);
-            }
-          : undefined
+  const recordControl = canRecordTab() ? (
+    <button
+      type="button"
+      className="clip-button"
+      disabled={recording === 'chooser'}
+      onClick={
+        recording === undefined
+          ? () => void captureTab()
+          : () => recordingStop.current?.abort()
       }
-    />
+    >
+      {strings[recording === undefined ? 'batch.record' : 'video.stop']}
+    </button>
+  ) : null;
+  const recordStatus =
+    typeof recording === 'number' ? (
+      <span role="status">
+        {strings['clip.recording']
+          .replace('{elapsed}', String(Math.floor(recording)))
+          .replace('{total}', String(maxClipSeconds))}
+      </span>
+    ) : null;
+  const sourceTools =
+    FLAGS.batch && flow === 'workspace' ? (
+      <>
+        <div className="app-find-actions">
+          <button
+            type="button"
+            className="clip-button"
+            aria-expanded={batchStart}
+            onClick={() => setBatchStart(!batchStart)}
+          >
+            {strings['batch.paste']}
+          </button>
+          {recordControl}
+          {recordStatus}
+        </div>
+        {batchStart ? (
+          <BatchStart collect={pasteBatch} close={() => setBatchStart(false)} />
+        ) : null}
+      </>
+    ) : null;
+  const input = (
+    <div className="app-source-group">
+      <InputRow
+        onInput={add}
+        onPhoto={
+          active
+            ? (file) => {
+                void photo(file);
+              }
+            : undefined
+        }
+      />
+      {sourceTools}
+    </div>
   );
   const inGrid =
     collection?.draft.mode === 'grid' || collection?.clips.length === 0;
@@ -654,14 +699,19 @@ export function App() {
     FLAGS.batch &&
     collection?.draft.batch &&
     collection.draft.mode === 'grid' ? (
-      <BatchEditor
-        key={collection.draft.id}
-        collection={collection}
-        change={setCollection}
-        close={close}
-        digest={() => switchMode('video')}
-        view={flow === 'workspace' ? 'workspace' : 'popup'}
-      />
+      <>
+        {sourceTools ? (
+          <div className="app-batch-tools app-source-group">{sourceTools}</div>
+        ) : null}
+        <BatchEditor
+          key={collection.draft.id}
+          collection={collection}
+          change={setCollection}
+          close={close}
+          digest={() => switchMode('video')}
+          view={flow === 'workspace' ? 'workspace' : 'popup'}
+        />
+      </>
     ) : screen === 'make' && collection && inVideo ? (
       <VideoProjectEditor
         key={collection.draft.id}
@@ -734,51 +784,11 @@ export function App() {
         />
       ) : null}
       <main className="app-main">
-        {FLAGS.batch &&
-        ((screen === 'make' && flow === 'workspace') ||
-          recording !== undefined) ? (
-          <div className="app-find-actions">
-            {screen === 'make' ? (
-              <button
-                type="button"
-                className="clip-button"
-                aria-expanded={batchStart}
-                onClick={() => setBatchStart(!batchStart)}
-              >
-                {strings['batch.paste']}
-              </button>
-            ) : null}
-            {canRecordTab() ? (
-              <button
-                type="button"
-                className="clip-button"
-                disabled={recording === 'chooser'}
-                onClick={
-                  recording === undefined
-                    ? () => void captureTab()
-                    : () => recordingStop.current?.abort()
-                }
-              >
-                {
-                  strings[
-                    recording === undefined ? 'batch.record' : 'video.stop'
-                  ]
-                }
-              </button>
-            ) : null}
-            {typeof recording === 'number' ? (
-              <span role="status">
-                {strings['clip.recording']
-                  .replace('{elapsed}', String(Math.floor(recording)))
-                  .replace('{total}', String(maxClipSeconds))}
-              </span>
-            ) : null}
-            {batchStart && screen === 'make' ? (
-              <BatchStart
-                collect={pasteBatch}
-                close={() => setBatchStart(false)}
-              />
-            ) : null}
+        {recording !== undefined &&
+        (screen !== 'make' || flow !== 'workspace') ? (
+          <div className="app-recording-bar">
+            {recordControl}
+            {recordStatus}
           </div>
         ) : null}
         {screen === 'library' || screen === 'gifs' ? (
@@ -794,10 +804,21 @@ export function App() {
             }}
           />
         ) : screen === 'settings' ? (
-          <section className="app-drafts">
-            <GifSettings />
-            <CollectionBackupControls refresh={refresh} />
-          </section>
+          <div className="app-settings">
+            <header className="app-work-header">
+              <h1>{strings['settings.title']}</h1>
+            </header>
+            <div className="app-settings-body">
+              <section aria-labelledby="app-gif-settings-title">
+                <h2 id="app-gif-settings-title">{strings['gifs.tab']}</h2>
+                <GifSettings />
+              </section>
+              <section aria-labelledby="app-draft-settings-title">
+                <h2 id="app-draft-settings-title">{strings['drafts.title']}</h2>
+                <CollectionBackupControls refresh={refresh} />
+              </section>
+            </div>
+          </div>
         ) : screen === 'drafts' ? (
           <section>
             <header className="app-work-header">
