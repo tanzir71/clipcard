@@ -1,4 +1,4 @@
-import type { CaptionCue, CardSource } from '@clipcard/core';
+import type { BatchLink, CaptionCue, CardSource } from '@clipcard/core';
 import type { Format, Template } from '@clipcard/cards';
 import type { CardDraft, Overrides } from '@clipcard/ui';
 
@@ -81,6 +81,13 @@ export interface ClipTray {
 
 export type OffscreenMessage =
   | { to: 'offscreen'; kind: 'make'; source: SourceRequest; render: boolean }
+  | {
+      to: 'offscreen';
+      kind: 'makeBatch';
+      sources: SourceRequest[];
+      origin: 'selection' | 'paste' | 'tabs';
+      title: string;
+    }
   | { to: 'offscreen'; kind: 'resolve'; address: string };
 
 export type BridgeMessage =
@@ -96,6 +103,7 @@ export type BridgeMessage =
       collection?: string;
       drafts?: boolean;
     }
+  | { to: 'bridge'; kind: 'startBatch' }
   | { to: 'bridge'; kind: 'startClipping' }
   | { to: 'bridge'; kind: 'openVideo'; address?: string }
   | { to: 'bridge'; kind: 'contextImage'; address?: string }
@@ -126,6 +134,14 @@ export type BackgroundMessage =
   | { to: 'background'; kind: 'openCollection'; id: string }
   | { to: 'background'; kind: 'pageCard' }
   | { to: 'background'; kind: 'addPage' }
+  | { to: 'background'; kind: 'startBatch' }
+  | {
+      to: 'background';
+      kind: 'batchLinks';
+      links: BatchLink[];
+      origin: 'selection' | 'paste';
+    }
+  | { to: 'background'; kind: 'batchTabs' }
   | { to: 'background'; kind: 'previewLink'; address: string }
   | { to: 'background'; kind: 'copyQuote'; text: string }
   | { to: 'background'; kind: 'offscreenIdle' };

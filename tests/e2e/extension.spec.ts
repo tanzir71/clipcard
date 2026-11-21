@@ -3,6 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import type { Page, Worker } from '@playwright/test';
 import jsQR from 'jsqr';
 import { PNG } from 'pngjs';
+import { BATCH_RELEASED } from '../../packages/core/flags.ts';
 
 test('loads the localized scaffold and starts the service worker', async ({
   extension,
@@ -634,5 +635,67 @@ test.describe('registered browser actions', () => {
     });
     expect(median).toBeLessThanOrEqual(1200);
     expect(tail).toBeLessThanOrEqual(2500);
+  });
+});
+
+test.describe('batch selection', () => {
+  test.use({ instrumentEvents: true });
+  test('drags across headlines and copies a Roundup with four canonical QRs', async ({
+    extension,
+    worker,
+  }) => {
+    test.skip(!BATCH_RELEASED);
+    const page = await extension.newPage();
+    await extension.grantPermissions(['clipboard-read', 'clipboard-write']);
+    const address = origin + '/news-og.html';
+    await page.goto(address);
+    await page.evaluate((origin) => {
+      const stories = document.createElement('main');
+      stories.style.cssText =
+        'position:fixed;left:50px;top:50px;display:grid;gap:20px';
+      for (let i = 1; i <= 5; i++) {
+        const link = document.createElement('a');
+        link.href = origin + '/roundup-story-' + i + '?utm_source=frontpage';
+        link.textContent = 'Local newsroom publishes a major story ' + i;
+        if (i === 5) {
+          const nav = document.createElement('nav');
+          nav.append(link);
+          stories.append(nav);
+        } else stories.append(link);
+      }
+      document.body.replaceChildren(stories);
+    }, origin);
+    await runMenu(worker, address, 'batchSelect');
+    await expect(page.locator('clipcard-batch-selection')).toBeAttached();
+    const opening = page.waitForEvent(
+      'framenavigated',
+      (frame) =>
+        frame
+          .url()
+          .startsWith(new URL('sheet.html?collection=', worker.url()).href) ||
+        (frame.url().includes('sheet.html') &&
+          frame.url().includes('collection=')),
+    );
+    await page.mouse.move(35, 35);
+    await page.mouse.down();
+    await page.mouse.move(485, 265, { steps: 8 });
+    await page.mouse.up();
+    const frame = await opening;
+    await expect(frame.locator('.cc-roundup-source .cc-qr')).toHaveCount(4);
+    await expect(frame.locator('.clip-batch-count')).toContainText([
+      '4 links · from selection',
+    ]);
+    await frame.getByRole('button', { name: 'Copy', exact: true }).click();
+    await expect(frame.getByRole('status')).toHaveText('Copied');
+    const png = await clipboardPng(page);
+    expect(png).not.toBeNull();
+    expect([png!.width, png!.height]).toEqual([1080, 1350]);
+    for (let index = 0; index < 4; index++) {
+      const crop = new PNG({ width: 160, height: 230 });
+      PNG.bitblt(png!, crop, 854, 312 + 230 * index, 160, 230, 0, 0);
+      expect(
+        jsQR(new Uint8ClampedArray(crop.data), crop.width, crop.height)?.data,
+      ).toBe(origin + '/roundup-story-' + (index + 1));
+    }
   });
 });

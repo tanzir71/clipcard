@@ -21,3 +21,4 @@ export {
 } from './url.ts';
 
 export * from './video.ts';
+export * from './batch.ts';

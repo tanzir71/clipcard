@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## v0.7.0 - 2026-11-21
+
+- Collect headlines by dragging across a page, gathering open tabs, or pasting a list of links.
+- Make a Roundup with four stories per page, save a numbered Carousel ZIP, or turn the same links into a Digest video.
+- Record a tab in the web app with the browser’s permission, then finish the video from your local draft.
+
 ## v0.6.0 - 2026-11-21
 
 - Join recorded clips, excerpts and pictures into a video in the extension or web app. Reorder the scenes, trim clips and edit captions on the timeline.

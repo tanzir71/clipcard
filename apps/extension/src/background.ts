@@ -1,4 +1,11 @@
-import { cleanUrl, parseWebUrl, unwrapUrl } from '@clipcard/core';
+import {
+  cleanBatchLinks,
+  cleanUrl,
+  maxBatchLinks,
+  parseWebUrl,
+  unwrapUrl,
+} from '@clipcard/core';
+import type { BatchLink } from '@clipcard/core';
 import { FLAGS } from '@clipcard/core/flags';
 import { interfaceCopy } from '@clipcard/i18n';
 import type { InterfaceLanguage, UiStrings } from '@clipcard/i18n';
@@ -277,6 +284,40 @@ async function findClip(
   return tray;
 }
 
+async function collectBatch(
+  tab: Browser.tabs.Tab,
+  links: readonly BatchLink[],
+  origin: 'selection' | 'paste' | 'tabs',
+) {
+  const batch = cleanBatchLinks(links);
+  if (!batch.length || batch.length > maxBatchLinks) return false;
+  const requests = await Promise.all(
+    batch.map(async ({ address, title }) => {
+      const hints: Hints = {
+        address,
+        title: title ?? '',
+        source: null,
+        image: null,
+        imageWidth: 0,
+        selection: '',
+        referrer: '',
+        hoveredLink: null,
+      };
+      return { address, hints, canFetch: await mayRead(address) };
+    }),
+  );
+  const collection = await offscreen<string>({
+    to: 'offscreen',
+    kind: 'makeBatch',
+    sources: requests,
+    origin,
+    title: browser.i18n.getMessage('batch_roundup'),
+  });
+  if (!collection) return false;
+  await open(tab, undefined, undefined, collection);
+  return true;
+}
+
 async function fromMenu(
   info: Browser.contextMenus.OnClickData,
   tab?: Browser.tabs.Tab,
@@ -285,6 +326,10 @@ async function fromMenu(
   const address = info.linkUrl ?? info.frameUrl ?? info.pageUrl ?? tab.url;
   if (!address || !parseWebUrl(address)) return;
   const id = info.menuItemId;
+  if (FLAGS.batch && id === 'batchSelect') {
+    await bridge(tab.id, 0, { to: 'bridge', kind: 'startBatch' });
+    return;
+  }
   if (FLAGS.videoClips && id === 'clipVideo') {
     await bridge(tab.id, info.frameId ?? 0, {
       to: 'bridge',
@@ -492,6 +537,14 @@ async function installMenus(force: boolean) {
       parentId: 'clipcard',
     });
   }
+  if (FLAGS.batch) {
+    browser.contextMenus.create({
+      id: 'batchSelect',
+      title: localized('batch_select'),
+      contexts: ['page'],
+      parentId: 'clipcard',
+    });
+  }
   if (FLAGS.videoJoin) {
     browser.contextMenus.create({
       id: 'saveLibraryImage',
@@ -520,6 +573,46 @@ async function handleRequest(
       return clipping && sender.tab
         ? findClip(sender.tab, sender.frameId ?? 0, message.capture)
         : null;
+    case 'startBatch':
+    case 'batchLinks':
+    case 'batchTabs': {
+      if (!FLAGS.batch) return false;
+      const tab =
+        sender.tab ??
+        (
+          await browser.tabs.query({ active: true, lastFocusedWindow: true })
+        )[0];
+      if (!tab?.id) return false;
+      if (message.kind === 'startBatch')
+        return Boolean(
+          await bridge(tab.id, 0, { to: 'bridge', kind: 'startBatch' }),
+        );
+      if (message.kind === 'batchLinks') {
+        if (
+          (message.origin !== 'paste' && message.origin !== 'selection') ||
+          !Array.isArray(message.links) ||
+          message.links.length > maxBatchLinks ||
+          message.links.some(
+            (item) =>
+              typeof item?.address !== 'string' ||
+              (item.title !== undefined && typeof item.title !== 'string'),
+          )
+        )
+          return false;
+        return collectBatch(tab, message.links, message.origin);
+      }
+      const granted = await browser.permissions.contains({
+        origins: ['<all_urls>'],
+      });
+      const tabs = granted ? await browser.tabs.query({}) : [tab];
+      return collectBatch(
+        tab,
+        tabs.flatMap(({ url, title }) =>
+          url ? [{ address: url, title }] : [],
+        ),
+        'tabs',
+      );
+    }
     case 'videoMoment':
     case 'videoRecording': {
       const tab = sender.tab;

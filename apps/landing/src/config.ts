@@ -16,6 +16,6 @@ export const RELEASED = {
   videoJoin: FLAGS.videoJoin,
   gifs: FLAGS.gifs,
   app: true,
-  batch: false,
+  batch: true,
   pwa: true,
 } as const satisfies Record<string, boolean>;

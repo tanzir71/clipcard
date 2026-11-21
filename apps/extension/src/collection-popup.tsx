@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { interfaceStrings as strings } from '@clipcard/i18n';
+import { BatchEditor, BatchStart } from '@clipcard/ui/batch-editor';
 import { FLAGS } from '@clipcard/core/flags';
 import { Icon } from '@clipcard/ui';
 import type { CardDraft } from '@clipcard/ui';
@@ -52,6 +53,7 @@ export function CollectionPopup({
   const [cardState, setCard] = useState<CardDraft | null>(card ?? null);
   const [items, setItems] = useState<ClipDraft[]>([]);
   const [status, setStatus] = useState('');
+  const [batchStart, setBatchStart] = useState(false);
   const [library, setLibrary] = useState<'library' | 'gifs'>();
   const failed = () => setStatus(strings['card.savedFailed']);
 
@@ -132,6 +134,49 @@ export function CollectionPopup({
     }
   }
 
+  async function sendBatch(request: BackgroundMessage) {
+    const success = Boolean(await browser.runtime.sendMessage(request));
+    if (success) close();
+    return success;
+  }
+
+  if (batchStart) {
+    return (
+      <BatchStart
+        close={() => setBatchStart(false)}
+        collect={(links) =>
+          sendBatch({
+            to: 'background',
+            kind: 'batchLinks',
+            origin: 'paste',
+            links,
+          })
+        }
+        select={() => sendBatch({ to: 'background', kind: 'startBatch' })}
+        tabs={async () => {
+          await browser.permissions
+            .request({ origins: ['<all_urls>'] })
+            .catch(() => false);
+          return sendBatch({ to: 'background', kind: 'batchTabs' });
+        }}
+      />
+    );
+  }
+  if (
+    FLAGS.batch &&
+    collection?.draft.batch &&
+    collection.draft.mode === 'grid'
+  ) {
+    return (
+      <BatchEditor
+        key={collection.draft.id}
+        collection={collection}
+        change={setCollection}
+        close={close}
+        digest={() => void switchMode('video')}
+      />
+    );
+  }
   if (library) {
     return (
       <LibraryPanel
@@ -273,6 +318,15 @@ export function CollectionPopup({
         ))}
       </ul>
       <footer className="clip-grid-actions">
+        {FLAGS.batch ? (
+          <button
+            type="button"
+            className="clip-button"
+            onClick={() => setBatchStart(true)}
+          >
+            {strings['batch.collect']}
+          </button>
+        ) : null}
         {FLAGS.videoJoin ? (
           <button
             type="button"

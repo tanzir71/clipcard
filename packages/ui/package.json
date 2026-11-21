@@ -6,6 +6,8 @@
     ".": "./src/index.ts",
     "./card-editor": "./src/components/CardEditor.tsx",
     "./card-preview": "./src/components/CardPreview.tsx",
+    "./batch": "./src/batch.ts",
+    "./batch-editor": "./src/components/BatchEditor.tsx",
     "./bookmark": "./src/bookmark.ts",
     "./collection-archive": "./src/collection-archive.ts",
     "./collection-card": "./src/collection-card.ts",

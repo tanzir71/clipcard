@@ -7,6 +7,8 @@ export const CARD_LANGUAGES_RELEASED = true;
 export const VIDEO_CLIPS_RELEASED = true;
 export const VIDEO_JOIN_RELEASED = true;
 export const GIFS_RELEASED = true;
+export const BATCH_RELEASED = true;
+const batchPreview = env?.DEV === true || env?.MODE === 'r7-preview';
 const videoPreview = env?.DEV === true || env?.MODE === 'r6-preview';
 
 export const FLAGS = {
@@ -29,6 +31,6 @@ export const FLAGS = {
     VIDEO_JOIN_RELEASED ||
     (videoPreview && env?.VITE_CLIPCARD_VIDEO_JOIN === '1'),
   gifs: GIFS_RELEASED || (videoPreview && env?.VITE_CLIPCARD_GIFS === '1'),
-  batch: env?.DEV === true && env.VITE_CLIPCARD_BATCH === '1',
+  batch: BATCH_RELEASED || (batchPreview && env?.VITE_CLIPCARD_BATCH === '1'),
   pwa: env?.DEV === true && env.VITE_CLIPCARD_PWA === '1',
 } as const;

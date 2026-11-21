@@ -134,6 +134,12 @@ export const archiveSchema = z.object({
       createdAt: time,
       updatedAt: time,
       mode: z.enum(['card', 'grid', 'video']),
+      batch: z
+        .object({
+          source: z.enum(['selection', 'paste', 'tabs']),
+          output: z.enum(['roundup', 'carousel']),
+        })
+        .optional(),
       gridLayout: z.enum(GRID_LAYOUTS).optional(),
       videoOptions: z
         .object({

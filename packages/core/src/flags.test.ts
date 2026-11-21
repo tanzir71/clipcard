@@ -5,7 +5,7 @@ afterEach(() => {
   vi.resetModules();
 });
 
-it('enables clips, drafts, languages and video clips by default', async () => {
+it('enables the shipped workflow flags by default', async () => {
   const { FLAGS } = await import('../flags.ts');
   expect(
     Object.entries(FLAGS)
@@ -18,6 +18,7 @@ it('enables clips, drafts, languages and video clips by default', async () => {
     'videoClips',
     'videoJoin',
     'gifs',
+    'batch',
   ]);
 });
 

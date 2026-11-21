@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import {
+  BATCH_RELEASED,
   CARD_LANGUAGES_RELEASED,
   VIDEO_CLIPS_RELEASED,
   VIDEO_JOIN_RELEASED,
@@ -61,7 +62,9 @@ test('shows the web app, upcoming features and keyboard-accessible FAQ', async (
   await expect(
     page.getByRole('button', { name: 'Make card', exact: true }),
   ).toBeVisible();
-  await expect(page.locator('#templates figure')).toHaveCount(7);
+  await expect(page.locator('#templates figure')).toHaveCount(
+    BATCH_RELEASED ? 8 : 7,
+  );
   const install = page.locator('#install');
   await expect(
     install.getByRole('link', { name: 'Download .zip' }),

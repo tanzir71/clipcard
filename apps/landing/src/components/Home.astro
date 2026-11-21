@@ -9,6 +9,7 @@ import Icon from './Icon.astro';
 import Languages from './Languages.astro';
 import LiveCardDemo from './LiveCardDemo.astro';
 import SendToComputer from './SendToComputer.astro';
+import { interfaceCopy } from '@clipcard/i18n';
 import { RELEASED, REPO_URL } from '../config';
 import Site from '../layouts/Site.astro';
 import { previewImage } from '../media';
@@ -68,11 +69,14 @@ const releasedPreviews = {
   clips: clipsPreview,
   drafts: draftsPreview,
 };
-const examples = Object.entries(templates.names).filter(
+const cardExamples = Object.entries(templates.names).filter(
   ([name]) =>
     RELEASED.extension ||
     (RELEASED.cards ? !['duotone', 'caps'].includes(name) : name !== 'solid'),
 );
+const examples: [string, string][] = RELEASED.batch
+  ? [...cardExamples, ['roundup', interfaceCopy(locale)['template.roundup']]]
+  : cardExamples;
 const formats =
   RELEASED.cards && !RELEASED.extension
     ? ['4:5', '1:1', '9:16']
@@ -282,7 +286,11 @@ const schema = [
     >
       {examples.map(([name, label]) => (
         <figure>
-          <div data-demo-card={RELEASED.cards ? name : undefined}>
+          <div
+            data-demo-card={
+              RELEASED.cards && name !== 'roundup' ? name : undefined
+            }
+          >
             <CardImage
               name={`${name}-4x5`}
               alt={templates.example.replace('{name}', label)}

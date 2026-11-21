@@ -1,5 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
+import {
+  maxBatchLinks,
+  maxClipSeconds,
+  pastedBatchLinks,
+} from '@clipcard/core';
+import type { BatchLink } from '@clipcard/core';
+import { BatchEditor, BatchStart } from '@clipcard/ui/batch-editor';
+import {
+  createBatch,
+  resolveBatchLinks,
+  webBatchCard,
+} from '@clipcard/ui/batch';
 import { FLAGS } from '@clipcard/core/flags';
 import { interfaceStrings as strings } from '@clipcard/i18n';
 import { Icon, InputRow } from '@clipcard/ui';
@@ -12,6 +24,7 @@ import {
   cardFromCollection,
 } from '@clipcard/ui/collection-card';
 import {
+  appendDraftClip,
   listDraftCollections,
   resumeDraftCollection,
   saveCollectionForLater,
@@ -39,6 +52,7 @@ import {
   saveDraft,
 } from '@clipcard/ui/storage';
 import mark from '../../../design/brand/mark.svg?url';
+import { canRecordTab, recordTab, TabRecordingError } from './record-tab.ts';
 import './collections.css';
 
 declare const __CLIPCARD_BOOKMARK__: string;
@@ -260,6 +274,9 @@ export function App() {
     'workspace',
   );
   const [message, setMessage] = useState('');
+  const [batchStart, setBatchStart] = useState(false);
+  const [recording, setRecording] = useState<number | 'chooser'>();
+  const recordingStop = useRef<AbortController | null>(null);
   const [working, setWorking] = useState(false);
   const picker = useRef<HTMLInputElement>(null);
   const draftRef = useRef<CardDraft | null>(null);
@@ -313,6 +330,7 @@ export function App() {
   }, []);
 
   const close = useCallback(() => {
+    setBatchStart(false);
     if (draftRef.current) void put(draftRef.current).catch(failed);
     if (flow === 'popup' && window.opener) {
       window.close();
@@ -381,14 +399,38 @@ export function App() {
     [display, showGrid],
   );
 
+  const pasteBatch = useCallback(
+    async (links: BatchLink[]) => {
+      if (links.length < 2 || links.length > maxBatchLinks) {
+        setMessage(strings[links.length < 2 ? 'batch.empty' : 'batch.limit']);
+        return false;
+      }
+      const cards = await resolveBatchLinks(links, webBatchCard);
+      const group = await createBatch(cards, 'paste', strings['batch.roundup']);
+      if (!group) return false;
+      setBatchStart(false);
+      showGrid(group, 'workspace');
+      await refresh();
+      return true;
+    },
+    [showGrid, refresh],
+  );
+
   const add = useCallback(
     async (input: CardInput) => {
+      if (FLAGS.batch && !input.file && input.text) {
+        const links = pastedBatchLinks(input.text);
+        if (links) {
+          await pasteBatch(links);
+          return true;
+        }
+      }
       const draft = await draftFromInput(input, strings['card.photo']);
       if (!draft) return false;
       await find(draft);
       return true;
     },
-    [find],
+    [find, pasteBatch],
   );
 
   useEffect(() => {
@@ -505,6 +547,58 @@ export function App() {
     }
   }
 
+  useEffect(() => {
+    const stop = () => recordingStop.current?.abort();
+    window.addEventListener('pagehide', stop);
+    return () => {
+      window.removeEventListener('pagehide', stop);
+      stop();
+    };
+  }, []);
+
+  async function captureTab() {
+    if (recordingStop.current) return;
+    const stop = new AbortController();
+    recordingStop.current = stop;
+    setRecording('chooser');
+    setMessage('');
+    try {
+      const { blob, duration, poster } = await recordTab(
+        stop.signal,
+        setRecording,
+      );
+      const group = await appendDraftClip(
+        {
+          kind: 'video',
+          title: strings['batch.recordTitle'],
+          sourceUrl: null,
+          video: { source: null, start: 0, end: duration, cues: [], poster },
+        },
+        { draftId: collection?.draft.id, preferVideo: true, media: blob },
+      );
+      showGrid(group, 'workspace');
+      await refresh();
+    } catch (error) {
+      if (error instanceof TabRecordingError) {
+        setMessage(
+          strings[
+            error.reason === 'surface'
+              ? 'batch.recordTabOnly'
+              : 'batch.recordEmpty'
+          ],
+        );
+      } else if (!(
+        error instanceof DOMException &&
+        ['NotAllowedError', 'AbortError'].includes(error.name)
+      )) {
+        setMessage(strings['card.renderFailed']);
+      }
+    } finally {
+      recordingStop.current = null;
+      setRecording(undefined);
+    }
+  }
+
   function navigate(destination: Screen) {
     setScreen(destination);
     if (destination === 'drafts') void refresh().catch(failed);
@@ -556,7 +650,19 @@ export function App() {
       ? () => switchMode('video')
       : undefined;
   const editor =
-    screen === 'make' && collection && inVideo ? (
+    screen === 'make' &&
+    FLAGS.batch &&
+    collection?.draft.batch &&
+    collection.draft.mode === 'grid' ? (
+      <BatchEditor
+        key={collection.draft.id}
+        collection={collection}
+        change={setCollection}
+        close={close}
+        digest={() => switchMode('video')}
+        view={flow === 'workspace' ? 'workspace' : 'popup'}
+      />
+    ) : screen === 'make' && collection && inVideo ? (
       <VideoProjectEditor
         key={collection.draft.id}
         collection={collection}
@@ -628,6 +734,53 @@ export function App() {
         />
       ) : null}
       <main className="app-main">
+        {FLAGS.batch &&
+        ((screen === 'make' && flow === 'workspace') ||
+          recording !== undefined) ? (
+          <div className="app-find-actions">
+            {screen === 'make' ? (
+              <button
+                type="button"
+                className="clip-button"
+                aria-expanded={batchStart}
+                onClick={() => setBatchStart(!batchStart)}
+              >
+                {strings['batch.paste']}
+              </button>
+            ) : null}
+            {canRecordTab() ? (
+              <button
+                type="button"
+                className="clip-button"
+                disabled={recording === 'chooser'}
+                onClick={
+                  recording === undefined
+                    ? () => void captureTab()
+                    : () => recordingStop.current?.abort()
+                }
+              >
+                {
+                  strings[
+                    recording === undefined ? 'batch.record' : 'video.stop'
+                  ]
+                }
+              </button>
+            ) : null}
+            {typeof recording === 'number' ? (
+              <span role="status">
+                {strings['clip.recording']
+                  .replace('{elapsed}', String(Math.floor(recording)))
+                  .replace('{total}', String(maxClipSeconds))}
+              </span>
+            ) : null}
+            {batchStart && screen === 'make' ? (
+              <BatchStart
+                collect={pasteBatch}
+                close={() => setBatchStart(false)}
+              />
+            ) : null}
+          </div>
+        ) : null}
         {screen === 'library' || screen === 'gifs' ? (
           <LibraryPanel
             key={screen}
