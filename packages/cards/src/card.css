@@ -448,6 +448,10 @@
   max-inline-size: 940px;
 }
 
+.cc-split:is([data-format='1:1'], [data-format='9:16']) .cc-split-title {
+  inset-inline-end: calc(64px + var(--cc-qr-width, 0px));
+}
+
 .cc-overlay-title {
   inset-block-end: calc(var(--cc-bottom) + 48px);
   max-inline-size: min(800px, var(--cc-meta-width));

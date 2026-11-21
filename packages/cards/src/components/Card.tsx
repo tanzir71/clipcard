@@ -18,6 +18,7 @@ import { numberingSystem } from '../numerals.ts';
 import type { Numerals } from '../numerals.ts';
 import { typefaceFor } from '../typefaces.ts';
 import { Headline } from './Headline.tsx';
+import { qrGeometry } from '../qr.ts';
 import { Qr } from './Qr.tsx';
 import '../card.css';
 
@@ -335,6 +336,13 @@ export function Card({ model: draft, options, assets }: CardProps) {
       : story
         ? tokens.card.qr.tile['9:16']
         : tokens.card.qrSize.default4x5;
+  const qr = useMemo(
+    () =>
+      model.qrUrl && options.qr !== false
+        ? qrGeometry(model.qrUrl, qrBaseSize, typeface ? 2.5 : undefined)
+        : null,
+    [model.qrUrl, options.qr, qrBaseSize, typeface],
+  );
   const headerHeight =
     localHeader && model.script === 'bengali'
       ? 406
@@ -378,6 +386,7 @@ export function Card({ model: draft, options, assets }: CardProps) {
     '--cc-top': top + 'px',
     '--cc-bottom': bottom + 'px',
     '--cc-deep': background,
+    '--cc-qr-width': (qr?.size ?? 0) + 'px',
     '--cc-key': guarded.key,
     '--cc-split-x': splitX + 'px',
     '--cc-wide-title-top': Math.round(height * 0.157) + 'px',
@@ -413,6 +422,7 @@ export function Card({ model: draft, options, assets }: CardProps) {
         localHeader && model.script === 'devanagari' ? 0.8 : undefined
       }
       secondLine={template === 'duotone'}
+      qrWidth={template === 'duotone' && !wide ? qr?.size : undefined}
     />
   );
   const thumbPattern = useMemo(
@@ -617,13 +627,7 @@ export function Card({ model: draft, options, assets }: CardProps) {
           <Meta model={model} numerals={numerals} />
         </>
       )}
-      {model.qrUrl && options.qr !== false ? (
-        <Qr
-          url={model.qrUrl}
-          size={qrBaseSize}
-          minModulePx={typeface ? 2.5 : undefined}
-        />
-      ) : null}
+      {qr ? <Qr geometry={qr} /> : null}
     </article>
   );
 }

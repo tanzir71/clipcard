@@ -64,10 +64,10 @@
 ## M9 · Release
 - [x] GitHub Release workflow: tag `v*` → build → attach `clipcard-chrome.zip` (manifest at the root). Test the developer‑mode install from that zip on Chrome, Edge and Brave.
 - [x] Update‑available check against GitHub Releases (once a day, settings dot) for developer‑mode installs.
-- [ ] Store assets: icons 16/32/48/128, 1280×800 screenshots made from `design/screens` (real UI captures preferred), localized store names/summaries (`I18N.md` §6).
-- [ ] Privacy policy page; permission justifications for the store review.
-- [ ] Run the full `docs/QA.md` matrix and fix blockers.
-- [ ] Firefox build (stretch).
+- [x] Store assets: icons 16/32/48/128, 1280×800 screenshots made from `design/screens` (real UI captures preferred), localized store names/summaries (`I18N.md` §6).
+- [x] Privacy policy page; permission justifications for the store review.
+- [ ] Run the full `docs/QA.md` matrix and fix blockers. See DECISIONS.md for automated results and remaining physical checks.
+- [x] Firefox build (stretch).
 
 ## M10 · Cards v2 (replaces the M2 visual spec; do it before M3 if M2 isn't merged yet)
 - [ ] Templates Header (auto default), Split, Caps, Overlay, Duotone, Quote, Solid, Roundup per DESIGN §4.2. Match `design/cards/*.png` at true size (≤ 2% pixel diff after anti‑aliasing).

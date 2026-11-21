@@ -141,6 +141,7 @@ export async function makeCard(
   request: SourceRequest,
   render: boolean,
   preferencesFor: (address: string) => Promise<SitePrefs>,
+  chromiumOffscreen = true,
 ): Promise<MadeCard> {
   const draft = await makeDraft(request, preferencesFor);
   const localImage = draft.photo ? URL.createObjectURL(draft.photo.blob) : null;
@@ -149,7 +150,7 @@ export async function makeCard(
     const options = optionsForDraft(draft, model);
     const png = render
       ? await import('@clipcard/cards/export').then(({ renderCard }) =>
-          renderCard(model, options, { chromiumOffscreen: true }),
+          renderCard(model, options, { chromiumOffscreen }),
         )
       : null;
     const [thumb, encodedPng] = await Promise.all([

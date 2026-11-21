@@ -1,6 +1,13 @@
 # Clipcard
 
-Clipcard turns links, excerpts and photos into shareable cards in your browser. Sourced cards include a QR code back to the original. [Open the web app](https://tanzir71.github.io/clipcard/app/).
+Clipcard turns links, excerpts, photos and video moments into shareable cards, grids and videos in your browser. Sourced exports include QR codes back to the originals. [Open the web app](https://tanzir71.github.io/clipcard/app/).
+
+## Install an unsigned release
+
+- Chrome, Edge and Brave. Download and extract the Chromium ZIP, then open your browser's Extensions page. Turn on Developer mode and choose **Load unpacked**. Select the folder containing the manifest. [Chromium ZIP](https://github.com/tanzir71/clipcard/releases/latest/download/clipcard-chrome.zip)
+- Firefox. Open about:debugging, select **This Firefox**, choose **Load Temporary Add-on**, and select the ZIP. The Firefox build includes sourced cards, page clippings and moment cards. Firefox removes temporary add-ons on restart. Open the web app for video editing, GIFs and batch tools. [Firefox ZIP](https://github.com/tanzir71/clipcard/releases/latest/download/clipcard-firefox.zip)
+
+[Store submission materials](store/README.md) are available for the owner's Chrome Web Store submission.
 
 Follow development in the [release roadmap](docs/ROADMAP.md) or visit the [project site](https://tanzir71.github.io/clipcard/).
 

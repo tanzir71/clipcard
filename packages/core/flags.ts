@@ -1,4 +1,5 @@
 const env = import.meta.env;
+const firefoxExtension = env?.FIREFOX === true;
 const clipPreview = env?.DEV === true || env?.MODE === 'r3-preview';
 const languagePreview =
   env?.DEV === true || env?.MODE === 'r4-preview' || env?.MODE === 'store';
@@ -28,9 +29,14 @@ export const FLAGS = {
     ((env?.DEV === true || env?.MODE === 'r5-preview') &&
       env?.VITE_CLIPCARD_VIDEO_CLIPS === '1'),
   videoJoin:
-    VIDEO_JOIN_RELEASED ||
-    (videoPreview && env?.VITE_CLIPCARD_VIDEO_JOIN === '1'),
-  gifs: GIFS_RELEASED || (videoPreview && env?.VITE_CLIPCARD_GIFS === '1'),
-  batch: BATCH_RELEASED || (batchPreview && env?.VITE_CLIPCARD_BATCH === '1'),
+    !firefoxExtension &&
+    (VIDEO_JOIN_RELEASED ||
+      (videoPreview && env?.VITE_CLIPCARD_VIDEO_JOIN === '1')),
+  gifs:
+    !firefoxExtension &&
+    (GIFS_RELEASED || (videoPreview && env?.VITE_CLIPCARD_GIFS === '1')),
+  batch:
+    !firefoxExtension &&
+    (BATCH_RELEASED || (batchPreview && env?.VITE_CLIPCARD_BATCH === '1')),
   pwa: env?.DEV === true && env.VITE_CLIPCARD_PWA === '1',
 } as const;

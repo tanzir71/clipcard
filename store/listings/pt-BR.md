@@ -12,6 +12,4 @@ Transforme qualquer link em um card com QR code para a fonte original. Um clique
 
 ## Description
 
-Crie um card para compartilhar a partir de um link, uma citação ou uma imagem. Clique com o botão direito no link para copiar o card. Quem receber o card pode escanear o QR code e abrir a fonte original.
-
-Combine citações, fotos e gráficos de várias páginas em uma grade. Salve o rascunho e abra de novo neste navegador. Escolha tamanho, cor e sua própria marca. Os cards são criados e salvos no seu dispositivo.
+Crie cards de notícias, grades e vídeos curtos usando links, trechos, fotos e momentos de uma aba em reprodução. Clique com o botão direito em um link para copiar um card ou reúna várias fontes em um resumo, carrossel ou vídeo. Os códigos QR levam às fontes originais. Rascunhos e exportações ficam no navegador. Não é preciso ter conta.

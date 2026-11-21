@@ -12,6 +12,4 @@ Gawing clipcard ang kahit anong link, may QR code pabalik sa orihinal. Isang cli
 
 ## Description
 
-Gumawa ng photo card mula sa link, sipi, o larawan. I-right-click ang link para kopyahin ang card. Maaaring i-scan ng mambabasa ang QR code para buksan ang orihinal na pinagmulan.
-
-Pagsamahin ang mga sipi, larawan, at chart mula sa ilang pahina sa isang grid. I-save ang draft at buksan ulit sa browser na ito. Pumili ng laki, kulay, at sarili mong marka. Sa device mo ginagawa at sine-save ang mga card.
+Gumawa ng mga news card, grid, at maikling video mula sa mga link, sipi, larawan, at sandali mula sa tab na may pinapatugtog. I-right-click ang link para kumopya ng card, o pagsamahin ang mga source sa roundup, carousel, o digest. Ang mga QR code ay nagbabalik sa orihinal na source. Nasa browser ang mga draft at export. Hindi kailangan ng account.

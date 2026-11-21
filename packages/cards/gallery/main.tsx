@@ -15,6 +15,7 @@ import {
   encodingSamples,
   languageReferences,
   languageSamples,
+  qrSpacingSamples,
 } from './language-samples.ts';
 import './style.css';
 
@@ -91,9 +92,12 @@ if (root)
           <GridSample key={sample.id} {...sample} />
         ))}
         {FLAGS.languages &&
-          [...languageReferences, ...languageSamples, ...encodingSamples].map(
-            (sample) => <Sample key={sample.id} sample={sample} />,
-          )}
+          [
+            ...languageReferences,
+            ...languageSamples,
+            ...encodingSamples,
+            ...qrSpacingSamples,
+          ].map((sample) => <Sample key={sample.id} sample={sample} />)}
       </div>
     </main>,
   );

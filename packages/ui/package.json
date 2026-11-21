@@ -25,6 +25,7 @@
     "./video-project-editor": "./src/components/VideoProjectEditor.tsx",
     "./video-project": "./src/video-project.ts",
     "./video-editor": "./src/components/VideoEditor.tsx",
+    "./video-metadata": "./src/video-metadata.ts",
     "./video-encoding": "./src/video-encoding.ts",
     "./style.css": "./src/ui.css"
   },

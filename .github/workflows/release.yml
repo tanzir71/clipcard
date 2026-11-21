@@ -49,7 +49,11 @@ jobs:
           mkdir -p release
           (cd apps/extension/.output/chrome-mv3 && zip -qr "$GITHUB_WORKSPACE/release/clipcard-chrome.zip" .)
           unzip -Z1 release/clipcard-chrome.zip | grep -Fx manifest.json
-          (cd release && sha256sum clipcard-chrome.zip > SHA256SUMS)
+          CLIPCARD_EXTENSION_VERSION="$version" pnpm build:firefox
+          node -e 'const m = require("./apps/extension/.output/firefox-mv3/manifest.json"); if (m.version !== process.argv[1] || !m.background?.scripts?.length || m.permissions?.includes("offscreen") || !m.browser_specific_settings?.gecko?.id) process.exit(1)' "$version"
+          (cd apps/extension/.output/firefox-mv3 && zip -qr "$GITHUB_WORKSPACE/release/clipcard-firefox.zip" .)
+          unzip -Z1 release/clipcard-firefox.zip | grep -Fx manifest.json
+          (cd release && sha256sum clipcard-chrome.zip clipcard-firefox.zip > SHA256SUMS)
       - name: Attach the extension and checksums
         env:
           GH_TOKEN: ${{ github.token }}
@@ -64,15 +68,16 @@ jobs:
           JS
           if gh release view "$GITHUB_REF_NAME" --json isDraft > release/state.json 2>/dev/null; then
             if [[ "$(node -pe 'require("./release/state.json").isDraft')" == true ]]; then
-              gh release upload "$GITHUB_REF_NAME" release/clipcard-chrome.zip release/SHA256SUMS --clobber
+              gh release upload "$GITHUB_REF_NAME" release/clipcard-chrome.zip release/clipcard-firefox.zip release/SHA256SUMS --clobber
             else
               gh release view "$GITHUB_REF_NAME" --json assets --jq '.assets[].name' > release/assets.txt
               grep -Fx clipcard-chrome.zip release/assets.txt
+              grep -Fx clipcard-firefox.zip release/assets.txt
               grep -Fx SHA256SUMS release/assets.txt
               exit 0
             fi
           else
-            gh release create "$GITHUB_REF_NAME" release/clipcard-chrome.zip release/SHA256SUMS \
+            gh release create "$GITHUB_REF_NAME" release/clipcard-chrome.zip release/clipcard-firefox.zip release/SHA256SUMS \
               --draft --verify-tag --title "Clipcard $GITHUB_REF_NAME" --notes-file release/notes.md
           fi
           gh release edit "$GITHUB_REF_NAME" --draft=false --latest

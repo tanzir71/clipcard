@@ -12,6 +12,4 @@ Ubah link apa pun jadi kartu foto dengan kode QR ke sumber aslinya. Satu klik. G
 
 ## Description
 
-Buat kartu foto dari tautan, kutipan, atau gambar. Klik kanan tautan untuk menyalin kartu. Pembaca bisa memindai kode QR untuk membuka sumber asli.
-
-Satukan kutipan, foto, dan bagan dari beberapa halaman dalam kisi. Simpan draf dan buka kembali di peramban ini. Pilih ukuran, warna, dan tanda Anda sendiri. Kartu dibuat dan disimpan di perangkat Anda.
+Buat kartu berita, kisi, dan video pendek dari tautan, kutipan, foto, dan momen dari tab yang sedang diputar. Klik kanan tautan untuk menyalin kartu atau kumpulkan beberapa sumber menjadi rangkuman, karusel, atau video. Kode QR mengarah ke sumber asli. Draf dan hasil ekspor tersimpan di peramban. Tidak perlu akun.
