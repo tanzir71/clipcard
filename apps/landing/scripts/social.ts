@@ -5,7 +5,7 @@ import sharp from 'sharp';
 import { createServer } from 'vite';
 import type {} from '../../../packages/cards/gallery/social.ts';
 
-export async function renderSocialImages(output: URL) {
+export async function renderLocalizedImages(output: URL): Promise<Buffer> {
   const folders = new URL(
     '../../../packages/i18n/locales/landing/',
     import.meta.url,
@@ -53,6 +53,10 @@ export async function renderSocialImages(output: URL) {
           .jpeg({ quality: 88, mozjpeg: true })
           .toFile(fileURLToPath(new URL('social-' + locale + '.jpg', output)));
       }
+      const banglaExample = await page.evaluate(() =>
+        window.renderBanglaExample(),
+      );
+      return Buffer.from(banglaExample.split(',')[1]!, 'base64');
     } finally {
       await browser.close();
     }

@@ -17,7 +17,6 @@
     "@clipcard/ui": "workspace:*",
     "@fontsource-variable/geist": "5.3.0",
     "@fontsource-variable/geist-mono": "5.3.0",
-    "@fontsource/anek-bangla": "5.3.0",
     "@fontsource/anek-gujarati": "5.3.0",
     "@fontsource/anek-gurmukhi": "5.3.0",
     "@fontsource/anek-kannada": "5.3.0",

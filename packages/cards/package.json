@@ -13,6 +13,7 @@
     "./qr": "./src/qr.ts",
     "./typefaces": "./src/typefaces.ts",
     "./export": "./src/export.tsx",
+    "./bengali.css": "./src/bengali.css",
     "./card.css": "./src/card.css",
     "./tokens.css": "./src/tokens.css"
   },
@@ -21,8 +22,8 @@
     "@clipcard/i18n": "workspace:*",
     "@fontsource-variable/geist": "5.3.0",
     "@fontsource-variable/geist-mono": "5.3.0",
+    "@fontsource-variable/noto-sans-bengali": "5.3.0",
     "@fontsource-variable/schibsted-grotesk": "5.3.0",
-    "@fontsource/anek-bangla": "5.3.0",
     "@fontsource/anek-gujarati": "5.3.0",
     "@fontsource/anek-gurmukhi": "5.3.0",
     "@fontsource/anek-kannada": "5.3.0",

@@ -1,9 +1,8 @@
 import { detectLang, detectScript, langToScript } from '@clipcard/core';
 import type { Script } from '@clipcard/core';
 import { FLAGS } from '@clipcard/core/flags';
-import anekBanglaRanges from '@fontsource/anek-bangla/unicode.json';
-import anekBanglaBengali300 from '@fontsource/anek-bangla/files/anek-bangla-bengali-300-normal.woff2?url';
-import anekBanglaBengali600 from '@fontsource/anek-bangla/files/anek-bangla-bengali-600-normal.woff2?url';
+import notoBengaliRanges from '@fontsource-variable/noto-sans-bengali/unicode.json';
+import notoBengali from '@fontsource-variable/noto-sans-bengali/files/noto-sans-bengali-bengali-wght-normal.woff2?url';
 import muktaRanges from '@fontsource/mukta/unicode.json';
 import muktaDevanagari300 from '@fontsource/mukta/files/mukta-devanagari-300-normal.woff2?url';
 import muktaDevanagari600 from '@fontsource/mukta/files/mukta-devanagari-600-normal.woff2?url';
@@ -77,22 +76,19 @@ export interface Typeface {
   lineHeight: number;
   files: readonly (readonly [
     url: string,
-    weight: number,
+    weight: number | string,
     unicodeRange: string,
   ])[];
 }
 
 const typefaces = {
   bengali: {
-    family: 'Anek Bangla',
+    family: 'Noto Sans Bengali',
     weight: 300,
     strong: 600,
     size: 49,
     lineHeight: 1.47,
-    files: [
-      [anekBanglaBengali300, 300, anekBanglaRanges['bengali']],
-      [anekBanglaBengali600, 600, anekBanglaRanges['bengali']],
-    ],
+    files: [[notoBengali, '100 900', notoBengaliRanges.bengali]],
   },
   devanagari: {
     family: 'Mukta',
