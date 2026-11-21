@@ -55,10 +55,11 @@ export async function trayFor({
     thumbnails: await Promise.all(
       clips.slice(-3).map(async (clip) => {
         if (clip.kind === 'video')
-          return { kind: clip.kind, image: clip.video?.poster };
+          return { kind: clip.kind, image: clip.video?.poster, id: clip.id };
         const blob = await readClipMedia(clip).catch(() => undefined);
         return {
           kind: clip.kind,
+          id: blob ? clip.id : undefined,
           image: blob
             ? await thumbnail(blob).catch(() => undefined)
             : undefined,

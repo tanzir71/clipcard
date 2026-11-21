@@ -10,7 +10,12 @@ interface ClipcardDB extends DBSchema {
   library: { key: string; value: LibraryItem };
   expiredMedia: { key: string; value: string };
   prefs: {
-    key: 'currentDraftId' | 'retention';
+    key:
+      | 'currentDraftId'
+      | 'retention'
+      | 'gifProvider'
+      | 'gifKeyGiphy'
+      | 'gifKeyKlipy';
     value: string;
   };
 }

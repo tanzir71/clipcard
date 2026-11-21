@@ -37,6 +37,8 @@
   "hero": {
     "heading": "Share the news as cards, grids and video",
     "description": "Coming soon. Clips from any page, joined into one card or one video. Every one links back to the source.",
+    "videoHeading": "Share the news as cards, grids and video",
+    "videoDescription": "Clips from any page, joined into one card or one video. Every one links back to the source.",
     "appHeading": "Share the news as\ncards and grids",
     "appDescription": "Clip quotes, images and charts into a card or grid. Every one links back to the source.",
     "gallery": "Example cards"
@@ -212,6 +214,7 @@
     "zibon": "Zibon"
   },
   "privacy": {
+    "gifText": "GIF search sends your search terms to the provider you choose, GIPHY or KLIPY. The Library stores the files you import and the clips you save in this browser.",
     "title": "Privacy",
     "description": "How Clipcard handles data.",
     "text": [

@@ -102,6 +102,29 @@ const clipKind = z.enum([
   'gif',
 ]);
 
+const clipVideo = z
+  .object({
+    source: url.nullable(),
+    start: z.number().nonnegative(),
+    end: z.number().nonnegative(),
+    cues: z
+      .array(
+        z.object({
+          start: z.number().nonnegative(),
+          end: z.number().nonnegative(),
+          text: z.string().max(600),
+        }),
+      )
+      .max(300),
+    poster: z
+      .string()
+      .max(800_000)
+      .regex(/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/)
+      .optional(),
+  })
+  .refine((video) => video.end > video.start && video.end - video.start <= 60)
+  .optional();
+
 export const archiveSchema = z.object({
   version: z.literal(1),
   drafts: z.array(
@@ -112,6 +135,13 @@ export const archiveSchema = z.object({
       updatedAt: time,
       mode: z.enum(['card', 'grid', 'video']),
       gridLayout: z.enum(GRID_LAYOUTS).optional(),
+      videoOptions: z
+        .object({
+          format: z.enum(['9:16', '4:5', '16:9']).optional(),
+          captions: z.boolean().optional(),
+          reactionSkipped: z.boolean().optional(),
+        })
+        .optional(),
       overrides,
       order: z.array(key),
       savedForLater: z.boolean().optional(),
@@ -130,32 +160,15 @@ export const archiveSchema = z.object({
       lang: text.optional(),
       publishedAt: text.optional(),
       range: range.optional(),
-      video: z
+      video: clipVideo,
+      trim: z
         .object({
-          source: url,
           start: z.number().nonnegative(),
           end: z.number().nonnegative(),
-          cues: z
-            .array(
-              z.object({
-                start: z.number().nonnegative(),
-                end: z.number().nonnegative(),
-                text: z.string().max(600),
-              }),
-            )
-            .max(300),
-          poster: z
-            .string()
-            .max(800_000)
-            .regex(
-              /^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/,
-            )
-            .optional(),
         })
-        .refine(
-          (video) => video.end > video.start && video.end - video.start <= 60,
-        )
         .optional(),
+      fit: z.enum(['contain', 'cover']).optional(),
+      reaction: z.boolean().optional(),
       rect: point.extend({ width: z.number(), height: z.number() }).optional(),
       textFragment: url.optional(),
       media: media.optional(),
@@ -168,6 +181,10 @@ export const archiveSchema = z.object({
       kind: clipKind,
       tags: z.array(text),
       favorite: z.boolean(),
+      title: text.optional(),
+      outlet: text.optional(),
+      lang: text.optional(),
+      video: clipVideo,
       sourceUrl: url.nullable(),
       savedAt: time,
       media: media.optional(),

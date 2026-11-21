@@ -21,6 +21,7 @@ const { brand, privacy } = landingCopy(locale);
     {(RELEASED.app ? privacy.appText : privacy.text).map((paragraph) => (
       <p>{paragraph}</p>
     ))}
+    {RELEASED.gifs && <p>{privacy.gifText}</p>}
     {RELEASED.extension &&
       privacy.extensionText.map((paragraph) => <p>{paragraph}</p>)}
   </article>

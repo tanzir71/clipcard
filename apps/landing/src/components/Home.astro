@@ -111,8 +111,20 @@ const schema = [
 <Site schema={schema} locale={locale} localizedPage="home">
   <section class="hero dark" aria-labelledby="page-heading">
     <div class="container hero-copy">
-      <h1 id="page-heading">{RELEASED.app ? hero.appHeading : hero.heading}</h1>
-      <p>{RELEASED.app ? hero.appDescription : hero.description}</p>
+      <h1 id="page-heading">
+        {RELEASED.videoJoin
+          ? hero.videoHeading
+          : RELEASED.app
+            ? hero.appHeading
+            : hero.heading}
+      </h1>
+      <p>
+        {RELEASED.videoJoin
+          ? hero.videoDescription
+          : RELEASED.app
+            ? hero.appDescription
+            : hero.description}
+      </p>
       {RELEASED.app ? (
         <HeroAppShortcut locale={locale} />
       ) : (

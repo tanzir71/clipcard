@@ -1,3 +1,5 @@
+import { FLAGS } from '@clipcard/core/flags';
+import { GifSettings } from '@clipcard/ui/gif-settings';
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { CARD_FORMATS, CARD_TEMPLATES, THEMES } from '@clipcard/cards';
@@ -174,6 +176,7 @@ export function SettingsPage({ update }: { update: string | null }) {
         </nav>
       </aside>
       <div className="settings-body">
+        {FLAGS.gifs ? <GifSettings /> : null}
         <fieldset disabled={!ready} className="settings-fields">
           <section id="general" aria-labelledby="heading-general">
             <h1 id="heading-general">{strings['settings.general']}</h1>

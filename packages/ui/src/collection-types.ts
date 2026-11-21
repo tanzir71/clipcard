@@ -2,6 +2,12 @@ import type { CaptionCue, TextRange, VideoRange } from '@clipcard/core';
 import type { GridLayout } from '@clipcard/cards/grid-model';
 import type { CardDraft, Overrides } from './draft.ts';
 
+export interface VideoOptions {
+  format?: '9:16' | '4:5' | '16:9';
+  captions?: boolean;
+  reactionSkipped?: boolean;
+}
+
 export interface ClipDraft {
   id: string;
   title: string;
@@ -9,6 +15,7 @@ export interface ClipDraft {
   updatedAt: number;
   mode: 'card' | 'grid' | 'video';
   gridLayout?: GridLayout;
+  videoOptions?: VideoOptions;
   overrides: Overrides;
   order: string[];
   savedForLater?: boolean;
@@ -16,7 +23,7 @@ export interface ClipDraft {
 }
 
 export interface ClipVideo extends VideoRange {
-  source: string;
+  source: string | null;
   cues: CaptionCue[];
   poster?: string;
 }
@@ -31,6 +38,9 @@ export interface ClipInput {
   text?: string;
   range?: TextRange;
   video?: ClipVideo;
+  trim?: VideoRange;
+  fit?: 'contain' | 'cover';
+  reaction?: boolean;
   rect?: { x: number; y: number; width: number; height: number };
 }
 
@@ -52,6 +62,10 @@ export interface LibraryItem extends StoredMedia {
   kind: DraftClip['kind'];
   tags: string[];
   favorite: boolean;
+  title?: string;
+  outlet?: string;
+  lang?: string;
+  video?: ClipVideo;
   sourceUrl: string | null;
   savedAt: number;
 }
