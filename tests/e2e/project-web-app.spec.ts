@@ -273,7 +273,9 @@ test('shows GIPHY branding and uses the selected provider key', async ({
   );
   await page.goto('./');
   await page.getByRole('button', { name: 'Settings', exact: true }).click();
-  await page.getByLabel('GIF provider').selectOption('giphy');
+  await page
+    .getByRole('combobox', { name: 'GIF provider', exact: true })
+    .selectOption('giphy');
   await page.getByLabel('API key').fill('mock-giphy-key');
   await page.getByRole('button', { name: 'Save key', exact: true }).click();
   await expect(page.getByRole('status')).toHaveText(
