@@ -5,8 +5,8 @@ const languagePreview =
 export const CLIP_DRAFTS_RELEASED = true;
 export const CARD_LANGUAGES_RELEASED = true;
 export const VIDEO_CLIPS_RELEASED = true;
-export const VIDEO_JOIN_RELEASED = false;
-export const GIFS_RELEASED = false;
+export const VIDEO_JOIN_RELEASED = true;
+export const GIFS_RELEASED = true;
 const videoPreview = env?.DEV === true || env?.MODE === 'r6-preview';
 
 export const FLAGS = {

@@ -2,6 +2,12 @@
 
 Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md).
 
+## R6 video and GIFs — 2026-11-21
+
+- The web app and extension share a local timeline and a WebCodecs renderer. The extension runs the export in the open popup. Both surfaces save video options, clip trims and caption edits in the draft.
+- The Library stores user-imported media and Clipcard captures in browser storage and draft exports. GIPHY and KLIPY results are shown directly in provider-specific search views with attribution. Their standard API terms restrict storing provider content, so provider assets stay out of the local Library and video exports. Local GIFs support reactions and export. See the [GIPHY API documentation](https://developers.giphy.com/docs/api/best-practices/) and [KLIPY API terms](https://klipy.com/support/api-terms).
+- KLIPY is the default search provider. A user supplies a key in Settings. The extension requests the provider’s optional origins from the Search gesture, and the clients send the query when the user presses Search.
+
 ## R5 video recording — 2026-11-21
 
 - The R2 build comparison found that optional `tabCapture` preserved the install warnings. R5 uses `getDisplayMedia` from the Add clip gesture. Chromium opens its chooser for every recording, and Clipcard verifies the selected tab by cropping to the actual player before encoding. It releases the capture tracks when recording stops.

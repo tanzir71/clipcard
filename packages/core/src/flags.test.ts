@@ -11,7 +11,14 @@ it('enables clips, drafts, languages and video clips by default', async () => {
     Object.entries(FLAGS)
       .filter(([, enabled]) => enabled)
       .map(([feature]) => feature),
-  ).toEqual(['clips', 'drafts', 'languages', 'videoClips']);
+  ).toEqual([
+    'clips',
+    'drafts',
+    'languages',
+    'videoClips',
+    'videoJoin',
+    'gifs',
+  ]);
 });
 
 it('only activates overrides in development', async () => {

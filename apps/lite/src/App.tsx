@@ -562,7 +562,6 @@ export function App() {
         collection={collection}
         change={setCollection}
         close={close}
-        onVideo={toVideo}
         onCard={(clip) => switchMode('card', clip)}
         onGrid={() => switchMode('grid')}
         view={flow === 'workspace' ? 'workspace' : 'popup'}
@@ -574,6 +573,7 @@ export function App() {
         collection={collection}
         change={setCollection}
         close={close}
+        onVideo={toVideo}
         onCard={collection.clips.length ? () => switchMode('card') : undefined}
         view={flow === 'popup' ? 'popup' : 'workspace'}
         beforePreview={flow === 'popup' ? undefined : input}

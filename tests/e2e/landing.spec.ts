@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 import {
   CARD_LANGUAGES_RELEASED,
   VIDEO_CLIPS_RELEASED,
+  VIDEO_JOIN_RELEASED,
 } from '../../packages/core/flags.ts';
 import { HtmlValidate } from 'html-validate';
 
@@ -11,10 +12,12 @@ test('shows the web app, upcoming features and keyboard-accessible FAQ', async (
 }) => {
   await page.goto('./');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-    'Share the news as cards and grids',
+    VIDEO_JOIN_RELEASED
+      ? 'Share the news as cards, grids and video'
+      : 'Share the news as cards and grids',
   );
   await expect(page.getByText('Soon', { exact: true })).toHaveCount(
-    VIDEO_CLIPS_RELEASED ? 2 : 3,
+    VIDEO_JOIN_RELEASED ? 0 : VIDEO_CLIPS_RELEASED ? 2 : 3,
   );
   if (VIDEO_CLIPS_RELEASED)
     await expect(

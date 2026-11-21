@@ -40,3 +40,7 @@ Clipcard performs rendering and keeps its working data on the device. It may req
 3. Try Settings in the extension profile. No login or test credentials are required.
 
 Submit for review from the owner’s account. Set the repository’s `STORE_URL` to the public listing URL after approval. [Chrome submission steps](https://developer.chrome.com/docs/webstore/publish)
+
+## GIF search disclosure
+
+A GIF search sends the submitted terms and the configured key directly to the selected provider, GIPHY or KLIPY. Library items, clips and video exports are stored in the browser. The extension asks for provider host access when the user starts a search.

@@ -234,12 +234,17 @@ export async function exportVideoProject(
       if (scene.kind === 'clip' && scene.clip.video && entry?.track) {
         const { video: original } = scene.clip;
         const clip = { ...scene.clip, sourceUrl: scene.url };
-        const artist = await clipScene(stage, clip, {
-          ...original,
-          start: original.start + scene.range.start,
-          end: original.start + scene.range.end,
-          cues: scene.cues,
-        });
+        const artist = await clipScene(
+          stage,
+          clip,
+          {
+            ...original,
+            start: original.start + scene.range.start,
+            end: original.start + scene.range.end,
+            cues: scene.cues,
+          },
+          collection.draft.overrides.theme,
+        );
         const first = await entry.track.getFirstTimestamp();
         const duration = await entry.track.computeDuration();
         const timestamps = Array.from({ length: frames }, (_, index) =>

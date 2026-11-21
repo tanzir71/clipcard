@@ -1,3 +1,4 @@
+import type { CardColor } from '@clipcard/cards';
 import { prepareCardAssets } from '@clipcard/cards/assets';
 import { qrGeometry } from '@clipcard/cards/qr';
 import { typefaceFor } from '@clipcard/cards/typefaces';
@@ -9,18 +10,6 @@ export const sceneWidth = 1080;
 export const sceneHeight = 1920;
 const ink = '#0b0b0c';
 const mist = '#a9bcdf';
-
-function cover(
-  ctx: CanvasRenderingContext2D,
-  image: HTMLCanvasElement | OffscreenCanvas,
-  width: number,
-  height: number,
-) {
-  const scale = Math.max(width / image.width, height / image.height);
-  const w = image.width * scale;
-  const h = image.height * scale;
-  ctx.drawImage(image, (width - w) / 2, (height - h) / 2, w, h);
-}
 
 function wrap(
   ctx: CanvasRenderingContext2D,
@@ -62,7 +51,10 @@ export async function clipScene(
   ctx: CanvasRenderingContext2D,
   clip: DraftClip,
   video: ClipVideo,
+  theme?: CardColor,
 ) {
+  const ground = theme?.deep ?? ink;
+  const highlight = theme?.light ?? mist;
   const outlet =
     clip.outlet || (clip.sourceUrl && new URL(clip.sourceUrl).hostname) || '';
   const texts = [
@@ -117,7 +109,7 @@ export async function clipScene(
     await poster.decode().catch(() => undefined);
   }
 
-  ctx.fillStyle = ink;
+  ctx.fillStyle = ground;
   ctx.fillRect(0, 0, sceneWidth, sceneHeight);
   if (poster.naturalWidth) {
     const factor =
@@ -161,9 +153,9 @@ export async function clipScene(
     const width = Math.min(946, ctx.measureText(line).width + 20);
     const x = rtl ? edge - width : edge;
     const y = 316 + index * 70;
-    ctx.fillStyle = mist;
+    ctx.fillStyle = highlight;
     ctx.fillRect(x, y, width, 64);
-    ctx.fillStyle = ink;
+    ctx.fillStyle = ground;
     ctx.fillText(line, rtl ? edge - 10 : edge + 10, y + 49, width - 20);
   });
   ctx.fillStyle = '#ededf0';
@@ -181,7 +173,7 @@ export async function clipScene(
   output.width = sceneWidth;
   output.height = sceneHeight;
   const end = output.getContext('2d', { alpha: false })!;
-  ctx.fillStyle = ink;
+  ctx.fillStyle = ground;
   ctx.fillRect(0, 0, sceneWidth, sceneHeight);
   texturedBackground(250, 1690);
   const sourcesRtl = dirFor(detectLang(strings['video.watch'])) === 'rtl';
@@ -203,7 +195,7 @@ export async function clipScene(
     ctx.fillRect(x, 760, qr.size, qr.size);
     ctx.save();
     ctx.translate(x, 760);
-    ctx.fillStyle = ink;
+    ctx.fillStyle = ground;
     ctx.fill(new Path2D(qr.path));
     ctx.restore();
     labelX += (qr.size + 36) * (sourcesRtl ? -1 : 1);
@@ -211,7 +203,7 @@ export async function clipScene(
   ctx.fillStyle = '#fff';
   ctx.font = fontFor(source || title, 40, lang);
   ctx.fillText(source || title, labelX, 860, 650);
-  ctx.fillStyle = mist;
+  ctx.fillStyle = highlight;
   ctx.font = '500 22px "Geist Mono", monospace';
   ctx.fillText(timeRange, labelX, 909, 650);
   end.drawImage(ctx.canvas, 0, 0);
@@ -226,9 +218,6 @@ export async function clipScene(
       ctx.beginPath();
       ctx.rect(0, 0, sceneWidth, band);
       ctx.clip();
-      ctx.filter = 'blur(52px) brightness(0.55)';
-      cover(ctx, input, sceneWidth, band);
-      ctx.filter = 'none';
       ctx.drawImage(input, 0, 0, sceneWidth, band);
       ctx.restore();
       const clock = videoClock(video.start + at);
@@ -259,7 +248,7 @@ export async function clipScene(
         width,
         rows.length * 48 + 20,
       );
-      ctx.fillStyle = ink;
+      ctx.fillStyle = ground;
       rows.forEach((row, index) =>
         ctx.fillText(row, sceneWidth / 2, 1372 + index * 48, width - 20),
       );

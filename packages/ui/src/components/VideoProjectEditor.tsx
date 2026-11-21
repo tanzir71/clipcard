@@ -1,3 +1,4 @@
+import { THEMES } from '@clipcard/cards';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { FLAGS } from '@clipcard/core/flags';
@@ -223,6 +224,10 @@ export function VideoProjectEditor({
   const task = useRef<AbortController | null>(null);
   const drag = useRef<string | null>(null);
   const options = collection.draft.videoOptions;
+  const themeName =
+    (Object.keys(THEMES) as Array<keyof typeof THEMES>).find(
+      (name) => THEMES[name].deep === collection.draft.overrides.theme?.deep,
+    ) ?? '';
   const format = options?.format ?? '9:16';
   const current =
     scenes.find((scene) => time < scene.at + scene.seconds - 0.0001) ??
@@ -433,6 +438,7 @@ export function VideoProjectEditor({
               key={scene.id}
               aria-pressed={scene.id === current.id}
               title={sceneName(scene)}
+              aria-label={sceneName(scene)}
               style={{ '--clip-duration': scene.seconds } as CSSProperties}
               onClick={() => {
                 setPlaying(false);
@@ -569,6 +575,31 @@ export function VideoProjectEditor({
                 {Object.keys(visualFormats).map((value) => (
                   <option key={value}>{value}</option>
                 ))}
+              </select>
+            </label>
+            <label>
+              {strings['card.theme']}
+              <select
+                value={themeName}
+                onChange={(event) => {
+                  const theme =
+                    THEMES[event.currentTarget.value as keyof typeof THEMES];
+                  void update(
+                    updateDraftCollection(collection.draft.id, {
+                      overrides: { ...collection.draft.overrides, theme },
+                    }),
+                  );
+                }}
+              >
+                <option value="">{strings['card.auto']}</option>
+                {(Object.keys(THEMES) as Array<keyof typeof THEMES>).map(
+                  (name) => (
+                    <option key={name} value={name}>
+                      {strings[('color.' + name) as keyof typeof strings] ??
+                        name}
+                    </option>
+                  ),
+                )}
               </select>
             </label>
             <label>

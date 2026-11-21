@@ -176,7 +176,6 @@ export function SettingsPage({ update }: { update: string | null }) {
         </nav>
       </aside>
       <div className="settings-body">
-        {FLAGS.gifs ? <GifSettings /> : null}
         <fieldset disabled={!ready} className="settings-fields">
           <section id="general" aria-labelledby="heading-general">
             <h1 id="heading-general">{strings['settings.general']}</h1>
@@ -416,6 +415,7 @@ export function SettingsPage({ update }: { update: string | null }) {
             </div>
           </section>
         </fieldset>
+        {FLAGS.gifs ? <GifSettings /> : null}
         <p role="status">
           {status || (error ? strings['card.savedFailed'] : '')}
         </p>
