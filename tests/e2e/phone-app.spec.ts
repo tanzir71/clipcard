@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 
 test('installs a scoped service worker and opens a shared link while offline', async ({
@@ -59,4 +60,64 @@ test('installs a scoped service worker and opens a shared link while offline', a
     .toBe('image/png');
   await page.reload();
   await expect(page.locator('.cc-headline')).toHaveText('River Buses');
+});
+
+test('accepts an MP4 share offline and keeps the playable clip in its draft', async ({
+  page,
+  context,
+  request,
+  baseURL,
+}) => {
+  if (!baseURL) throw new Error('App base URL missing');
+  const manifest = await (await request.get('manifest.webmanifest')).json();
+  expect(manifest.share_target.params.files.accept).toContain('video/mp4');
+
+  const media = await readFile(
+    new URL('../../fixtures/pages/video.mp4', import.meta.url),
+  );
+  await page.goto('./');
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  await expect
+    .poll(() =>
+      page.evaluate(() => Boolean(navigator.serviceWorker.controller)),
+    )
+    .toBe(true);
+  await context.setOffline(true);
+
+  await page.evaluate(
+    ({ action, data }) => {
+      const form = document.createElement('form');
+      form.action = action;
+      form.method = 'POST';
+      form.enctype = 'multipart/form-data';
+      const field = document.createElement('input');
+      field.name = 'photo';
+      field.type = 'file';
+      const transfer = new DataTransfer();
+      transfer.items.add(
+        new File([new Uint8Array(data)], 'shared-clip.mp4', {
+          type: 'video/mp4',
+        }),
+      );
+      field.files = transfer.files;
+      form.append(field);
+      document.body.append(form);
+      form.submit();
+    },
+    { action: new URL('share/', baseURL).href, data: [...media] },
+  );
+
+  const clip = page.locator('.clip-project-scenes button[draggable="true"]');
+  await expect(clip).toHaveCount(1);
+  await clip.click();
+  await expect
+    .poll(() =>
+      page
+        .locator('.clip-project-preview video')
+        .first()
+        .evaluate((el) => (el as HTMLVideoElement).videoWidth),
+    )
+    .toBeGreaterThan(0);
+  await page.reload();
+  await expect(clip).toHaveCount(1);
 });

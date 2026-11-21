@@ -4,6 +4,8 @@ export const STORE_URL = import.meta.env.STORE_URL ?? '';
 export const REPO_URL =
   import.meta.env.CLIPCARD_REPO_URL ?? 'https://github.com/tanzir71/clipcard';
 export const ZIP_URL = `${REPO_URL}/releases/latest/download/clipcard-chrome.zip`;
+export const FIREFOX_ZIP_URL =
+  REPO_URL + '/releases/latest/download/clipcard-firefox.zip';
 export const INSTALL_URL = STORE_URL || ZIP_URL;
 export const RELEASED = {
   lite: true,

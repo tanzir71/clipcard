@@ -1,6 +1,6 @@
 {
   "name": "clipcard",
-  "version": "0.7.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.33.2",
@@ -18,6 +18,7 @@
     "capture:landing": "node apps/landing/scripts/capture-extension.ts",
     "build:landing": "pnpm prepare:landing && pnpm --filter @clipcard/landing build",
     "build:extension": "pnpm prepare:assets && pnpm --filter @clipcard/extension build",
+    "build:firefox": "pnpm prepare:assets && pnpm --filter @clipcard/extension exec wxt zip -b firefox",
     "build:store": "node scripts/build-store.ts",
     "build": "pnpm prepare:assets && tsc -b && pnpm --filter @clipcard/extension build && pnpm build:landing && pnpm --filter @clipcard/lite build",
     "typecheck": "pnpm prepare:assets && pnpm prepare:landing && tsc -b && tsc -p tsconfig.tools.json && tsc -p packages/cards/gallery/tsconfig.json && pnpm --filter @clipcard/extension --filter @clipcard/landing --filter @clipcard/lite --fail-if-no-match -r typecheck",

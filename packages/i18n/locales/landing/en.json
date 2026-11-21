@@ -16,7 +16,7 @@
   "extension": {
     "download": "Download for Chrome",
     "store": "Add to Chrome",
-    "heroBeta": "Beta · Right-click a link to make a card. Install in Developer mode.",
+    "heroBeta": "Right-click a link to make a card. Install in Developer mode.",
     "heading": "Install the extension",
     "beta": "Developer-mode beta for Chrome, Edge and Brave.",
     "zip": "Download .zip",
@@ -60,7 +60,7 @@
     "offline": "Open recent cards offline. On Android, send links to Clipcard from the share menu.",
     "ios": "On iPhone, tap Share, then Add to Home Screen.",
     "iosHint": "iPhone: Share → Add to Home Screen",
-    "heroBeta": "Beta · Installs like an app. Open recent cards offline.",
+    "heroBeta": "Installs like an app. Open recent cards offline.",
     "later": "Not now",
     "install": "Install",
     "open": "Open the app"

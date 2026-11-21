@@ -10,10 +10,10 @@ Turn any link into a clipcard with a QR code back to the source. One click. Free
 
 ## Description
 
-Make a photo card from a link, quotation or image and keep a clear path back to the source. Right-click a link and choose **Copy as clipcard**. Paste the card into a message, a post or a document.
+Make shareable news cards, story grids, and short videos from links, excerpts, photos, and moments from a playing tab. Right-click a link and choose **Copy as clipcard** to get a card with a QR code back to the source.
 
-Use Clip mode to gather quotes, photos and charts from several pages into a grid. Clipcard groups clips by source so readers can scan a QR code to find the original. Save a draft and return to it later from the toolbar.
+Collect links from a page, open tabs, or a pasted list. Clipcard can make a Roundup, save a numbered Carousel ZIP, or assemble a Digest video with source QR codes. Record playing tab video with the browser’s permission, trim clips, and export a captioned video.
 
-Clipcard chooses the layout and size automatically. Open Auto to choose a different format or template. Cards support 30 languages, including Bangla, Hindi and Urdu. You can set a default color or use your own mark.
+Clipcard chooses the format and design automatically. Open Auto to change the layout, theme, or format. Cards support 30 languages, including Bangla, Hindi, and Urdu. Save local drafts and library items to reuse them.
 
-Clipcard makes cards in your browser and stores drafts on your device. No account or analytics.
+Rendering and storage happen in your browser. Clipcard works without an account or analytics.

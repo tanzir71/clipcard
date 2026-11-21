@@ -8,10 +8,18 @@ export default defineConfig({
     zip: { artifactTemplate: 'clipcard-store-{{version}}.zip' },
   }),
   hooks: {
-    'build:manifestGenerated': (_wxt, manifest) => {
+    'build:manifestGenerated': (wxt, manifest) => {
       // WXT adds runtime content-script matches as required hosts.
       // Clipcard uses activeTab and requests persistent access on demand.
       if ('host_permissions' in manifest) delete manifest.host_permissions;
+      if (wxt.config.browser === 'firefox') {
+        manifest.permissions = manifest.permissions?.filter(
+          (permission) => permission !== 'offscreen',
+        );
+        manifest.browser_specific_settings = {
+          gecko: { id: 'clipcard@tanzir71.github.io' },
+        };
+      }
     },
   },
   manifest: {

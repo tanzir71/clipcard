@@ -69,7 +69,13 @@ export default defineConfig(async ({ command, mode }) => {
               url: 'url',
               files: {
                 name: 'photo',
-                accept: ['image/png', 'image/jpeg', 'image/webp', 'image/avif'],
+                accept: [
+                  'image/png',
+                  'image/jpeg',
+                  'image/webp',
+                  'image/avif',
+                  'video/mp4',
+                ],
               },
             },
           },

@@ -12,6 +12,4 @@ Badilisha kiungo chochote kuwa kadi ya picha yenye msimbo wa QR kwa chanzo asili
 
 ## Description
 
-Tengeneza kadi ya kushiriki kutokana na kiungo, nukuu au picha. Bofya kiungo kwa kitufe cha kulia ili kunakili kadi. Msomaji anaweza kuchanganua msimbo wa QR na kufungua chanzo asili.
-
-Unganisha nukuu, picha na chati za kurasa mbalimbali katika gridi. Hifadhi rasimu na uifungue tena katika kivinjari hiki. Chagua ukubwa, rangi na alama yako. Kadi zinaundwa na kuhifadhiwa kwenye kifaa chako.
+Tengeneza kadi za habari, gridi na video fupi kutoka kwa viungo, dondoo, picha na sehemu za video inayocheza kwenye kichupo. Bofya kiungo kwa kitufe cha kulia ili kunakili kadi, au kusanya vyanzo kadhaa katika muhtasari, mfululizo wa kadi au video. Msimbo wa QR humrudisha msomaji kwenye chanzo asili. Rasimu na faili husalia kwenye kivinjari. Hakuna akaunti inayohitajika.

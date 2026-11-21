@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## v1.0.0 - 2026-11-21
+
+- Install the complete Clipcard extension through Chromium Developer mode.
+- Try the Firefox temporary add-on for sourced cards, clippings, and video moment cards.
+- Share an MP4 into the web app on supported phones and finish it from a local video draft, even offline.
+- Find the Chromium and Firefox downloads together on the landing page.
+
 ## v0.7.0 - 2026-11-21
 
 - Collect headlines by dragging across a page, gathering open tabs, or pasting a list of links.

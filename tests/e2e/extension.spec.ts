@@ -2,6 +2,7 @@ import { expect, test } from './extension-fixture';
 import AxeBuilder from '@axe-core/playwright';
 import type { Page, Worker } from '@playwright/test';
 import jsQR from 'jsqr';
+import { join } from 'node:path';
 import { PNG } from 'pngjs';
 import { BATCH_RELEASED } from '../../packages/core/flags.ts';
 
@@ -569,6 +570,65 @@ test.describe('registered browser actions', () => {
     await expect
       .poll(() => clipboardSource(page), { timeout: 12_000 })
       .toContain(origin + '/feed.html#:~:text=');
+  });
+
+  test('captures the store listing from the real extension', async ({
+    extension,
+    worker,
+  }) => {
+    const directory = process.env.CLIPCARD_STORE_SCREENSHOTS;
+    test.skip(!directory, 'Run explicitly to refresh the store images.');
+    test.setTimeout(120_000);
+    const page = await extension.newPage();
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto(origin + '/feed.html');
+    const link = await page.locator('#preview').getAttribute('href');
+    if (!link || !directory) throw new Error('Store capture inputs missing');
+    const capture = (name: string) =>
+      page.screenshot({
+        path: join(directory, name),
+        animations: 'disabled',
+      });
+    await runMenu(worker, page.url(), 'copy', link);
+    await expect(page.locator('clipcard-toast')).toBeVisible({
+      timeout: 12_000,
+    });
+    await page.locator('clipcard-toast').hover();
+    await capture('01-one-click.png');
+    const [sheet] = await Promise.all([
+      page.waitForEvent('framenavigated', (item) =>
+        item.url().includes('sheet.html'),
+      ),
+      clickToastButton(page, 'Edit'),
+    ]);
+    await expect(sheet.locator('.cc-headline')).toBeVisible();
+    await capture('02-quick-sheet.png');
+    await sheet.getByRole('button', { name: 'Auto · 4:5' }).click();
+    await sheet.getByRole('button', { name: 'Forest', exact: true }).click();
+    await capture('03-colors.png');
+
+    await page.goto(origin + '/bn-article.html');
+    await runMenu(worker, page.url(), 'copy');
+    await expect(page.locator('clipcard-toast')).toBeVisible({
+      timeout: 12_000,
+    });
+    await page.locator('clipcard-toast').hover();
+    const [bangla] = await Promise.all([
+      page.waitForEvent('framenavigated', (item) =>
+        item.url().includes('sheet.html'),
+      ),
+      clickToastButton(page, 'Edit'),
+    ]);
+    await expect(bangla.locator('.cc-headline')).toContainText(
+      /[\u0980-\u09ff]/,
+    );
+    await capture('04-bangla.png');
+
+    await page.goto(new URL('options.html', worker.url()).href);
+    await expect(
+      page.getByRole('navigation', { name: 'Settings' }),
+    ).toBeVisible();
+    await capture('05-settings.png');
   });
 
   test('measures 20 one-click card copies', async ({ extension, worker }) => {

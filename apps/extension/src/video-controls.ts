@@ -159,7 +159,8 @@ export function mountVideoClipping() {
   const progress = document.createElement('span');
   const stopButton = videoButton('video-stop');
   const trigger = videoButton('video-trigger');
-  capsule.append(times, card, add);
+  capsule.append(times, card);
+  if (!import.meta.env.FIREFOX) capsule.append(add);
   rail.append(highlight, start, end);
   panel.append(capsule, rail, status);
   indicator.append(progress, stopButton);
@@ -452,9 +453,11 @@ export function mountVideoClipping() {
   card.onclick = () => {
     if (target && range && !busy) void moment(target, range);
   };
-  add.onclick = () => {
-    if (target && range && !busy) void record(target, range);
-  };
+  if (!import.meta.env.FIREFOX) {
+    add.onclick = () => {
+      if (target && range && !busy) void record(target, range);
+    };
+  }
   stopButton.onclick = () => recording?.abort();
   triggerSurface.host.onpointerenter = () => {
     pointerInsideTrigger = true;

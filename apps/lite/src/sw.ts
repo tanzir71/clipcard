@@ -3,6 +3,9 @@ import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { CacheFirst } from 'workbox-strategies';
 import { draftFromInput } from '@clipcard/ui/input';
+import { maxClipSeconds } from '@clipcard/core';
+import { appendDraftClip } from '@clipcard/ui/collections';
+import { mp4Duration } from '@clipcard/ui/video-metadata';
 import { FLAGS } from '@clipcard/core/flags';
 import { appendCardDraft } from '@clipcard/ui/collection-card';
 import { saveDraft } from '@clipcard/ui/storage';
@@ -14,6 +17,7 @@ declare const self: ServiceWorkerGlobalScope & {
 
 const scope = new URL(self.registration.scope);
 const sharePath = new URL('share/', scope).pathname;
+const maxShareBytes = 20_000_000;
 precacheAndRoute(self.__WB_MANIFEST);
 registerRoute(
   new NavigationRoute(
@@ -40,7 +44,7 @@ registerRoute(
   async ({ request }) => {
     const destination = new URL(scope);
     try {
-      if (Number(request.headers.get('content-length')) > 20_000_000)
+      if (Number(request.headers.get('content-length')) > maxShareBytes)
         throw new Error('Share too large');
       const data = await request.formData();
       const text = String(data.get('text') ?? '').slice(0, 20_000);
@@ -49,6 +53,34 @@ registerRoute(
       const uri =
         String(data.get('url') ?? '') ||
         text.match(/https?:\/\/[^\s<>"']+/)?.[0];
+      if (
+        FLAGS.videoJoin &&
+        file instanceof File &&
+        file.type === 'video/mp4'
+      ) {
+        if (file.size > maxShareBytes) throw new RangeError('Share too large');
+        const duration = await mp4Duration(file);
+        const collection = await appendDraftClip(
+          {
+            kind: 'video',
+            title:
+              title ||
+              file.name.replace(/\.mp4$/i, '').slice(0, 120) ||
+              strings['video.title'],
+            sourceUrl: uri ?? null,
+            video: {
+              source: null,
+              start: 0,
+              end: Math.min(duration, maxClipSeconds),
+              cues: [],
+            },
+          },
+          { media: file, preferVideo: true },
+        );
+        destination.searchParams.set('collection', collection.draft.id);
+        destination.searchParams.set('from', 'share');
+        return Response.redirect(destination.href, 303);
+      }
       const draft = await draftFromInput(
         { text, title, uri, file: file instanceof File ? file : null },
         strings['card.photo'],

@@ -12,6 +12,4 @@ Convierte cualquier enlace en una tarjeta con código QR a la fuente original. U
 
 ## Description
 
-Crea una tarjeta para compartir a partir de un enlace, una cita o una imagen. Haz clic derecho en un enlace para copiar la tarjeta. Quien la reciba puede escanear el código QR y abrir la fuente original.
-
-Combina citas, fotos y gráficos de varias páginas en una cuadrícula. Guarda el borrador y ábrelo después en este navegador. Elige el tamaño, el color y tu propia marca. Las tarjetas se crean y se guardan en tu dispositivo.
+Crea tarjetas de noticias, cuadrículas y vídeos breves a partir de enlaces, extractos, fotos y momentos de una pestaña en reproducción. Haz clic derecho en un enlace para copiar una tarjeta, o reúne varias fuentes en un resumen, carrusel o vídeo. Los códigos QR llevan a las fuentes originales. Los borradores y exportaciones se quedan en el navegador. No necesitas una cuenta.

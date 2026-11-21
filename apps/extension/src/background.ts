@@ -71,6 +71,16 @@ async function createOffscreen() {
 }
 
 async function offscreen<T>(message: OffscreenMessage): Promise<T | null> {
+  // Firefox runs its MV3 background script in a DOM-capable extension page.
+  if (import.meta.env.FIREFOX) {
+    if (message.kind === 'makeBatch') return null;
+    const { makeCard, sourceAddress } = await import('./make-card.ts');
+    const result =
+      message.kind === 'resolve'
+        ? await sourceAddress(message.address, true)
+        : await makeCard(message.source, message.render, sitePrefs, false);
+    return result as T;
+  }
   offscreenRequests++;
   try {
     opening ??= createOffscreen().finally(() => {
@@ -631,6 +641,7 @@ async function handleRequest(
         if (id) await open(tab, id, undefined, id);
         return Boolean(id);
       }
+      if (import.meta.env.FIREFOX) return null;
       try {
         const tray = await persistRecording(tab, hints, message.capture);
         if (tray) await open(tab, undefined, undefined, tray.id);
