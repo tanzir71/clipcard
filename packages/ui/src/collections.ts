@@ -37,7 +37,17 @@ export async function appendDraftClip(
     now = Date.now(),
     media,
     preferGrid = false,
-  }: { now?: number; media?: Blob; preferGrid?: boolean } = {},
+    draftId,
+    preferVideo = false,
+    after,
+  }: {
+    now?: number;
+    media?: Blob;
+    preferGrid?: boolean;
+    draftId?: string;
+    preferVideo?: boolean;
+    after?: string;
+  } = {},
 ): Promise<DraftCollection> {
   const db = await collectionDatabase();
   const id = crypto.randomUUID();
@@ -55,13 +65,17 @@ export async function appendDraftClip(
     const prefs = tx.objectStore('prefs');
     const drafts = tx.objectStore('drafts');
     const clips = tx.objectStore('clips');
-    const currentId = await prefs.get('currentDraftId');
+    const currentId = draftId ?? (await prefs.get('currentDraftId'));
     const previous = currentId ? await drafts.get(currentId) : undefined;
+    if (draftId && !previous) {
+      await tx.done;
+      throw new Error('missing-draft');
+    }
     const current =
-      previous && now - previous.updatedAt < draftTimeout
+      previous && (draftId || now - previous.updatedAt < draftTimeout)
         ? previous
         : undefined;
-    if (current && video) {
+    if (current && video?.source) {
       const saved = await clips.index('draftId').getAll(current.id);
       const used = saved.reduce(
         (total, clip) =>
@@ -76,17 +90,20 @@ export async function appendDraftClip(
       }
     }
     const mode =
-      video || current?.mode === 'video'
+      preferVideo || video || current?.mode === 'video'
         ? 'video'
         : preferGrid || current?.order.length
           ? 'grid'
           : 'card';
+    const order = current?.order.slice() ?? [];
+    const position = after ? order.indexOf(after) : -1;
+    order.splice(position < 0 ? order.length : position + 1, 0, id);
     const draft: ClipDraft = current
       ? {
           ...current,
           updatedAt: Math.max(current.updatedAt, now),
           mode,
-          order: [...current.order, id],
+          order,
         }
       : {
           id: crypto.randomUUID(),
@@ -95,7 +112,7 @@ export async function appendDraftClip(
           updatedAt: now,
           mode,
           overrides: {},
-          order: [id],
+          order,
         };
     const clip: DraftClip = {
       ...input,
@@ -165,7 +182,10 @@ export async function startNewDraftCollection(): Promise<void> {
 export async function updateDraftCollection(
   id: string,
   patch: Partial<
-    Pick<ClipDraft, 'mode' | 'gridLayout' | 'overrides' | 'title'>
+    Pick<
+      ClipDraft,
+      'mode' | 'gridLayout' | 'overrides' | 'title' | 'videoOptions'
+    >
   >,
 ): Promise<DraftCollection | undefined> {
   const db = await collectionDatabase();
@@ -183,6 +203,43 @@ export async function updateDraftCollection(
     tx.done,
   ]);
   return { draft, clips: orderedClips(clips, draft.order) };
+}
+
+export async function updateVideoClip(
+  draftId: string,
+  clipId: string,
+  change: {
+    trim?: DraftClip['trim'];
+    fit?: DraftClip['fit'];
+    cues?: NonNullable<DraftClip['video']>['cues'];
+  },
+): Promise<DraftCollection | undefined> {
+  const db = await collectionDatabase();
+  const tx = db.transaction(['drafts', 'clips'], 'readwrite');
+  const drafts = tx.objectStore('drafts');
+  const clips = tx.objectStore('clips');
+  const [draft, clip] = await Promise.all([
+    drafts.get(draftId),
+    clips.get(clipId),
+  ]);
+  if (!draft || !clip?.video || clip.draftId !== draftId) {
+    await tx.done;
+    return;
+  }
+  const duration = clip.video.end - clip.video.start;
+  const trim = change.trim && {
+    start: Math.max(0, Math.min(duration - 0.2, change.trim.start)),
+    end: Math.min(duration, change.trim.end),
+  };
+  const next = {
+    ...clip,
+    trim: trim && trim.end - trim.start >= 0.19 ? trim : clip.trim,
+    fit: change.fit ?? clip.fit,
+    video: { ...clip.video, cues: change.cues ?? clip.video.cues },
+  };
+  const updated = { ...draft, updatedAt: Date.now() };
+  await Promise.all([clips.put(next), drafts.put(updated), tx.done]);
+  return getDraftCollection(draftId);
 }
 
 export async function moveDraftClip(

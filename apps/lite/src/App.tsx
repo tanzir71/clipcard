@@ -19,7 +19,14 @@ import {
   sweepDraftCollections,
   updateDraftCollection,
 } from '@clipcard/ui/collections';
-import type { ClipDraft, DraftCollection } from '@clipcard/ui/collections';
+import type {
+  ClipDraft,
+  DraftClip,
+  DraftCollection,
+} from '@clipcard/ui/collections';
+import { LibraryPanel } from '@clipcard/ui/library-panel';
+import { VideoProjectEditor } from '@clipcard/ui/video-project-editor';
+import { GifSettings } from '@clipcard/ui/gif-settings';
 import { GridEditor } from '@clipcard/ui/grid-editor';
 import { CollectionBackupControls } from '@clipcard/ui/collection-backup-controls';
 import { CollectionThumbnail } from '@clipcard/ui/collection-thumbnail';
@@ -35,7 +42,7 @@ import mark from '../../../design/brand/mark.svg?url';
 import './collections.css';
 
 declare const __CLIPCARD_BOOKMARK__: string;
-type Screen = 'make' | 'drafts';
+type Screen = 'make' | 'drafts' | 'library' | 'gifs' | 'settings';
 const getParams = () => new URLSearchParams(location.search);
 const appUrl = import.meta.env.BASE_URL;
 const collectionsEnabled = FLAGS.drafts && FLAGS.clips;
@@ -157,6 +164,39 @@ function AppNav({
           <span>{strings['drafts.title']}</span>
           {length ? <small>{length}</small> : null}
         </button>
+        {FLAGS.videoJoin ? (
+          <button
+            type="button"
+            title={strings['library.tab']}
+            aria-current={screen === 'library' ? 'page' : undefined}
+            onClick={() => go('library')}
+          >
+            <Icon name="photo" />
+            <span>{strings['library.tab']}</span>
+          </button>
+        ) : null}
+        {FLAGS.gifs ? (
+          <>
+            <button
+              type="button"
+              title={strings['gifs.tab']}
+              aria-current={screen === 'gifs' ? 'page' : undefined}
+              onClick={() => go('gifs')}
+            >
+              <Icon name="video" />
+              <span>{strings['gifs.tab']}</span>
+            </button>
+            <button
+              type="button"
+              title={strings['settings.title']}
+              aria-current={screen === 'settings' ? 'page' : undefined}
+              onClick={() => go('settings')}
+            >
+              <Icon name="settings" />
+              <span>{strings['settings.title']}</span>
+            </button>
+          </>
+        ) : null}
       </nav>
       <div className="app-bookmark-help">
         <strong>{strings['card.oneClickBookmark']}</strong>
@@ -215,7 +255,7 @@ export function App() {
   const [history, setHistory] = useState<CardDraft[]>([]);
   const [collection, setCollection] = useState<DraftCollection | null>(null);
   const [collections, setCollections] = useState<ClipDraft[]>([]);
-  const [filter, setFilter] = useState<'all' | 'card' | 'grid'>('all');
+  const [filter, setFilter] = useState<'all' | ClipDraft['mode']>('all');
   const [flow, setFlow] = useState<'workspace' | 'popup' | 'shared'>(
     'workspace',
   );
@@ -304,7 +344,10 @@ export function App() {
         return;
       }
       const group = await appendCardDraft(draft);
-      if (group.draft.mode === 'grid') {
+      if (
+        group.draft.mode === 'grid' ||
+        (FLAGS.videoJoin && group.draft.mode === 'video')
+      ) {
         showGrid(group, view);
         await refresh();
         return;
@@ -323,7 +366,11 @@ export function App() {
         setMessage(strings['card.draftMissing']);
         return;
       }
-      if (group.draft.mode === 'grid' || group.clips.length === 0) {
+      if (
+        group.draft.mode === 'grid' ||
+        (FLAGS.videoJoin && group.draft.mode === 'video') ||
+        group.clips.length === 0
+      ) {
         showGrid(group, view);
         return;
       }
@@ -459,12 +506,8 @@ export function App() {
   }
 
   function navigate(destination: Screen) {
-    if (destination === 'make') {
-      setScreen('make');
-      return;
-    }
-    setScreen('drafts');
-    void refresh().catch(failed);
+    setScreen(destination);
+    if (destination === 'drafts') void refresh().catch(failed);
   }
 
   function fresh() {
@@ -473,13 +516,19 @@ export function App() {
     else close();
   }
 
-  function switchMode(mode: 'grid' | 'card') {
+  function switchMode(mode: ClipDraft['mode'], clip?: DraftClip) {
     if (!collection) return;
     void updateDraftCollection(collection.draft.id, { mode })
       .then(async (next) => {
         if (!next) return;
-        if (mode === 'grid') showGrid(next, flow);
-        else await restoreCollection(next.draft.id, flow);
+        if (mode === 'grid' || mode === 'video') showGrid(next, flow);
+        else if (clip) {
+          const card = await cardFromCollection(next, clip);
+          if (card) {
+            display(card, flow, next);
+            await put(card);
+          }
+        } else await restoreCollection(next.draft.id, flow);
       })
       .catch(failed);
   }
@@ -498,13 +547,33 @@ export function App() {
   );
   const inGrid =
     collection?.draft.mode === 'grid' || collection?.clips.length === 0;
+  const inVideo =
+    FLAGS.videoJoin &&
+    collection?.draft.mode === 'video' &&
+    Boolean(collection.clips.length);
+  const toVideo =
+    FLAGS.videoJoin && collection?.clips.length
+      ? () => switchMode('video')
+      : undefined;
   const editor =
-    screen === 'make' && collection && inGrid ? (
+    screen === 'make' && collection && inVideo ? (
+      <VideoProjectEditor
+        key={collection.draft.id}
+        collection={collection}
+        change={setCollection}
+        close={close}
+        onCard={(clip) => switchMode('card', clip)}
+        onGrid={() => switchMode('grid')}
+        view={flow === 'workspace' ? 'workspace' : 'popup'}
+        beforePreview={flow === 'workspace' ? input : undefined}
+      />
+    ) : screen === 'make' && collection && inGrid ? (
       <GridEditor
         key={collection.draft.id}
         collection={collection}
         change={setCollection}
         close={close}
+        onVideo={toVideo}
         onCard={collection.clips.length ? () => switchMode('card') : undefined}
         view={flow === 'popup' ? 'popup' : 'workspace'}
         beforePreview={flow === 'popup' ? undefined : input}
@@ -528,11 +597,12 @@ export function App() {
             : undefined
         }
         onGrid={collection ? () => switchMode('grid') : undefined}
+        onVideo={toVideo}
         beforePreview={flow === 'workspace' ? input : undefined}
       />
     ) : null;
   const showNav = !(
-    (active || inGrid) &&
+    (active || inGrid || inVideo) &&
     screen === 'make' &&
     flow !== 'workspace'
   );
@@ -543,7 +613,9 @@ export function App() {
     <div
       className={
         'app' +
-        ((active || inGrid) && screen === 'make' ? ' app-editing' : '') +
+        ((active || inGrid || inVideo) && screen === 'make'
+          ? ' app-editing'
+          : '') +
         (showNav ? '' : ' app-compact')
       }
     >
@@ -556,7 +628,24 @@ export function App() {
         />
       ) : null}
       <main className="app-main">
-        {screen === 'drafts' ? (
+        {screen === 'library' || screen === 'gifs' ? (
+          <LibraryPanel
+            key={screen}
+            initialTab={screen}
+            allowGifs={FLAGS.gifs}
+            draftId={collection?.draft.id}
+            change={(group) => {
+              if (group.draft.mode === 'video' || group.draft.mode === 'grid')
+                showGrid(group, 'workspace');
+              else void restoreCollection(group.draft.id).catch(failed);
+            }}
+          />
+        ) : screen === 'settings' ? (
+          <section className="app-drafts">
+            <GifSettings />
+            <CollectionBackupControls refresh={refresh} />
+          </section>
+        ) : screen === 'drafts' ? (
           <section>
             <header className="app-work-header">
               <h1>{strings['drafts.title']}</h1>
@@ -566,7 +655,10 @@ export function App() {
             </header>
             {collectionsEnabled ? (
               <div className="app-collection-filters">
-                {(['all', 'card', 'grid'] as const).map((value) => (
+                {(FLAGS.videoJoin
+                  ? (['all', 'card', 'grid', 'video'] as const)
+                  : (['all', 'card', 'grid'] as const)
+                ).map((value) => (
                   <button
                     type="button"
                     key={value}

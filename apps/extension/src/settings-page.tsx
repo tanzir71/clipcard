@@ -1,3 +1,5 @@
+import { FLAGS } from '@clipcard/core/flags';
+import { GifSettings } from '@clipcard/ui/gif-settings';
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { CARD_FORMATS, CARD_TEMPLATES, THEMES } from '@clipcard/cards';
@@ -413,6 +415,7 @@ export function SettingsPage({ update }: { update: string | null }) {
             </div>
           </section>
         </fieldset>
+        {FLAGS.gifs ? <GifSettings /> : null}
         <p role="status">
           {status || (error ? strings['card.savedFailed'] : '')}
         </p>

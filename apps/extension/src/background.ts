@@ -3,9 +3,12 @@ import { FLAGS } from '@clipcard/core/flags';
 import { interfaceCopy } from '@clipcard/i18n';
 import type { InterfaceLanguage, UiStrings } from '@clipcard/i18n';
 import {
+  getDraftCollection,
   sweepDraftCollections,
   updateDraftCollection,
 } from '@clipcard/ui/collections';
+import { saveClipToLibrary, saveSourcedImage } from '@clipcard/ui/library';
+import { fetchPhoto } from '@clipcard/ui/input';
 import { getDraft } from '@clipcard/ui/storage';
 import { browser } from 'wxt/browser';
 import type { Browser } from 'wxt/browser';
@@ -21,7 +24,7 @@ import type {
 } from './messages.ts';
 import { destinationFor, rememberPrefs, sitePrefs } from './preferences.ts';
 import { developerUpdate } from './update-check.ts';
-import { persistCapture } from './clip-capture.ts';
+import { cropVisible, persistCapture } from './clip-capture.ts';
 import { persistMoment, persistRecording } from './video-persist.ts';
 import { getUserSettings, watchUserSettings } from './user-settings.ts';
 
@@ -301,6 +304,40 @@ async function fromMenu(
     });
     return;
   }
+  if (FLAGS.videoJoin && id === 'saveLibraryImage') {
+    const frame = info.frameId ?? 0;
+    const [hints, capture] = await Promise.all([
+      readHints(tab.id, frame),
+      bridge<ClipCapture>(tab.id, frame, {
+        to: 'bridge',
+        kind: 'contextImage',
+        address: info.srcUrl,
+      }),
+    ]);
+    const fetched =
+      info.srcUrl && (await mayRead(info.srcUrl))
+        ? await fetchPhoto(info.srcUrl, 1)
+        : null;
+    const image =
+      fetched?.blob ??
+      (frame === 0 && capture?.rect
+        ? await cropVisible(tab, capture.rect).catch(() => undefined)
+        : undefined);
+    if (!image) {
+      await report(tab.id);
+      return;
+    }
+    await saveSourcedImage(
+      hints?.source?.title ||
+        hints?.title ||
+        tab.title ||
+        new URL(address).hostname,
+      hints?.source?.canonicalUrl ?? address,
+      image,
+    );
+    await open(tab, undefined, undefined, undefined, true);
+    return;
+  }
   if (clipping && id === 'clipImage') {
     const capture = await bridge<ClipCapture>(tab.id, info.frameId ?? 0, {
       to: 'bridge',
@@ -455,6 +492,14 @@ async function installMenus(force: boolean) {
       parentId: 'clipcard',
     });
   }
+  if (FLAGS.videoJoin) {
+    browser.contextMenus.create({
+      id: 'saveLibraryImage',
+      title: localized('library_save'),
+      contexts: ['image'],
+      parentId: 'clipcard',
+    });
+  }
   if (FLAGS.videoClips) {
     browser.contextMenus.create({
       id: 'clipVideo',
@@ -501,6 +546,12 @@ async function handleRequest(
         if (error instanceof RangeError) return { limit: true };
         throw error;
       }
+    }
+    case 'saveLibraryClip': {
+      if (!FLAGS.videoJoin) return false;
+      const group = await getDraftCollection(message.draftId);
+      const clip = group?.clips.find((item) => item.id === message.clipId);
+      return clip ? Boolean(await saveClipToLibrary(clip)) : false;
     }
     case 'openCollection':
       if (clipping) await open(sender.tab, undefined, undefined, message.id);
@@ -575,7 +626,9 @@ async function syncClippingEntryPoints() {
   const id = 'clipcard-clipping';
   const { origins } = await browser.permissions.getAll();
   const matches = (origins ?? []).filter(
-    (origin) => origin === '<all_urls>' || /^(\*|https?):\/\//.test(origin),
+    (origin) =>
+      (origin === '<all_urls>' || /^(\*|https?):\/\//.test(origin)) &&
+      !/^https:\/\/(?:api|\*)\.(?:klipy|giphy)\.com\/\*/.test(origin),
   );
   const [existing] = await browser.scripting.getRegisteredContentScripts({
     ids: [id],

@@ -1,0 +1,126 @@
+.clip-library {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  min-inline-size: 0;
+  padding: 12px;
+  color: #151517;
+  background: #fff;
+}
+
+.clip-library-tools,
+.clip-library-tags,
+.clip-gif-settings form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.clip-library-tools input:not([type='file']),
+.clip-gif-settings input,
+.clip-gif-settings select {
+  min-block-size: 36px;
+  min-inline-size: 100px;
+  max-inline-size: 100%;
+  flex: 1;
+  padding: 5px 8px;
+  border: 1px solid #d0d0d5;
+  background: #fff;
+  color: #0b0b0c;
+  font: inherit;
+}
+
+.clip-library-close {
+  margin-inline-start: auto;
+}
+
+.clip-library-tools [aria-pressed='true'],
+.clip-library-tags [aria-pressed='true'] {
+  background: #ededf0;
+}
+
+.clip-library-tags button {
+  min-block-size: 28px;
+  font-size: 12px;
+}
+
+.clip-library-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(98px, 1fr));
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.clip-library-item,
+.clip-library-tiles a {
+  display: grid;
+  align-content: start;
+  inline-size: 100%;
+  gap: 6px;
+  border: 1px solid #e0e0e5;
+  padding: 0 0 6px;
+  text-align: start;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.clip-library-item[aria-pressed='true'] {
+  outline: 2px solid #0b0b0c;
+  outline-offset: -2px;
+}
+
+.clip-library-tiles img,
+.clip-library-tiles video {
+  display: block;
+  inline-size: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background: #ededf0;
+}
+
+.clip-library-tiles span,
+.clip-library-tiles small {
+  display: block;
+  overflow: hidden;
+  padding-inline: 5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+}
+
+.clip-library-note,
+.clip-gif-credit {
+  margin: 0;
+  font-size: 12px;
+}
+
+.clip-gif-credit img {
+  display: block;
+  inline-size: 105px;
+  max-block-size: 40px;
+  object-fit: contain;
+}
+
+.clip-gif-search,
+.clip-gif-settings {
+  display: grid;
+  gap: 8px;
+}
+
+.clip-gif-settings label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 480px) {
+  .clip-library-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

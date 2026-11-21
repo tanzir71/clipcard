@@ -1,6 +1,9 @@
 import { readFile } from 'node:fs/promises';
 import jsQR from 'jsqr';
-import { VIDEO_CLIPS_RELEASED } from '../../packages/core/flags.ts';
+import {
+  VIDEO_CLIPS_RELEASED,
+  VIDEO_JOIN_RELEASED,
+} from '../../packages/core/flags.ts';
 import { expect, test } from './extension-fixture.ts';
 
 const port = Number(process.env.CLIPCARD_TEST_PORT_BASE ?? 4321) + 1;
@@ -70,6 +73,21 @@ test('records only the approved player and exports captions and a timestamp QR',
   ]);
   await expect(content).toHaveAttribute('data-cropped', '1');
   await expect(page.locator('clipcard-popup')).toHaveCSS('right', '12px');
+  if (VIDEO_JOIN_RELEASED) {
+    await sheet
+      .getByLabel('Timeline')
+      .getByRole('button', { name: 'Video clip', exact: true })
+      .click();
+    const player = sheet.locator('.clip-project-preview video');
+    await expect(player).toBeVisible();
+    await expect
+      .poll(() => player.evaluate((node: HTMLVideoElement) => node.videoWidth))
+      .toBe(640);
+    await expect(
+      sheet.getByRole('button', { name: /^Export ·/ }),
+    ).toBeEnabled();
+    return;
+  }
   const preview = sheet.locator('.clip-video-preview video');
   await expect(preview).toBeVisible();
   expect(

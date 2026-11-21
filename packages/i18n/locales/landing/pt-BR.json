@@ -11,6 +11,8 @@
     "follow": "Seguir no GitHub"
   },
   "hero": {
+    "videoHeading": "Compartilhe notícias como cartões, grades e vídeos",
+    "videoDescription": "Junte trechos de qualquer página em um cartão ou vídeo. Cada resultado tem um link para a fonte original.",
     "appHeading": "Compartilhe notícias em cartões",
     "appDescription": "Transforme um link, um artigo copiado ou uma foto em um cartão que leve à fonte original."
   },

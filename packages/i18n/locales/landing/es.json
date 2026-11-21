@@ -11,6 +11,8 @@
     "follow": "Seguir en GitHub"
   },
   "hero": {
+    "videoHeading": "Comparte las noticias en tarjetas, cuadrículas y vídeos",
+    "videoDescription": "Combina fragmentos de cualquier página en una tarjeta o un vídeo. Cada resultado enlaza a su fuente original.",
     "appHeading": "Comparte noticias en tarjetas",
     "appDescription": "Convierte un enlace, un artículo copiado o una foto en una tarjeta que lleve a la fuente original."
   },

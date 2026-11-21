@@ -19,6 +19,8 @@ import type {
   DraftClip,
   DraftCollection,
 } from '@clipcard/ui/collections';
+import { LibraryPanel } from '@clipcard/ui/library-panel';
+import { VideoProjectEditor } from '@clipcard/ui/video-project-editor';
 import { VideoEditor } from '@clipcard/ui/video-editor';
 import { GridEditor } from '@clipcard/ui/grid-editor';
 import { getDraft, saveDraft } from '@clipcard/ui/storage';
@@ -50,6 +52,7 @@ export function CollectionPopup({
   const [cardState, setCard] = useState<CardDraft | null>(card ?? null);
   const [items, setItems] = useState<ClipDraft[]>([]);
   const [status, setStatus] = useState('');
+  const [library, setLibrary] = useState<'library' | 'gifs'>();
   const failed = () => setStatus(strings['card.savedFailed']);
 
   useEffect(() => {
@@ -95,7 +98,11 @@ export function CollectionPopup({
     Boolean(
       collection?.clips.some((clip) => clip.kind === 'video' && clip.video),
     );
-  const toVideo = hasVideo ? () => void switchMode('video') : undefined;
+  const canMakeVideo =
+    hasVideo || (FLAGS.videoJoin && Boolean(collection?.clips.length));
+  const toVideo = canMakeVideo ? () => void switchMode('video') : undefined;
+  const permitGifs = (origins: string[]) =>
+    browser.permissions.request({ origins });
 
   async function switchMode(mode: ClipDraft['mode'], moment?: DraftClip) {
     if (!collection) return;
@@ -125,6 +132,39 @@ export function CollectionPopup({
     }
   }
 
+  if (library) {
+    return (
+      <LibraryPanel
+        initialTab={library}
+        allowGifs={FLAGS.gifs}
+        permit={permitGifs}
+        draftId={collection?.draft.id}
+        close={() => setLibrary(undefined)}
+        change={(group) => {
+          setCollection(group);
+          setCard(null);
+          setLibrary(undefined);
+        }}
+      />
+    );
+  }
+  if (
+    collection &&
+    FLAGS.videoJoin &&
+    collection.clips.length &&
+    collection.draft.mode === 'video'
+  ) {
+    return (
+      <VideoProjectEditor
+        collection={collection}
+        change={setCollection}
+        close={close}
+        permit={permitGifs}
+        onCard={(clip) => void switchMode('card', clip)}
+        onGrid={() => void switchMode('grid')}
+      />
+    );
+  }
   if (collection && hasVideo && collection.draft.mode === 'video') {
     return (
       <VideoEditor
@@ -233,6 +273,24 @@ export function CollectionPopup({
         ))}
       </ul>
       <footer className="clip-grid-actions">
+        {FLAGS.videoJoin ? (
+          <button
+            type="button"
+            className="clip-button"
+            onClick={() => setLibrary('library')}
+          >
+            {strings['library.tab']}
+          </button>
+        ) : null}
+        {FLAGS.gifs ? (
+          <button
+            type="button"
+            className="clip-button"
+            onClick={() => setLibrary('gifs')}
+          >
+            {strings['gifs.tab']}
+          </button>
+        ) : null}
         <button
           type="button"
           className="clip-button clip-primary"

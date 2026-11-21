@@ -7,6 +7,7 @@ const paths = {
   close: 'm6 6 12 12M18 6 6 18',
   copy: 'M8 8h12v12H8zM16 4H4v12',
   download: 'M12 4v11m-4-4 4 4 4-4M5 16v4h14v-4',
+  pause: 'M8 5v14m8-14v14',
   video: 'M4 4h16v16H4z M10 8v8l6-4z',
   grid: 'M3 3h18v18H3zM12 3v18M3 12h18',
   link: 'M10 13a4 4 0 0 0 6 .5l3.5-3.5a4 4 0 0 0-5.7-5.7l-2 2M14 11a4 4 0 0 0-6-.5L4.5 14a4 4 0 0 0 5.7 5.7l2-2',

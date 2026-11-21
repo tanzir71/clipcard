@@ -1,3 +1,4 @@
+import { FLAGS } from '@clipcard/core/flags';
 import { dirFor, parseWebUrl, textFragment } from '@clipcard/core';
 import { interfaceStrings as strings } from '@clipcard/i18n';
 import type { UiStrings } from '@clipcard/i18n';
@@ -52,7 +53,7 @@ export function mountClipping(readHints: () => Hints) {
     .clip{position:fixed;z-index:2147483646;font:500 13px system-ui,sans-serif}
     .panel{inset:12px 12px auto auto;display:grid;justify-items:end;gap:8px;max-width:calc(100vw - 24px)}
     .bar{display:flex;align-items:center;gap:8px;padding:6px;border-radius:5px;color:#fff;background:#0b0b0c;box-shadow:0 8px 28px #0004}
-    .tray{padding:10px;gap:12px}.tray em{font:inherit;color:#bbb}
+    .tiles button.tile{position:relative;min-width:40px;padding:0}.tiles button.tile img{position:absolute;inset:0;z-index:-1}.tiles button.tile:disabled{opacity:.55}.tray{padding:10px;gap:12px}.tray em{font:inherit;color:#bbb}
     .tiles{display:flex;padding-inline-start:2px}
     .tile{display:grid;width:40px;height:52px;place-items:center;margin-inline-start:-10px;background:#14243d;color:#a9bcdf;box-shadow:0 0 0 1px #0b0b0c;font:700 24px Georgia,serif}
     .tile:first-child{margin-inline-start:0}
@@ -164,9 +165,37 @@ export function mountClipping(readHints: () => Hints) {
     caption.append(title, document.createElement('br'), sources);
     const tiles = document.createElement('div');
     tiles.className = 'tiles';
-    tiles.setAttribute('aria-hidden', 'true');
+    if (!FLAGS.videoJoin) tiles.setAttribute('aria-hidden', 'true');
     for (const item of summary.thumbnails) {
-      const tile = document.createElement('div');
+      const tile =
+        FLAGS.videoJoin && item.id
+          ? button(
+              '☆',
+              () => {
+                const action = tile as HTMLButtonElement;
+                action.disabled = true;
+                void send({
+                  to: 'background',
+                  kind: 'saveLibraryClip',
+                  draftId: summary.id,
+                  clipId: item.id!,
+                })
+                  .then((saved) => {
+                    action.disabled = Boolean(saved);
+                    if (saved)
+                      action.setAttribute('aria-label', strings['card.saved']);
+                  })
+                  .catch(() => {
+                    action.disabled = false;
+                  });
+              },
+              true,
+            )
+          : document.createElement('div');
+      if (tile instanceof HTMLButtonElement) {
+        tile.setAttribute('aria-label', strings['library.save']);
+        tile.title = strings['library.save'];
+      }
       tile.className = 'tile';
       if (item.image) {
         const image = document.createElement('img');

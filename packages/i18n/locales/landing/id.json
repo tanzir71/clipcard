@@ -11,6 +11,8 @@
     "follow": "Ikuti di GitHub"
   },
   "hero": {
+    "videoHeading": "Bagikan berita sebagai kartu, kisi, dan video",
+    "videoDescription": "Gabungkan cuplikan dari halaman mana pun menjadi satu kartu atau video. Setiap hasil menautkan sumber asli.",
     "appHeading": "Bagikan berita sebagai kartu",
     "appDescription": "Ubah tautan, artikel yang disalin, atau foto menjadi kartu yang dapat dibagikan dan tertaut ke sumbernya."
   },

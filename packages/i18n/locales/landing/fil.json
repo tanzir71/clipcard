@@ -11,6 +11,8 @@
     "follow": "Sundan sa GitHub"
   },
   "hero": {
+    "videoHeading": "Ibahagi ang balita bilang mga card, grid at video",
+    "videoDescription": "Pagsamahin ang mga clip mula sa anumang pahina sa isang card o video. Bawat isa ay may link sa orihinal na pinagmulan.",
     "appHeading": "Ibahagi ang balita bilang card",
     "appDescription": "Gawing card ang isang link, kinopyang artikulo, o larawan. May link ang card pabalik sa pinagmulan."
   },

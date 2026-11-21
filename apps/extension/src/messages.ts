@@ -76,7 +76,7 @@ export interface ClipTray {
   id: string;
   count: number;
   sources: number;
-  thumbnails: Array<{ kind: string; image?: string }>;
+  thumbnails: Array<{ kind: string; image?: string; id?: string }>;
 }
 
 export type OffscreenMessage =
@@ -117,6 +117,12 @@ export type BackgroundMessage =
   | { to: 'background'; kind: 'captureClip'; capture: ClipCapture }
   | { to: 'background'; kind: 'videoMoment'; capture: MomentCapture }
   | { to: 'background'; kind: 'videoRecording'; capture: RecordedCapture }
+  | {
+      to: 'background';
+      kind: 'saveLibraryClip';
+      draftId: string;
+      clipId: string;
+    }
   | { to: 'background'; kind: 'openCollection'; id: string }
   | { to: 'background'; kind: 'pageCard' }
   | { to: 'background'; kind: 'addPage' }

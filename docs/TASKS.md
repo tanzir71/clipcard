@@ -91,18 +91,18 @@
 - [x] Verify the `tabCapture` install warning and record the decision.
 
 ## M14 · One video from many sources
-- [ ] Scene renderers (DESIGN §4.6), auto durations, captions, Sources end card; export MP4; progress; Download/Share.
-- [ ] "Add a reaction?" step with 3 suggestions + Skip.
+- [x] Scene renderers (DESIGN §4.6), auto durations, captions, Sources end card; export MP4; progress; Download/Share.
+- [x] "Add a reaction?" step with up to 3 Library suggestions + Skip.
 
 ## M15 · Library, GIFs, drafts, batch
-- [ ] IndexedDB + OPFS storage (ARCH §12), Save to library, tags, search, export/import.
-- [ ] GIPHY/KLIPY search with optional host permissions, attribution, cache, Settings key field (ARCH §15).
+- [x] IndexedDB + OPFS storage (ARCH §12), Save to library, tags, search, export/import.
+- [x] GIPHY/KLIPY search with optional host permissions, attribution and a Settings key field. See DECISIONS.md for provider storage limits.
 - [x] Drafts: auto‑append, 6 h rule, list in the popup, restore exactly, retention sweep.
 - [ ] Batch: marquee over links, open tabs, paste list → Roundup / Carousel / Digest video (ARCH §16).
-- [ ] Privacy page + store data disclosure updated for GIF search.
+- [x] Privacy page and store disclosure draft updated for GIF search.
 
 ## M16 · Lite (no install)
-- [ ] `apps/lite` window reusing the popup, storage, cards and video packages; served at `/lite`; PWA with `share_target`.
+- [x] `apps/lite` serves the shared editors, storage and video export at `/app` with PWA share handling.
 - [ ] Bookmarklet under 4 KB, no external loads, works on sites with strict CSP (test on news sites, YouTube, Facebook, X).
 - [x] postMessage handshake (origin + schema check), reuse of the named window, add‑to‑draft on repeat clicks, moment from the playing video.
 - [x] Landing "No install? Use the bookmark." block with the draggable link; mobile "Add to Home Screen".

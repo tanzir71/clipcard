@@ -1,0 +1,265 @@
+.clip-project {
+  min-inline-size: 0;
+  display: grid;
+  color: #0b0b0c;
+  background: #fff;
+}
+
+.clip-project-workspace {
+  grid-template-columns: minmax(0, 1fr) minmax(225px, 30%);
+}
+
+.clip-project-main {
+  min-inline-size: 0;
+  background: #f1f1f3;
+}
+
+.clip-project-preview {
+  display: grid;
+  place-items: center;
+  position: relative;
+  min-block-size: 200px;
+}
+
+.clip-project-popup .clip-project-preview {
+  background: #0b0b0c;
+}
+
+.clip-project-frame {
+  display: grid;
+  place-items: center;
+  inline-size: clamp(180px, 60%, 310px);
+  max-block-size: 53vh;
+  background: #0b0b0c;
+  overflow: hidden;
+}
+
+.clip-project-stage {
+  display: grid;
+  position: relative;
+  align-content: center;
+  justify-items: stretch;
+  aspect-ratio: 9 / 16;
+  max-inline-size: 100%;
+  max-block-size: 52vh;
+  color: #fff;
+  background: #16161a;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.clip-project-stage[data-scene='image'],
+.clip-project-stage[data-scene='reaction'] {
+  align-content: stretch;
+}
+
+.clip-project-echo {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  z-index: -1;
+  object-fit: cover;
+  filter: blur(22px) brightness(0.36);
+  transform: scale(1.15);
+}
+
+.clip-project-stage video,
+.clip-project-photo {
+  display: block;
+  inline-size: 100%;
+  max-block-size: 100%;
+  object-fit: contain;
+}
+
+.clip-project-headline,
+.clip-project-originals {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.clip-project-originals a {
+  color: #a9bcdf;
+}
+
+.clip-project-headline strong {
+  line-height: 1.3;
+  font-size: clamp(11px, 2vw, 19px);
+}
+
+.clip-project-stage small,
+.clip-project-caption {
+  font-size: 10px;
+}
+
+.clip-project-caption,
+.clip-project-quote {
+  justify-self: center;
+  margin: 8px 12px;
+  padding: 4px 8px;
+  background: #fff;
+  color: #0b0b0c;
+  text-align: center;
+}
+
+.clip-project-quote {
+  font-family: 'Libre Caslon Text', serif;
+}
+
+.clip-project-timeline,
+.clip-project-inspector {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-inline-size: 0;
+  padding: 10px;
+  background: #fff;
+}
+
+.clip-project-clock,
+.clip-project-toolbar,
+.clip-project-reaction {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  min-inline-size: 0;
+  gap: 6px;
+}
+
+.clip-project-clock span {
+  font:
+    11px 'Geist Mono',
+    monospace;
+  direction: ltr;
+}
+
+.clip-project-clock input {
+  flex: 1;
+  min-inline-size: 65px;
+  accent-color: #9c2424;
+}
+
+.clip-project-scenes {
+  display: flex;
+  overflow-x: auto;
+  gap: 4px;
+  padding: 2px;
+}
+
+.clip-project-scenes button {
+  display: grid;
+  position: relative;
+  isolation: isolate;
+  gap: 5px;
+  align-content: space-between;
+  flex: var(--clip-duration, 1) 0 60px;
+  min-block-size: 60px;
+  border: 0;
+  padding: 6px;
+  background: #29292d;
+  color: white;
+  text-align: start;
+  font:
+    11px 'Geist',
+    sans-serif;
+  cursor: pointer;
+}
+
+.clip-project-scenes img {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  filter: brightness(0.5);
+}
+
+.clip-project-scenes button[aria-pressed='true'] {
+  outline: 2px solid #151516;
+  outline-offset: 1px;
+}
+
+.clip-project-scenes .clip-project-add {
+  flex: 0 0 34px;
+  place-items: center;
+  align-content: center;
+  border: 1px dashed #c8c8cd;
+  background: #fff;
+  color: #0b0b0c;
+}
+
+.clip-project-mode {
+  display: grid;
+  place-items: center;
+  min-inline-size: 34px;
+  min-block-size: 34px;
+  color: #fff;
+  background: #0b0b0c;
+}
+
+.clip-project-auto {
+  margin-inline-start: auto;
+}
+
+.clip-project-reaction {
+  font-size: 12px;
+}
+
+.clip-project-suggestion {
+  inline-size: 40px;
+  block-size: 40px;
+  border: 0;
+  padding: 0;
+  background: #efeff1;
+  cursor: pointer;
+}
+
+.clip-project-suggestion :is(img, video) {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.clip-project-export .clip-primary {
+  flex: 1;
+}
+
+.clip-project-tools {
+  display: grid;
+  gap: 8px;
+  max-block-size: 290px;
+  overflow: auto;
+  padding: 6px;
+  background: #f5f5f6;
+  font-size: 12px;
+}
+
+.clip-project-tools label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-inline-size: 0;
+}
+
+.clip-project-tools label :is(input, select) {
+  min-inline-size: 28px;
+  max-inline-size: 60%;
+  margin-inline-start: auto;
+  font: inherit;
+}
+
+.clip-project-trim {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+@media (max-width: 940px) {
+  .clip-project-workspace {
+    grid-template-columns: 1fr;
+  }
+}

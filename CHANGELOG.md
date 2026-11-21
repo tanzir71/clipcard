@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## v0.6.0 - 2026-11-21
+
+- Join recorded clips, excerpts and pictures into a video in the extension or web app. Reorder the scenes, trim clips and edit captions on the timeline.
+- Use your own GIFs for reactions and export with a Sources card that links back to the originals.
+- Save photos, GIFs and clips to your Library. Search, tag or favorite them, and include them in a draft backup.
+- Browse GIPHY and KLIPY with your provider key. The search results link to their original pages.
+
 ## v0.5.0 - 2026-11-21
 
 - Select a range on a video and make a moment card with a QR that opens the source at the selected time.
