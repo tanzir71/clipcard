@@ -74,7 +74,7 @@ const cardExamples = Object.entries(templates.names).filter(
     RELEASED.extension ||
     (RELEASED.cards ? !['duotone', 'caps'].includes(name) : name !== 'solid'),
 );
-const examples = RELEASED.batch
+const examples: [string, string][] = RELEASED.batch
   ? [...cardExamples, ['roundup', interfaceCopy(locale)['template.roundup']]]
   : cardExamples;
 const formats =
