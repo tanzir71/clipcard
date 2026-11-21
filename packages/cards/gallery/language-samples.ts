@@ -24,6 +24,24 @@ export const languageSamples = headlines.samples.flatMap(
     })),
 );
 
+const longHeadline = languageSamples.find(
+  ({ id }) => id === 'header-language-es',
+)!.model;
+
+export const qrSpacingSamples = (
+  [
+    ['split', '1:1'],
+    ['split', '9:16'],
+    ['duotone', '4:5'],
+    ['duotone', '1:1'],
+  ] as const
+).map(([template, format]) => ({
+  id: 'qr-spacing-' + template + '-' + format,
+  template,
+  format,
+  model: longHeadline,
+}));
+
 export const languageReferences = [
   reference(
     'bn',

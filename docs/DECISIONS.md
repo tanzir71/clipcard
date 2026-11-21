@@ -2,6 +2,15 @@
 
 Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md).
 
+## R8 developer release — 2026-11-21
+
+- Chromium releases ship as an unsigned Developer mode ZIP. Firefox has a DOM-capable MV3 background page for rendering sourced cards. Its temporary add-on also exposes page clipping and moment cards. Firefox removes temporary add-ons on restart. The Chromium extension and web app provide the other workflows.
+- The installed web app accepts a shared MP4, reads its duration offline and saves the first 60 seconds in a local video draft. The browser test covers multipart delivery, playback and reload with the browser offline.
+- Checked 1,050 card layouts across 30 headline samples, seven single-card templates and five formats. Narrow layouts reserve room for the actual QR. Duotone preserves the reference layout and refits when text would touch the QR. The affected Duotone artwork still passes its 2% reference checks.
+- The one-click browser benchmark measured 486 ms p50 and 528 ms p95 across 20 runs. A 60.1-second H.264/AAC video at 1080 × 1920 rendered in 18.8 seconds and decoded through the end. Live metadata sampling returned a source for 30 of 36 publisher homepages. Six ran through the unavailable-source path.
+- Store materials include five real 1280 × 800 captures and copy for all 12 wave-one locales. The store build command produces the separate upload candidate. The owner requested the unsigned developer release first and asked to ship without waiting for sign-off.
+- Physical phone installation and sharing, the native recording chooser, signed-in social composers, phone camera scans, and the full OS scaling matrix remain manual checks. Verified browser and export tests accompany the developer release.
+
 ## R7 batch and web tab capture — 2026-11-21
 
 - Collection preserves page, tab, or paste order after URL cleanup and deduplication. Open tabs use the existing optional site access, with the active tab as fallback. The no-install app builds from pasted URLs and their slugs.

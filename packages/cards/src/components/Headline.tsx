@@ -20,6 +20,7 @@ interface Props {
   availableHeight: number;
   panel?: boolean;
   secondLine?: boolean;
+  qrWidth?: number;
 }
 
 const wordSegmenters = {
@@ -53,6 +54,7 @@ export function Headline({
   availableHeight,
   panel = false,
   secondLine = false,
+  qrWidth,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [breakAt, setBreakAt] = useState(0);
@@ -111,22 +113,51 @@ export function Headline({
     const element = ref.current;
     if (!element) return;
 
-    element.style.display = 'block';
-    element.style.maxHeight = 'none';
-    element.style.textWrap = 'wrap';
-    const size = fitText(minSize, maxSize, (value) => {
-      element.style.fontSize = value + 'px';
-      return (
-        element.scrollHeight <=
-          Math.min(lines * lineHeight * value, availableHeight) + 1 &&
-        element.scrollWidth <= element.clientWidth + 1
-      );
-    });
-    element.style.fontSize = size + 'px';
-    element.style.maxHeight =
-      Math.min(lines * lineHeight * size, availableHeight) + 'px';
-    if (!panel && size < maxSize) element.style.textWrap = 'balance';
-    element.style.display = '-webkit-box';
+    function fit(element: HTMLDivElement) {
+      element.style.display = 'block';
+      element.style.maxHeight = 'none';
+      element.style.textWrap = 'wrap';
+      const size = fitText(minSize, maxSize, (value) => {
+        element.style.fontSize = value + 'px';
+        return (
+          element.scrollHeight <=
+            Math.min(lines * lineHeight * value, availableHeight) + 1 &&
+          element.scrollWidth <= element.clientWidth + 1
+        );
+      });
+      element.style.fontSize = size + 'px';
+      element.style.maxHeight =
+        Math.min(lines * lineHeight * size, availableHeight) + 'px';
+      if (!panel && size < maxSize) element.style.textWrap = 'balance';
+      element.style.display = '-webkit-box';
+    }
+    element.style.maxInlineSize = '';
+    fit(element);
+    const code = qrWidth && element.closest('article')?.querySelector('.cc-qr');
+    if (!code || !element.clientWidth) return;
+
+    const titleBox = element.getBoundingClientRect();
+    const qrBox = code.getBoundingClientRect();
+    const scale = titleBox.width / element.clientWidth;
+    const text = document.createRange();
+    text.selectNodeContents(element);
+    const intersects = [...text.getClientRects()].some(
+      (line) =>
+        Math.min(line.right, titleBox.right, qrBox.right) -
+          Math.max(line.left, titleBox.left, qrBox.left) >
+          1 &&
+        Math.min(line.bottom, titleBox.bottom, qrBox.bottom) -
+          Math.max(line.top, titleBox.top, qrBox.top) >
+          1,
+    );
+    if (!intersects) return;
+
+    const usable =
+      getComputedStyle(element).direction === 'rtl'
+        ? titleBox.right - qrBox.right
+        : qrBox.left - titleBox.left;
+    element.style.maxInlineSize = Math.floor(usable / scale - 8) + 'px';
+    fit(element);
   }, [
     title,
     validRange,
@@ -141,6 +172,7 @@ export function Headline({
     panel,
     wrappedKey,
     breakAt,
+    qrWidth,
   ]);
 
   const style = {

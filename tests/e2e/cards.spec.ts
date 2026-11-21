@@ -73,3 +73,34 @@ for (const [id, font, url, width, height, compare] of cases) {
     },
   );
 }
+
+test('keeps long headlines clear of source QRs', async ({ page }) => {
+  await page.goto('./');
+  const cases = page.locator('[data-sample^="qr-spacing-"]');
+  await expect(cases.locator('.cc-qr')).toHaveCount(4);
+  for (const artwork of await cases.locator('article').all()) {
+    const collides = await artwork.evaluate((card) => {
+      const title = card.querySelector('.cc-headline');
+      const qr = card.querySelector('.cc-qr');
+      if (!title || !qr) throw new Error('Missing title or source QR');
+      const bounds = title.getBoundingClientRect();
+      const code = qr.getBoundingClientRect();
+      const nodes = document.createTreeWalker(title, NodeFilter.SHOW_TEXT);
+      while (nodes.nextNode()) {
+        const range = document.createRange();
+        range.selectNodeContents(nodes.currentNode);
+        for (const part of range.getClientRects()) {
+          const overlapWidth =
+            Math.min(part.right, bounds.right, code.right) -
+            Math.max(part.left, bounds.left, code.left);
+          const overlapHeight =
+            Math.min(part.bottom, bounds.bottom, code.bottom) -
+            Math.max(part.top, bounds.top, code.top);
+          if (overlapWidth > 0.2 && overlapHeight > 0.2) return true;
+        }
+      }
+      return false;
+    });
+    expect(collides).toBe(false);
+  }
+});

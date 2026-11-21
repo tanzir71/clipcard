@@ -67,10 +67,16 @@ test('shows the web app, upcoming features and keyboard-accessible FAQ', async (
   );
   const install = page.locator('#install');
   await expect(
-    install.getByRole('link', { name: 'Download .zip' }),
+    install.getByRole('link', { name: 'Download .zip', exact: true }),
   ).toHaveAttribute(
     'href',
     'https://github.com/tanzir71/clipcard/releases/latest/download/clipcard-chrome.zip',
+  );
+  await expect(
+    install.getByRole('link', { name: 'Download .zip · Firefox', exact: true }),
+  ).toHaveAttribute(
+    'href',
+    'https://github.com/tanzir71/clipcard/releases/latest/download/clipcard-firefox.zip',
   );
   await expect(install.getByRole('listitem')).toHaveCount(4);
   await install.getByText('Build from source', { exact: true }).click();

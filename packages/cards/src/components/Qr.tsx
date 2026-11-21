@@ -3,16 +3,15 @@ import strings from '@clipcard/i18n/en';
 import { qrGeometry } from '../qr.ts';
 import { tokens } from '../tokens.ts';
 
-export const Qr = memo(function Qr({
-  url,
-  size,
-  minModulePx,
-}: {
-  url: string;
-  size: number;
-  minModulePx?: number;
-}) {
-  const geometry = qrGeometry(url, size, minModulePx);
+type QrProps =
+  | { url: string; size: number; minModulePx?: number }
+  | { geometry: ReturnType<typeof qrGeometry> };
+
+export const Qr = memo(function Qr(props: QrProps) {
+  const geometry =
+    'geometry' in props
+      ? props.geometry
+      : qrGeometry(props.url, props.size, props.minModulePx);
   return (
     <svg
       className="cc-qr"
