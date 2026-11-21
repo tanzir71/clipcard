@@ -47,3 +47,16 @@
   color: #0b0b0c;
   font: inherit;
 }
+
+.app-find-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-block-end: 12px;
+  font-size: 12px;
+}
+
+.app-find-actions .clip-batch-start {
+  inline-size: 100%;
+}

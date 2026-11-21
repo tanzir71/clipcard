@@ -9,7 +9,6 @@ import Icon from './Icon.astro';
 import Languages from './Languages.astro';
 import LiveCardDemo from './LiveCardDemo.astro';
 import SendToComputer from './SendToComputer.astro';
-import { FLAGS } from '@clipcard/core/flags';
 import { interfaceCopy } from '@clipcard/i18n';
 import { RELEASED, REPO_URL } from '../config';
 import Site from '../layouts/Site.astro';
@@ -75,7 +74,7 @@ const cardExamples = Object.entries(templates.names).filter(
     RELEASED.extension ||
     (RELEASED.cards ? !['duotone', 'caps'].includes(name) : name !== 'solid'),
 );
-const examples = FLAGS.batch
+const examples = RELEASED.batch
   ? [...cardExamples, ['roundup', interfaceCopy(locale)['template.roundup']]]
   : cardExamples;
 const formats =

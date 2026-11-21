@@ -7,7 +7,10 @@ import { PNG } from 'pngjs';
 import jsQR from 'jsqr';
 import { buildBookmarklet } from '../../scripts/bookmarklet.ts';
 
-import { VIDEO_CLIPS_RELEASED } from '../../packages/core/flags.ts';
+import {
+  BATCH_RELEASED,
+  VIDEO_CLIPS_RELEASED,
+} from '../../packages/core/flags.ts';
 
 const source = 'https://publisher.example/city/electric-river-buses';
 const photo = fileURLToPath(
@@ -315,4 +318,129 @@ test('runs the landing shortcut and opens its draft in the web app', async ({
   await expect(
     page.getByRole('textbox', { name: 'Headline', exact: true }),
   ).toHaveValue('Electric River Buses');
+});
+
+test('pastes eight links, saves a numbered Carousel and opens a Digest', async ({
+  page,
+}) => {
+  test.skip(!BATCH_RELEASED);
+  test.setTimeout(60_000);
+  const urls = Array.from(
+    { length: 8 },
+    (_, index) => 'https://publisher.example/news/dispatch-' + (index + 1),
+  );
+  await page.goto('./');
+  await page.getByRole('textbox', { name: field }).evaluate((input, links) => {
+    const clipboardData = new DataTransfer();
+    clipboardData.setData('text/plain', links.join('\n'));
+    input.dispatchEvent(
+      new ClipboardEvent('paste', {
+        clipboardData,
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+  }, urls);
+  await expect(page.locator('.cc-roundup-source .cc-qr')).toHaveCount(4);
+  await page
+    .getByRole('button', { name: 'Next template', exact: true })
+    .click();
+  await expect(page.locator('.cc-roundup-num').first()).toHaveText('05');
+  await page.getByRole('button', { name: 'Carousel · 8' }).click();
+  await expect(
+    page.getByRole('button', { name: 'Carousel · 8' }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Save ZIP' }).click();
+  const archive = await readFile(await (await download).path());
+  let cursor = 0;
+  for (const [index, url] of urls.entries()) {
+    expect(archive.readUInt32LE(cursor)).toBe(0x04034b50);
+    expect(archive.readUInt16LE(cursor + 8)).toBe(0);
+    const size = archive.readUInt32LE(cursor + 18);
+    const nameLength = archive.readUInt16LE(cursor + 26);
+    const extraLength = archive.readUInt16LE(cursor + 28);
+    const name = archive.toString(
+      'utf8',
+      cursor + 30,
+      cursor + 30 + nameLength,
+    );
+    expect(name).toMatch(new RegExp('^0' + (index + 1) + '-.*[.]png$'));
+    const offset = cursor + 30 + nameLength + extraLength;
+    const png = PNG.sync.read(archive.subarray(offset, offset + size));
+    expect(
+      jsQR(new Uint8ClampedArray(png.data), png.width, png.height)?.data,
+    ).toBe(url);
+    cursor = offset + size;
+  }
+  expect(archive.readUInt32LE(cursor)).toBe(0x02014b50);
+  await page.getByRole('button', { name: 'Digest video' }).click();
+  await expect(
+    page.locator('.clip-project-scenes button[draggable="true"]'),
+  ).toHaveCount(8);
+  await page.reload();
+  await expect(
+    page.locator('.clip-project-scenes button[draggable="true"]'),
+  ).toHaveCount(8);
+});
+
+test('records a browser tab into a draft and refuses a window surface', async ({
+  page,
+}) => {
+  test.skip(!BATCH_RELEASED);
+  await page.addInitScript(() => {
+    navigator.mediaDevices.getDisplayMedia = async (options) => {
+      if (!navigator.userActivation.isActive || options?.audio !== true)
+        throw new Error(
+          'Capture must be a deliberate request for tab video and audio',
+        );
+      const canvas = document.createElement('canvas');
+      canvas.width = 480;
+      canvas.height = 270;
+      const context = canvas.getContext('2d')!;
+      const stream = canvas.captureStream(30);
+      const [track] = stream.getVideoTracks();
+      if (!track) throw new Error('Missing fixture video track');
+      const video = track;
+      const settings = video.getSettings.bind(video);
+      video.getSettings = () => ({
+        ...settings(),
+        displaySurface: document.body.dataset.windowCapture
+          ? 'window'
+          : 'browser',
+      });
+      function draw() {
+        if (video.readyState === 'ended') return;
+        context.fillStyle = '#2578a1';
+        context.fillRect(0, 0, 480, 270);
+        context.fillStyle = '#fff';
+        context.fillRect(performance.now() % 300, 30, 71, 95);
+        requestAnimationFrame(draw);
+      }
+      draw();
+      return stream;
+    };
+  });
+  await page.goto('./');
+  const record = page.getByRole('button', { name: 'Record tab', exact: true });
+  await page.locator('body').evaluate((body) => {
+    body.dataset.windowCapture = '1';
+  });
+  await record.click();
+  await expect(page.getByRole('status')).toHaveText(
+    'Choose a browser tab to make a recording.',
+  );
+  await page.locator('body').evaluate((body) => {
+    delete body.dataset.windowCapture;
+  });
+  await record.click();
+  await expect(page.getByRole('status')).toHaveText('Recording 1 / 60');
+  await page.getByRole('button', { name: 'Stop', exact: true }).click();
+  await expect(
+    page.locator('.clip-project-scenes button[draggable="true"]'),
+  ).toHaveCount(1);
+  await page.reload();
+  await expect(
+    page.locator('.clip-project-scenes button[draggable="true"]'),
+  ).toHaveCount(1);
 });

@@ -604,9 +604,7 @@ async function handleRequest(
       const granted = await browser.permissions.contains({
         origins: ['<all_urls>'],
       });
-      const tabs = granted
-        ? await browser.tabs.query({ windowId: tab.windowId })
-        : [tab];
+      const tabs = granted ? await browser.tabs.query({}) : [tab];
       return collectBatch(
         tab,
         tabs.flatMap(({ url, title }) =>

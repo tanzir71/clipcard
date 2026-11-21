@@ -98,7 +98,7 @@
 - [x] IndexedDB + OPFS storage (ARCH §12), Save to library, tags, search, export/import.
 - [x] GIPHY/KLIPY search with optional host permissions, attribution and a Settings key field. See DECISIONS.md for provider storage limits.
 - [x] Drafts: auto‑append, 6 h rule, list in the popup, restore exactly, retention sweep.
-- [ ] Batch: marquee over links, open tabs, paste list → Roundup / Carousel / Digest video (ARCH §16).
+- [x] Batch: marquee over links, open tabs, paste list → Roundup / Carousel / Digest video (ARCH §16).
 - [x] Privacy page and store disclosure draft updated for GIF search.
 
 ## M16 · Lite (no install)
@@ -106,4 +106,4 @@
 - [ ] Bookmarklet under 4 KB, no external loads, works on sites with strict CSP (test on news sites, YouTube, Facebook, X).
 - [x] postMessage handshake (origin + schema check), reuse of the named window, add‑to‑draft on repeat clicks, moment from the playing video.
 - [x] Landing "No install? Use the bookmark." block with the draggable link; mobile "Add to Home Screen".
-- [ ] Optional tab recording via `getDisplayMedia` (user prompt every time).
+- [x] Optional tab recording via `getDisplayMedia` (user prompt every time).

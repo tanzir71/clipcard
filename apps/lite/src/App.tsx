@@ -734,6 +734,53 @@ export function App() {
         />
       ) : null}
       <main className="app-main">
+        {FLAGS.batch &&
+        ((screen === 'make' && flow === 'workspace') ||
+          recording !== undefined) ? (
+          <div className="app-find-actions">
+            {screen === 'make' ? (
+              <button
+                type="button"
+                className="clip-button"
+                aria-expanded={batchStart}
+                onClick={() => setBatchStart(!batchStart)}
+              >
+                {strings['batch.paste']}
+              </button>
+            ) : null}
+            {canRecordTab() ? (
+              <button
+                type="button"
+                className="clip-button"
+                disabled={recording === 'chooser'}
+                onClick={
+                  recording === undefined
+                    ? () => void captureTab()
+                    : () => recordingStop.current?.abort()
+                }
+              >
+                {
+                  strings[
+                    recording === undefined ? 'batch.record' : 'video.stop'
+                  ]
+                }
+              </button>
+            ) : null}
+            {typeof recording === 'number' ? (
+              <span role="status">
+                {strings['clip.recording']
+                  .replace('{elapsed}', String(Math.floor(recording)))
+                  .replace('{total}', String(maxClipSeconds))}
+              </span>
+            ) : null}
+            {batchStart && screen === 'make' ? (
+              <BatchStart
+                collect={pasteBatch}
+                close={() => setBatchStart(false)}
+              />
+            ) : null}
+          </div>
+        ) : null}
         {screen === 'library' || screen === 'gifs' ? (
           <LibraryPanel
             key={screen}
@@ -848,46 +895,6 @@ export function App() {
             />
           ))
         )}
-        {FLAGS.batch && screen === 'make' && flow === 'workspace' ? (
-          batchStart ? (
-            <BatchStart
-              collect={pasteBatch}
-              close={() => setBatchStart(false)}
-            />
-          ) : (
-            <button
-              className="clip-button"
-              type="button"
-              onClick={() => setBatchStart(true)}
-            >
-              {strings['batch.paste']}
-            </button>
-          )
-        ) : null}
-        {FLAGS.batch &&
-        screen === 'make' &&
-        flow === 'workspace' &&
-        canRecordTab() ? (
-          <button
-            type="button"
-            className="clip-button"
-            disabled={recording === 'chooser'}
-            onClick={
-              recording === undefined
-                ? () => void captureTab()
-                : () => recordingStop.current?.abort()
-            }
-          >
-            {strings[recording === undefined ? 'batch.record' : 'video.stop']}
-          </button>
-        ) : null}
-        {typeof recording === 'number' ? (
-          <p className="app-message" role="status">
-            {strings['clip.recording']
-              .replace('{elapsed}', String(Math.floor(recording)))
-              .replace('{total}', String(maxClipSeconds))}
-          </p>
-        ) : null}
         {message ? (
           <p className="app-message" role="status">
             {message}

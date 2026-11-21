@@ -7,7 +7,7 @@ export const CARD_LANGUAGES_RELEASED = true;
 export const VIDEO_CLIPS_RELEASED = true;
 export const VIDEO_JOIN_RELEASED = true;
 export const GIFS_RELEASED = true;
-export const BATCH_RELEASED = false;
+export const BATCH_RELEASED = true;
 const batchPreview = env?.DEV === true || env?.MODE === 'r7-preview';
 const videoPreview = env?.DEV === true || env?.MODE === 'r6-preview';
 

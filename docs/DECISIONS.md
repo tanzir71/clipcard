@@ -2,6 +2,13 @@
 
 Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md).
 
+## R7 batch and web tab capture — 2026-11-21
+
+- Collection preserves page, tab, or paste order after URL cleanup and deduplication. Open tabs use the existing optional site access, with the active tab as fallback. The no-install app builds from pasted URLs and their slugs.
+- Roundup uses the reference’s 1080 × 1350 layout and four-story pages. The screenshot comparison measured 2.75% difference against the supplied artwork with the same story copy, and the computed headline font was Libre Caslon Text. The browser test decodes four distinct canonical QRs from the actual export.
+- The web app asks for browser-tab capture from a deliberate click, limits recordings to 60 seconds and refuses window and screen surfaces. It uses the browser’s picture and audio. It does not infer a source URL from the chosen tab. A user can add a source separately.
+- The browser test verified the recording controls, refusal of a window, local persistence and reload using synthetic tab frames at the consent boundary. Native browser chooser and OS-level sharing remain physical-device checks.
+
 ## R6 video and GIFs — 2026-11-21
 
 - The web app and extension share a local timeline and a WebCodecs renderer. The extension runs the export in the open popup. Both surfaces save video options, clip trims and caption edits in the draft.

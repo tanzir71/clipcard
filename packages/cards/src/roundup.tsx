@@ -96,7 +96,7 @@ export function RoundupCard({
               </div>
               {clip.sourceUrl ? (
                 <div className="cc-roundup-source">
-                  <Qr url={clip.sourceUrl} size={84} minModulePx={2.6} />
+                  <Qr url={clip.sourceUrl} size={84} minModulePx={2} />
                 </div>
               ) : null}
             </li>
