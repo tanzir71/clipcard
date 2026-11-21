@@ -184,7 +184,7 @@ export async function updateDraftCollection(
   patch: Partial<
     Pick<
       ClipDraft,
-      'mode' | 'gridLayout' | 'overrides' | 'title' | 'videoOptions'
+      'mode' | 'gridLayout' | 'overrides' | 'title' | 'videoOptions' | 'batch'
     >
   >,
 ): Promise<DraftCollection | undefined> {

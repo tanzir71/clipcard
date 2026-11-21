@@ -6,6 +6,7 @@ import { FLAGS } from '@clipcard/core/flags';
 import { browser } from 'wxt/browser';
 import { defineContentScript } from 'wxt/utils/define-content-script';
 import { forTarget } from '../src/messages.ts';
+import { selectPageLinks } from '../src/batch-selection.ts';
 import { mountVideoClipping } from '../src/video-controls.ts';
 import { mountClipping } from '../src/clipping.ts';
 import { trackPage } from '../src/page-hints.ts';
@@ -142,6 +143,13 @@ export default defineContentScript({
               message.drafts,
             ).then(respond, () => respond(false));
             return true;
+          case 'startBatch':
+            if (FLAGS.batch) {
+              closeFrame?.();
+              selectPageLinks();
+            }
+            respond(FLAGS.batch);
+            break;
           case 'startClipping':
             clips?.start();
             respond(Boolean(clips));

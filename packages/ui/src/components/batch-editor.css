@@ -1,0 +1,130 @@
+.clip-batch {
+  display: grid;
+  align-content: start;
+  min-inline-size: 0;
+  color: #151517;
+  background: #fff;
+}
+
+.clip-batch-workspace {
+  grid-template-columns: minmax(0, 520px) minmax(240px, 1fr);
+  gap: 16px;
+  padding: 18px;
+}
+
+.clip-batch-art {
+  position: relative;
+  min-inline-size: 0;
+}
+
+.clip-batch-roundup {
+  position: relative;
+  overflow: hidden;
+  background: #0b0b0c;
+}
+
+.clip-batch-roundup > div {
+  position: absolute;
+  inset: 0 auto auto 0;
+  transform-origin: top left;
+}
+
+.clip-batch-tools {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 10px;
+  min-inline-size: 0;
+}
+
+.clip-batch-tools [aria-pressed='true'] {
+  color: #fff;
+  background: #0b0b0c;
+}
+
+.clip-batch-count {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font:
+    11px 'Geist Mono',
+    monospace;
+}
+
+.clip-batch-list {
+  max-block-size: 110px;
+  overflow: auto;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.clip-batch-list button {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  inline-size: 100%;
+  padding: 5px 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font:
+    12px 'Geist',
+    sans-serif;
+  text-align: start;
+}
+
+.clip-batch-list button span {
+  flex: 1;
+}
+
+.clip-batch-list button :is(span, small) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clip-batch-list button small {
+  opacity: 0.68;
+  min-inline-size: 26%;
+  text-align: end;
+}
+
+.clip-batch-tools .clip-primary {
+  flex: 1;
+}
+
+.clip-batch-tools p {
+  margin: 0;
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .clip-batch-workspace {
+    grid-template-columns: 1fr;
+    padding: 0;
+  }
+}
+
+.clip-batch-start {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  color: #151517;
+  background: #fff;
+}
+
+.clip-batch-start textarea {
+  box-sizing: border-box;
+  inline-size: 100%;
+  resize: vertical;
+  padding: 8px;
+  font: inherit;
+}
+
+.clip-batch-start p {
+  margin: 0;
+  font-size: 12px;
+}

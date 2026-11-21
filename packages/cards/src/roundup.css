@@ -1,0 +1,139 @@
+.cc-roundup {
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  inline-size: 1080px;
+  block-size: 1350px;
+  overflow: hidden;
+  padding: 50px 60px;
+  color: #fff;
+  background: #0b0b0c;
+  font-style: normal;
+  font-family: 'Geist', sans-serif;
+  text-align: start;
+}
+
+.cc-roundup-grain {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  opacity: 0.16;
+  mix-blend-mode: soft-light;
+}
+
+.cc-roundup-echo {
+  position: absolute;
+  z-index: -1;
+  inset-block-start: -350px;
+  inset-inline-start: 410px;
+  max-inline-size: 790px;
+  color: rgb(255 255 255 / 4%);
+  font:
+    750 650px/0.8 'Geist',
+    sans-serif;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.cc-roundup header {
+  block-size: 262px;
+}
+
+.cc-roundup-mark {
+  min-block-size: 99px;
+  white-space: pre-line;
+  font:
+    750 33px/0.87 'Geist',
+    sans-serif;
+}
+
+.cc-roundup h1 {
+  margin: 0 0 22px;
+  font:
+    400 50px/1.2 'Geist',
+    sans-serif;
+}
+
+.cc-roundup h1 strong {
+  display: block;
+  font-weight: 650;
+}
+
+.cc-roundup time {
+  color: #949498;
+  font:
+    400 16px 'Geist Mono',
+    monospace;
+  text-transform: uppercase;
+}
+
+.cc-roundup-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cc-roundup-rows li {
+  display: grid;
+  grid-template-columns: 25px 150px minmax(0, 1fr) 150px;
+  align-items: center;
+  gap: 24px;
+  block-size: 230px;
+  border-block-end: 1px solid rgb(255 255 255 / 12%);
+}
+
+.cc-roundup-rows li:last-child {
+  border-block-end: 0;
+}
+
+.cc-roundup-num {
+  color: #a9bcdf;
+  font:
+    500 20px 'Geist Mono',
+    monospace;
+}
+
+.cc-roundup-photo {
+  display: grid;
+  place-items: center;
+  inline-size: 150px;
+  block-size: 150px;
+  background: #25252a center / cover;
+  color: #d8d8de;
+  font:
+    600 39px 'Geist Mono',
+    monospace;
+}
+
+.cc-roundup-story {
+  display: grid;
+  min-inline-size: 0;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.cc-roundup-story strong {
+  display: -webkit-box;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font:
+    700 31px/1.22 var(--roundup-face, 'Libre Caslon Text'),
+    serif;
+}
+
+.cc-roundup-story span {
+  overflow: hidden;
+  color: #919196;
+  font:
+    400 14px 'Geist Mono',
+    monospace;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.cc-roundup-source {
+  justify-self: start;
+}

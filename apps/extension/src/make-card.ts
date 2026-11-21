@@ -85,11 +85,10 @@ async function makeThumbnail(png: Blob): Promise<Blob> {
   }
 }
 
-export async function makeCard(
+export async function makeDraft(
   request: SourceRequest,
-  render: boolean,
   preferencesFor: (address: string) => Promise<SitePrefs>,
-): Promise<MadeCard> {
+) {
   const { hints, canFetch, destination } = request;
   const address = await sourceAddress(request.address, canFetch);
   const live = hints?.source;
@@ -135,7 +134,16 @@ export async function makeCard(
   draft.destination = destination?.name;
   draft.fallback = !live && !downloaded;
 
-  const localImage = photo ? URL.createObjectURL(photo.blob) : null;
+  return draft;
+}
+
+export async function makeCard(
+  request: SourceRequest,
+  render: boolean,
+  preferencesFor: (address: string) => Promise<SitePrefs>,
+): Promise<MadeCard> {
+  const draft = await makeDraft(request, preferencesFor);
+  const localImage = draft.photo ? URL.createObjectURL(draft.photo.blob) : null;
   try {
     const model = modelForDraft(draft, localImage, draft.createdAt);
     const options = optionsForDraft(draft, model);
@@ -159,13 +167,13 @@ export async function makeCard(
     return {
       id: draft.id,
       collectionId: collection?.draft.id,
-      url: source.canonicalUrl,
+      url: draft.source!.canonicalUrl,
       dir: model.dir,
       template: options.template,
       format: options.format,
       png: encodedPng,
       thumb: preview,
-      fallback: draft.fallback,
+      fallback: draft.fallback ?? false,
     };
   } finally {
     if (localImage) URL.revokeObjectURL(localImage);

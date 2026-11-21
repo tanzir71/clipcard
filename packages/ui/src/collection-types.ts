@@ -8,6 +8,11 @@ export interface VideoOptions {
   reactionSkipped?: boolean;
 }
 
+export interface BatchOptions {
+  source: 'selection' | 'paste' | 'tabs';
+  output: 'roundup' | 'carousel';
+}
+
 export interface ClipDraft {
   id: string;
   title: string;
@@ -16,6 +21,7 @@ export interface ClipDraft {
   mode: 'card' | 'grid' | 'video';
   gridLayout?: GridLayout;
   videoOptions?: VideoOptions;
+  batch?: BatchOptions;
   overrides: Overrides;
   order: string[];
   savedForLater?: boolean;
