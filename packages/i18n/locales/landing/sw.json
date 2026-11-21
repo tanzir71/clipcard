@@ -11,6 +11,8 @@
     "follow": "Fuata kwenye GitHub"
   },
   "hero": {
+    "videoHeading": "Shiriki habari kama kadi, gridi na video",
+    "videoDescription": "Unganisha vipande kutoka ukurasa wowote kuwa kadi au video moja. Kila matokeo yana kiungo cha chanzo asili.",
     "appHeading": "Shiriki habari kwa kadi",
     "appDescription": "Geuza kiungo, makala uliyonakili au picha kuwa kadi ya kushiriki inayowaelekeza wasomaji kwenye chanzo."
   },

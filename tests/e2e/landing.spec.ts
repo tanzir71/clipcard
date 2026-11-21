@@ -110,7 +110,12 @@ test('serves valid HTML, discovery metadata and legal and changelog pages', asyn
     rules: { 'require-sri': ['error', { target: 'crossorigin' }] },
   });
   for (const [path, heading] of [
-    ['./', 'Share the news as cards and grids'],
+    [
+      './',
+      VIDEO_JOIN_RELEASED
+        ? 'Share the news as cards, grids and video'
+        : 'Share the news as cards and grids',
+    ],
     ['privacy/', 'Privacy'],
     ['changelog/', 'Changelog'],
   ] as const) {
@@ -146,7 +151,9 @@ test('wave-one routes switch locale, mirror RTL and link to the same-language ap
   await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-    'شارك الأخبار على هيئة بطاقات',
+    VIDEO_JOIN_RELEASED
+      ? 'شارك الأخبار على هيئة بطاقات وشبكات وفيديو'
+      : 'شارك الأخبار على هيئة بطاقات',
   );
   const home = 'https://tanzir71.github.io/clipcard/';
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
