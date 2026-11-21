@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './site-fixture';
 
 test('fits the viewport and sends the canonical URL with the share sheet', async ({
   page,

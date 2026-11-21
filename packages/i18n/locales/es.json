@@ -58,6 +58,7 @@
   "settings.clearHistory": "Borrar historial",
   "settings.clear": "Borrar",
   "settings.title": "Configuración",
+  "settings.automaticLanguage": "Automático",
   "settings.auto": "Automático",
   "settings.yourMark": "Tu marca",
   "settings.chooseMark": "Elige PNG o SVG",

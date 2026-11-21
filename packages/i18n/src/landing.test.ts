@@ -23,7 +23,8 @@ describe('wave-one interface copy', () => {
         Object.keys(en.features.items),
       );
     }
-    expect(landingStrings('ar').hero.gallery).toBe(en.hero.gallery);
+    expect(landingStrings('ar').hero.gallery).toBe('نماذج بطاقات');
+    expect(landingStrings('ar').privacy.appText).toEqual(en.privacy.appText);
     expect(landingStrings('bn').faq[0]?.question).toBe('এটি কি বিনামূল্যে?');
   });
 });

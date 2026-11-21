@@ -2,6 +2,12 @@
 
 Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md).
 
+## Web language selection — 2026-11-21
+
+- The default landing route and the web app can select a language from the visitor's country. GitHub Pages serves static files, so the browser uses Country.is for the country code. It sends no Clipcard data, credentials, or referrer. Clipcard saves the country code for the tab session and falls back to the browser's preferred supported language if lookup is unavailable.
+- Choosing a language in the site menu or app Settings saves it locally for both surfaces and skips automatic lookup. Automatic clears this choice. Direct links to translated landing pages preserve the linked language.
+- The Arabic and Urdu hero centers the gallery in the correct direction and uses translated source actions, installation text, and help.
+
 ## Web app workspace spacing — 2026-11-21
 
 - W1 aligns source actions under the work header with a 24 px workspace inset. A2 uses a paste card inside 20 px phone gutters. Batch paste and Record tab now sit with the source input using those same insets. The batch form opens below its button.
@@ -121,7 +127,7 @@ Newest first. Codex appends here when a spec is unclear or wrong (see AGENTS.md)
 
 ## R4 · Interface and browser locale support
 
-- A web app opened from a translated landing page remembers that language locally. Its card language still follows the source by default. Extension quick controls use the interface language chosen in Settings.
+- A web app opened from a translated landing page uses that language in Automatic mode. Its card language still follows the source by default. Extension quick controls use the interface language chosen in Settings.
 - Chrome's manifest locale table omits Urdu and Burmese. In-app settings support both languages, while the manifest publisher emits only Chrome-supported locales. Wave-one translations remain drafts pending native review.
 
 ## Landing hero

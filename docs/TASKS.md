@@ -60,6 +60,7 @@
 - [x] Pre‑store mode (`LANDING.md` §3.1): Install section, Download .zip / GitHub / clone‑and‑build, beta note; the switch to store mode when `STORE_URL` is set.
 - [x] Footer with tanziro.com link.
 - [x] Mobile "Send to my computer". Lighthouse ≥ 95.
+- [x] Center the Arabic and Urdu hero gallery and verify it on desktop and phone. Select a language by country when no choice is saved, with a shared manual preference for the landing and web app.
 
 ## M9 · Release
 - [x] GitHub Release workflow: tag `v*` → build → attach `clipcard-chrome.zip` (manifest at the root). Test the developer‑mode install from that zip on Chrome, Edge and Brave.

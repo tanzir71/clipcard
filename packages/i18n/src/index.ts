@@ -8,6 +8,7 @@ export {
   interfaceStrings,
   languageName,
   setInterfaceLanguage,
+  supportedInterfaceLanguage,
 } from './languages.ts';
 export type {
   CardLanguage,

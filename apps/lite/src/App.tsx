@@ -13,7 +13,12 @@ import {
   webBatchCard,
 } from '@clipcard/ui/batch';
 import { FLAGS } from '@clipcard/core/flags';
-import { interfaceStrings as strings } from '@clipcard/i18n';
+import {
+  interfaceLanguages,
+  interfaceStrings as strings,
+  languageName,
+} from '@clipcard/i18n';
+import type { WebLanguagePreference } from '@clipcard/i18n/web-language';
 import { Icon, InputRow } from '@clipcard/ui';
 import type { CardDraft } from '@clipcard/ui';
 import { receiveBookmark } from '@clipcard/ui/bookmark';
@@ -260,7 +265,13 @@ function Welcome({
   );
 }
 
-export function App() {
+export function App({
+  languagePreference,
+  changeLanguage,
+}: {
+  languagePreference: WebLanguagePreference;
+  changeLanguage: (preference: WebLanguagePreference) => Promise<void>;
+}) {
   const params = getParams();
   const [screen, setScreen] = useState<Screen>(
     params.has('drafts') ? 'drafts' : 'make',
@@ -809,6 +820,31 @@ export function App() {
               <h1>{strings['settings.title']}</h1>
             </header>
             <div className="app-settings-body">
+              <section aria-labelledby="app-general-settings-title">
+                <h2 id="app-general-settings-title">
+                  {strings['settings.general']}
+                </h2>
+                <label className="app-language-setting">
+                  {strings['settings.interfaceLanguage']}
+                  <select
+                    value={languagePreference}
+                    onChange={(event) =>
+                      void changeLanguage(
+                        event.currentTarget.value as WebLanguagePreference,
+                      )
+                    }
+                  >
+                    <option value="auto">
+                      {strings['settings.automaticLanguage']}
+                    </option>
+                    {interfaceLanguages.map((lang) => (
+                      <option key={lang} value={lang} lang={lang}>
+                        {languageName(lang)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </section>
               <section aria-labelledby="app-gif-settings-title">
                 <h2 id="app-gif-settings-title">{strings['gifs.tab']}</h2>
                 <GifSettings />

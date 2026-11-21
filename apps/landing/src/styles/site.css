@@ -356,11 +356,16 @@ body {
   margin-inline: auto;
   font-size: clamp(58px, 5.85vw, 84px);
   font-weight: 600;
-  letter-spacing: -0.045em;
-  line-height: calc(1em + 4px);
+  letter-spacing: var(--hero-title-tracking, -0.045em);
+  line-height: var(--hero-title-leading, calc(1em + 4px));
   white-space: pre-line;
   text-wrap: balance;
 }
+:root:dir(rtl) .hero {
+  --hero-title-leading: 1.27;
+  --hero-title-tracking: normal;
+}
+
 .hero p {
   max-inline-size: 640px;
   margin: 24px auto 24px;
@@ -377,7 +382,10 @@ body {
   inline-size: max-content;
   display: flex;
   gap: 28px;
-  transform: translateX(-50%);
+  transform: translateX(var(--hero-cards-offset, -50%));
+}
+.hero-cards:dir(rtl) {
+  --hero-cards-offset: 50%;
 }
 .hero-cards li {
   inline-size: 336px;
@@ -746,8 +754,8 @@ body {
   }
   .hero h1 {
     font-size: clamp(34px, 10.77vw, 50px);
-    letter-spacing: -0.04em;
-    line-height: calc(1em + 2px);
+    letter-spacing: var(--hero-title-tracking, -0.04em);
+    line-height: var(--hero-title-leading, calc(1em + 2px));
     text-wrap: initial;
   }
   .hero p {

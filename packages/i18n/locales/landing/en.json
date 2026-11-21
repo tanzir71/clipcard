@@ -214,6 +214,7 @@
     "zibon": "Zibon"
   },
   "privacy": {
+    "languageText": "Automatic language selection asks Country.is to identify your country from your connection’s IP address. Clipcard keeps the country code for the current tab session. Choosing a language saves that preference in your browser and skips the lookup.",
     "gifText": "GIF search sends your search terms to the provider you choose, GIPHY or KLIPY. The Library stores the files you import and the clips you save in this browser.",
     "title": "Privacy",
     "description": "How Clipcard handles data.",
