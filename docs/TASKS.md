@@ -107,3 +107,4 @@
 - [x] postMessage handshake (origin + schema check), reuse of the named window, add‑to‑draft on repeat clicks, moment from the playing video.
 - [x] Landing "No install? Use the bookmark." block with the draggable link; mobile "Add to Home Screen".
 - [x] Optional tab recording via `getDisplayMedia` (user prompt every time).
+- [x] Source actions align with the paste field and Settings uses grouped rows. Verified at desktop and phone widths, including Arabic and Urdu.
