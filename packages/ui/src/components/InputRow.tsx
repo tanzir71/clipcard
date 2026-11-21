@@ -95,7 +95,7 @@ export function InputRow({
           type="text"
           value={value}
           onChange={(event) => setValue(event.target.value)}
-          placeholder={strings['card.sourceHint']}
+          placeholder={strings['card.sourceHintShort']}
           aria-label={strings['card.sourceHint']}
         />
         {value ? (

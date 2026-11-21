@@ -89,6 +89,7 @@
   "drafts.export": "ထုတ်ယူရန်",
   "drafts.import": "တင်သွင်းရန်",
   "drafts.imported": "မူကြမ်းများ တင်သွင်းပြီး",
+  "card.sourceHintShort": "လင့်ခ်၊ စာသား သို့မဟုတ် ဓာတ်ပုံ ကူးထည့်ပါ",
   "card.sourceHint": "ရင်းမြစ်ထည့်ရန် လင့်ခ်၊ စာသား သို့မဟုတ် ပုံ ကူးထည့်ပါ",
   "card.photo": "ဓာတ်ပုံ",
   "card.addPhoto": "ဓာတ်ပုံ ထည့်ရန်",

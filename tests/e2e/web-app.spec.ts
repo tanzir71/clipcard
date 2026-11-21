@@ -444,3 +444,108 @@ test('records a browser tab into a draft and refuses a window surface', async ({
     page.locator('.clip-project-scenes button[draggable="true"]'),
   ).toHaveCount(1);
 });
+
+test('keeps batch tools aligned with the source input at desktop and phone widths', async ({
+  page,
+}) => {
+  await page.goto('./');
+  const group = page.locator('.app-source-group').first();
+  const pasteLinks = group.getByRole('button', {
+    name: 'Paste links',
+    exact: true,
+  });
+  for (const width of [1440, 1024, 390, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect(pasteLinks).toBeVisible();
+    const layout = await group.evaluate((section) => {
+      const row = section
+        .querySelector('.clip-input-row')!
+        .getBoundingClientRect();
+      const actions = section
+        .querySelector('.app-find-actions')!
+        .getBoundingClientRect();
+      return {
+        left: actions.left,
+        offset: actions.left - row.left,
+        gap: actions.top - row.bottom,
+        overflow: document.documentElement.scrollWidth > innerWidth,
+      };
+    });
+    expect(layout.left).toBeGreaterThanOrEqual(width >= 1024 ? 256 : 20);
+    expect(layout.offset).toBe(0);
+    expect(layout.gap).toBeGreaterThanOrEqual(8);
+    expect(layout.overflow).toBe(false);
+  }
+  await pasteLinks.click();
+  await group
+    .getByRole('textbox', { name: 'Paste links' })
+    .fill('https://example.org/news/one\nhttps://example.org/news/two');
+  await group
+    .getByRole('button', { name: 'Collect links', exact: true })
+    .click();
+  await expect(page.locator('.cc-roundup-rows li')).toHaveCount(2);
+});
+
+test('aligns settings rows and keeps their controls usable on desktop and phone', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('./');
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+
+  const provider = page.locator('.clip-gif-settings').getByRole('combobox');
+  const key = page.getByLabel('API key', { exact: true });
+  const keep = page.locator('.clip-backup-controls').getByRole('combobox');
+  const providerBox = await provider.boundingBox();
+  expect(providerBox).not.toBeNull();
+  expect((await key.boundingBox())?.x).toBe(providerBox!.x);
+  expect((await keep.boundingBox())?.x).toBe(providerBox!.x);
+  expect((await keep.boundingBox())?.width).toBe(providerBox!.width);
+
+  await page.setViewportSize({ width: 320, height: 800 });
+  const actions = page.locator('.app-settings button:visible');
+  for (const button of await actions.all()) {
+    const box = await button.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.x).toBeGreaterThanOrEqual(20);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(300);
+    expect(box!.height).toBeGreaterThanOrEqual(44);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
+    320,
+  );
+  await provider.selectOption('giphy');
+  await key.fill('fixture-key');
+  await page.getByRole('button', { name: 'Save key' }).click();
+  await expect(page.getByRole('status')).toHaveText(
+    'Key saved in this browser.',
+  );
+  await keep.selectOption('forever');
+  await expect(keep).toHaveValue('forever');
+
+  await page.reload();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  await expect(provider).toHaveValue('giphy');
+  await expect(key).toHaveValue('fixture-key');
+  await expect(keep).toHaveValue('forever');
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+for (const locale of ['ar', 'ur']) {
+  test(
+    'keeps settings within the phone viewport in ' + locale,
+    async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto('./?lang=' + locale);
+      await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+      await page.locator('.app-section-nav button').last().click();
+      const panel = page.locator('.app-settings-body');
+      await expect(panel.locator('.clip-gif-key-actions input')).toBeVisible();
+      await expect(panel.locator('.clip-backup-actions button')).toHaveCount(2);
+      expect(
+        await page.evaluate(() => document.documentElement.scrollWidth),
+      ).toBe(390);
+    },
+  );
+}

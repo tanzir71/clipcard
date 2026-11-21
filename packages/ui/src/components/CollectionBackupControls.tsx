@@ -86,22 +86,24 @@ export function CollectionBackupControls({
           <option value="forever">{strings['drafts.forever']}</option>
         </select>
       </label>
-      <button
-        type="button"
-        className="clip-button"
-        disabled={busy}
-        onClick={() => void backup()}
-      >
-        {strings['drafts.export']}
-      </button>
-      <button
-        type="button"
-        className="clip-button"
-        disabled={busy}
-        onClick={() => upload.current?.click()}
-      >
-        {strings['drafts.import']}
-      </button>
+      <div className="clip-backup-actions">
+        <button
+          type="button"
+          className="clip-button"
+          disabled={busy}
+          onClick={() => void backup()}
+        >
+          {strings['drafts.export']}
+        </button>
+        <button
+          type="button"
+          className="clip-button"
+          disabled={busy}
+          onClick={() => upload.current?.click()}
+        >
+          {strings['drafts.import']}
+        </button>
+      </div>
       <input
         type="file"
         ref={upload}

@@ -10,7 +10,8 @@
 
 .clip-library-tools,
 .clip-library-tags,
-.clip-gif-settings form {
+.clip-gif-settings form,
+.clip-gif-key-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
